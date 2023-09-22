@@ -174,7 +174,7 @@ class suews_database_manager:
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
         action.setEnabled(enabled_flag)
-
+        
         if status_tip is not None:
             action.setStatusTip(status_tip)
 
@@ -200,7 +200,7 @@ class suews_database_manager:
         icon_path = ':/plugins/suews_database_manager/icon.png'
         self.add_action(
             icon_path,
-            text=self.tr(u''),
+            text=self.tr(u'SUEWS Database Manager'),
             callback=self.run,
             parent=self.iface.mainWindow())
          
@@ -227,51 +227,51 @@ class suews_database_manager:
         urban_creator = UrbanTypeCreator()
         # self.setup_urban_type_creator(urban_creator, table_dict, Type, reg)
         setup_urban_type_creator(self,urban_creator, db_dict)
-        self.dlg.tabWidget.addTab(urban_creator, 'Urban Type Classifier')
+        self.dlg.tabWidget.addTab(urban_creator, 'Set Urban Types')
 
         urban_editor = UrbanTypeEditor()
         setup_urban_type_editor(self, urban_editor, db_dict, db_path)
-        self.dlg.tabWidget.addTab(urban_editor, 'Urban Type Editor')
+        self.dlg.tabWidget.addTab(urban_editor, 'Edit Urban Types')
 
         urban_elements_creator = UrbanElementsCreator()
         setup_urban_elements_creator(self, urban_elements_creator, db_dict, db_path)
-        self.dlg.tabWidget.addTab(urban_elements_creator, 'Urban Elements Creator')
+        self.dlg.tabWidget.addTab(urban_elements_creator, 'Create Urban Elements')
 
         urban_db_editor = UrbanTypeDBEditor()
         setup_urban_table_editor(self, urban_db_editor, db_dict, db_path)
-        self.dlg.tabWidget.addTab(urban_db_editor, 'Table Editor')
+        self.dlg.tabWidget.addTab(urban_db_editor, 'Table Editor??')
 
         spartacus_creator = SS_creator()
         setup_SUEWS_SS_creator(self, spartacus_creator, db_dict, db_path)
-        self.dlg.tabWidget.addTab(spartacus_creator, 'Spartacus Creator')
+        self.dlg.tabWidget.addTab(spartacus_creator, 'Building facets (Spartacus)')
 
         spartacus_material_creator = SpartacusMaterialCreator()
         setup_SS_material_creator(self, spartacus_material_creator, db_dict, db_path)
-        self.dlg.tabWidget.addTab(spartacus_material_creator, 'Spartacus Material Creator')
+        self.dlg.tabWidget.addTab(spartacus_material_creator, 'Materials (Spartacus)')
 
         profile_creator = ProfileCreator()
         setup_profile_creator(self, profile_creator,db_dict, db_path)
-        self.dlg.tabWidget.addTab(profile_creator, 'Profile Creator')
+        self.dlg.tabWidget.addTab(profile_creator, 'Profiles')
 
         anthropogenic_emission_creator = AnthropogenicEmissionCreator()
         setup_anthropogenic_emission_manager(self, anthropogenic_emission_creator, db_dict, db_path)
-        self.dlg.tabWidget.addTab(anthropogenic_emission_creator, 'Anthropogenic Emission Creator')
+        self.dlg.tabWidget.addTab(anthropogenic_emission_creator, 'Emissions')
 
         irrigation_manager = Irrigation_manager()
         # self.setup_irrigation_manager(irrigation_manager, ref, irr)
-        self.dlg.tabWidget.addTab(irrigation_manager, 'Irrigation Manager')
+        self.dlg.tabWidget.addTab(irrigation_manager, 'Irrigation')
 
         snow_creator = SnowCreator()
         # self.setup_snow_creator(snow_creator, ref, alb, em, OHM, ANOHM, snow, ESTM,)
-        self.dlg.tabWidget.addTab(snow_creator, 'Snow Creator')
+        self.dlg.tabWidget.addTab(snow_creator, 'Snow')
 
         country_creator = CountryCreator()
         # self.setup_country_creator(country_creator, cnd, reg, country, snow, AnEm, prof, irr, ref, table_dict_pd)
-        self.dlg.tabWidget.addTab(country_creator, 'Country Creator')
+        self.dlg.tabWidget.addTab(country_creator, 'Country')
 
         ref_manager = UrbanRefManager()
         # self.setup_ref_manager(ref_manager, ref)
-        self.dlg.tabWidget.addTab(ref_manager, 'Reference Manager')
+        self.dlg.tabWidget.addTab(ref_manager, 'References')
 
         bulk_import = BulkImport()
         # self.setup_bulk_import(bulk_import, alb, em, OHM, LAI, st, cnd, LGP, dr, VG, ANOHM, BIOCO2, MVCND, por,  ws, soil, ESTM, prof, table_dict_pd, table_dict_ID)
