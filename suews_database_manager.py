@@ -55,7 +55,7 @@ import webbrowser
 
 from .utilities.database_functions import *
 from .utilities.reclassifier import setup_urban_type_creator
-from .utilities.type_editor import setup_urban_type_editor
+# from .utilities.type_editor import setup_urban_type_editor
 from .utilities.suews_SS import setup_SUEWS_SS_creator
 from .utilities.spartacus_material import setup_SS_material_creator
 from .utilities.element_creator import setup_urban_elements_creator
@@ -229,9 +229,9 @@ class suews_database_manager:
         setup_urban_type_creator(self,urban_creator, db_dict)
         self.dlg.tabWidget.addTab(urban_creator, 'Set Urban Types')
 
-        urban_editor = UrbanTypeEditor()
-        setup_urban_type_editor(self, urban_editor, db_dict, db_path)
-        self.dlg.tabWidget.addTab(urban_editor, 'Edit Urban Types')
+        # urban_editor = UrbanTypeEditor()
+        # setup_urban_type_editor(self, urban_editor, db_dict, db_path)
+        # self.dlg.tabWidget.addTab(urban_editor, 'Edit Urban Types')
 
         urban_elements_creator = UrbanElementsCreator()
         setup_urban_elements_creator(self, urban_elements_creator, db_dict, db_path)

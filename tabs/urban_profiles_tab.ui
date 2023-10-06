@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1150</width>
+    <width>750</width>
     <height>629</height>
    </rect>
   </property>
@@ -599,6 +599,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="2" column="1">
        <widget class="QTextBrowser" name="textBrowser_7">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -608,7 +611,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -637,6 +640,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="4" column="4">
        <widget class="QTextBrowser" name="textBrowser_16">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -646,7 +652,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -675,6 +681,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="2" column="4">
        <widget class="QTextBrowser" name="textBrowser_10">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -684,7 +693,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -745,6 +754,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="2" column="0">
        <widget class="QTextBrowser" name="textBrowser_6">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -754,7 +766,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -799,6 +811,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="6" column="5">
        <widget class="QTextBrowser" name="textBrowser_23">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -808,7 +823,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -837,6 +852,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="4" column="0">
        <widget class="QTextBrowser" name="textBrowser_12">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -846,7 +864,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -875,6 +893,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="2" column="2">
        <widget class="QTextBrowser" name="textBrowser_8">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -884,7 +905,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -913,6 +934,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="4" column="1">
        <widget class="QTextBrowser" name="textBrowser_13">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -922,7 +946,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -951,6 +975,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="0" column="2">
        <widget class="QTextBrowser" name="textBrowser_2">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -960,7 +987,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1040,6 +1067,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="0" column="3">
        <widget class="QTextBrowser" name="textBrowser_3">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1049,7 +1079,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1158,6 +1188,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="4" column="5">
        <widget class="QTextBrowser" name="textBrowser_17">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1167,7 +1200,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1196,6 +1229,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="0" column="5">
        <widget class="QTextBrowser" name="textBrowser_5">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1205,7 +1241,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1250,6 +1286,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="0" column="0">
        <widget class="QTextBrowser" name="textBrowser_0">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1259,7 +1298,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1320,6 +1359,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="2" column="5">
        <widget class="QTextBrowser" name="textBrowser_11">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1329,7 +1371,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1358,6 +1400,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="0" column="1">
        <widget class="QTextBrowser" name="textBrowser_1">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1367,7 +1412,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1396,6 +1441,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="6" column="4">
        <widget class="QTextBrowser" name="textBrowser_22">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1405,7 +1453,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1434,6 +1482,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="6" column="3">
        <widget class="QTextBrowser" name="textBrowser_21">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1443,7 +1494,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1472,6 +1523,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="2" column="3">
        <widget class="QTextBrowser" name="textBrowser_9">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1481,7 +1535,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1510,6 +1564,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="6" column="0">
        <widget class="QTextBrowser" name="textBrowser_18">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1519,7 +1576,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1564,6 +1621,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="6" column="1">
        <widget class="QTextBrowser" name="textBrowser_19">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1573,7 +1633,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1634,6 +1694,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="0" column="4">
        <widget class="QTextBrowser" name="textBrowser_4">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1643,7 +1706,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1688,6 +1751,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="4" column="2">
        <widget class="QTextBrowser" name="textBrowser_14">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1697,7 +1763,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1742,6 +1808,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="4" column="3">
        <widget class="QTextBrowser" name="textBrowser_15">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1751,7 +1820,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">
@@ -1780,6 +1849,9 @@ p, li { white-space: pre-wrap; }
       </item>
       <item row="6" column="2">
        <widget class="QTextBrowser" name="textBrowser_20">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -1789,7 +1861,7 @@ p, li { white-space: pre-wrap; }
         <property name="maximumSize">
          <size>
           <width>120</width>
-          <height>40</height>
+          <height>27</height>
          </size>
         </property>
         <property name="font">

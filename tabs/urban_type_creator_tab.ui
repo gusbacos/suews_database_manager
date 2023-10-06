@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1070</width>
-    <height>561</height>
+    <height>500</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -20,6 +20,9 @@
    <string>Urban_type_creator</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
+   <item row="4" column="1">
+    <widget class="QTextBrowser" name="textBrowser"/>
+   </item>
    <item row="0" column="0">
     <widget class="QLabel" name="label_3">
      <property name="font">
@@ -32,106 +35,44 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QPushButton" name="pushButtonUpdateDatabase">
+   <item row="2" column="1" rowspan="2">
+    <widget class="QLabel" name="Qlabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>98</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>1600000</width>
+       <height>500</height>
+      </size>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::DefaultContextMenu</enum>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Box</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
      <property name="text">
-      <string>Update Local-Database</string>
+      <string/>
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <layout class="QGridLayout" name="gridLayout">
-     <property name="sizeConstraint">
-      <enum>QLayout::SetMaximumSize</enum>
-     </property>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Attribute Field</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Vector polygon grid:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="comboBoxField">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QCheckBox" name="checkBoxA">
-       <property name="text">
-        <string>Lock Attribute Field</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QgsMapLayerComboBox" name="comboBoxVector">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QCheckBox" name="checkBoxV">
-       <property name="text">
-        <string>Lock Vector polygon grid</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="1" column="1">
-    <layout class="QFormLayout" name="formLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Type Info:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="comboBoxType">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="currentIndex">
-        <number>-1</number>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QPushButton" name="editTypeButton">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>Type details and/or modify to new type</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="2" column="0" rowspan="3">
+   <item row="3" column="0" rowspan="3">
     <widget class="QScrollArea" name="scrollArea">
      <property name="frameShape">
       <enum>QFrame::Box</enum>
@@ -147,8 +88,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>519</width>
-        <height>453</height>
+        <width>502</width>
+        <height>350</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -571,47 +512,86 @@
      </widget>
     </widget>
    </item>
-   <item row="2" column="1">
-    <widget class="QLabel" name="Qlabel">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>98</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>1600000</width>
-       <height>500</height>
-      </size>
-     </property>
-     <property name="contextMenuPolicy">
-      <enum>Qt::DefaultContextMenu</enum>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::Box</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
+   <item row="1" column="0" rowspan="2">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QGridLayout" name="gridLayout">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMaximumSize</enum>
+       </property>
+       <item row="1" column="2">
+        <widget class="QCheckBox" name="checkBoxA">
+         <property name="text">
+          <string>Lock Attribute Field</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QCheckBox" name="checkBoxV">
+         <property name="text">
+          <string>Lock Vector polygon grid</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Attribute Field</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QgsMapLayerComboBox" name="comboBoxVector">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>New field name</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Vector polygon grid:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="comboBoxField">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1" colspan="2">
+        <widget class="QLineEdit" name="lineEditFilename"/>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="1">
+    <widget class="QPushButton" name="pushButtonUpdateDatabase">
      <property name="text">
-      <string/>
+      <string>Update Local-Database</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QTextBrowser" name="textBrowser"/>
-   </item>
-   <item row="4" column="1">
+   <item row="5" column="1">
     <layout class="QFormLayout" name="formLayout_2">
      <item row="1" column="0">
       <widget class="QLineEdit" name="textOutput"/>
@@ -630,20 +610,44 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="3" column="1">
       <widget class="QPushButton" name="helpButton">
        <property name="text">
         <string>Help</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QPushButton" name="closeButton">
+    </layout>
+   </item>
+   <item row="1" column="1">
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Type Info:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="comboBoxType">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="currentIndex">
+        <number>-1</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QPushButton" name="editTypeButton">
        <property name="enabled">
         <bool>true</bool>
        </property>
        <property name="text">
-        <string>Close</string>
+        <string>Type details and/or modify to new type</string>
        </property>
       </widget>
      </item>
@@ -660,22 +664,6 @@
  </customwidgets>
  <resources/>
  <connections>
-  <connection>
-   <sender>closeButton</sender>
-   <signal>clicked()</signal>
-   <receiver>Urban_type_creatorDialogBase</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>426</x>
-     <y>442</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>375</x>
-     <y>264</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>checkBoxV</sender>
    <signal>clicked(bool)</signal>

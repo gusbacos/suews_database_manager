@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>881</width>
-    <height>717</height>
+    <height>609</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -269,22 +269,6 @@ p, li { white-space: pre-wrap; }
      </layout>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QCheckBox" name="checkBox">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Activate Anthropogenic Emissions Creator</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="1">
     <widget class="QTextBrowser" name="textBrowserRef_2">
      <property name="sizePolicy">
@@ -320,7 +304,7 @@ p, li { white-space: pre-wrap; }
    <item row="2" column="1">
     <widget class="QPushButton" name="pushButtonGen">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="text">
       <string>Add Antrhopogenic 
@@ -331,7 +315,7 @@ Emission</string>
    <item row="3" column="0" colspan="2">
     <widget class="QFrame" name="frame">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -1799,54 +1783,5 @@ p, li { white-space: pre-wrap; }
   </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>checkBox</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>pushButtonGen</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>59</x>
-     <y>24</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>810</x>
-     <y>466</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>frame1</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>59</x>
-     <y>24</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>440</x>
-     <y>113</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>frame</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>59</x>
-     <y>24</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>375</x>
-     <y>466</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

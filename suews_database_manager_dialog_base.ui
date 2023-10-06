@@ -6,13 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1040</width>
-    <height>813</height>
+    <width>918</width>
+    <height>546</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
     <height>800</height>
    </size>
   </property>
@@ -31,6 +37,12 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>700</height>
+      </size>
+     </property>
      <property name="currentIndex">
       <number>-1</number>
      </property>
@@ -39,7 +51,7 @@
    <item row="1" column="0">
     <widget class="QPushButton" name="pushButton">
      <property name="text">
-      <string>PushButton</string>
+      <string>Close</string>
      </property>
     </widget>
    </item>

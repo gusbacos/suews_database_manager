@@ -10,7 +10,8 @@ from qgis.core import QgsVectorLayer, QgsMapLayerProxyModel, QgsProject, QgsFiel
 def setup_urban_type_creator(self, dlg, db_dict):
 
         def fill_cbox(dlg):        
-            typology_list = list(db_dict['Types']['descOrigin'])
+            # typology_list = list(db_dict['NonVeg']['descOrigin'])
+            typology_list = list(db_dict['NonVeg'].loc[db_dict['NonVeg']['Surface'] == 'Buildings', 'descOrigin'])
 
             for i in range(1,14):
                 Nc = eval('dlg.comboBoxNew' + str(i))
@@ -62,7 +63,6 @@ def setup_urban_type_creator(self, dlg, db_dict):
                     Nc.setEnabled(True)
                     vars()['dlg.comboBoxNew' + str(idx)] = Nc
     
-
         def layer_changed():
 
             try:
@@ -86,6 +86,7 @@ def setup_urban_type_creator(self, dlg, db_dict):
 
             vlayer = self.layerComboManagerPoint.currentLayer()
             att_list = []
+
             for fieldName in vlayer.fields():
                 att_list.append(fieldName.name())
 
@@ -111,11 +112,12 @@ def setup_urban_type_creator(self, dlg, db_dict):
                 idx += 1
 
             # Add new field # TODO perhaps make it able for user to select field name
-            # fieldname = dlg.textEditFilename.text() or similar
-            vlayer.dataProvider().addAttributes([QgsField('newfield',QVariant.String)])
+            newFieldName = dlg.lineEditFilename.text()
+
+            vlayer.dataProvider().addAttributes([QgsField(newFieldName,QVariant.String)])
             vlayer.updateFields()
 
-            newfieldindex = vlayer.fields().indexFromName('newfield') #The field needs to be created in advance
+            newfieldindex = vlayer.fields().indexFromName(newFieldName) #The field needs to be created in advance
             attrmap = {} #dictionary of feature id: {field index: new value}
             for f in vlayer.getFeatures():
                 if f[att_column] in dict_reclass:
@@ -129,7 +131,7 @@ def setup_urban_type_creator(self, dlg, db_dict):
             for fieldName in vlayer.fields():
                 att_list.append(fieldName.name())
 
-            att_index = att_list.index('newfield')
+            att_index = att_list.index(newFieldName)
             vlayer.dataProvider().deleteAttributes([att_index])
             vlayer.updateFields()
 

@@ -18,6 +18,14 @@ def setup_urban_table_editor(self, dlg, db_dict, db_path):
         dlg.comboBoxTableSelect.clear()
         dlg.comboBoxTableSelect.addItems(sorted(param_info_dict.keys()))
         dlg.comboBoxTableSelect.setCurrentIndex(-1)
+    
+        for i in range(0,15):
+            Oc = eval('dlg.textBrowser_' + str(i))
+            Oc.clear()
+            Oc.setDisabled(True)
+            Nc = eval('dlg.textEdit_Edit_' + str(i))
+            Nc.clear()
+            Nc.setDisabled(True)
 
     def table_changed():
 
