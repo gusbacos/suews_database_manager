@@ -1,4 +1,3 @@
-
 from qgis.PyQt.QtWidgets import QMessageBox
 import pandas as pd
 from .database_functions import create_code, save_to_db, surf_df_dict
@@ -6,17 +5,18 @@ from .database_functions import create_code, save_to_db, surf_df_dict
 
 #################################################################################################
 #                                                                                               #
-#                                  Urban Element Creator                                        #
+#                                  Typlogy Creator                                              #
 #                                                                                               #
 #################################################################################################
 
-def setup_urban_elements_creator(self, dlg, db_dict, db_path):
+def setup_typology_creator(self, dlg, db_dict, db_path):
     
     dlg.comboBoxSurface.setCurrentIndex(-1)
     dlg.comboBoxPeriod.setCurrentIndex(-1)
     dlg.comboBoxBase.setCurrentIndex(-1)
 
     def changed_surface():
+
         try:
             # # Clear and enable ComboBox
             dlg.comboBoxBase.clear()
@@ -56,7 +56,11 @@ def setup_urban_elements_creator(self, dlg, db_dict, db_path):
                 remove_cols.append('Porosity') # Exception for just Decidous tree in Veg
 
             if surface != 'Water': # Exception for just Water
-                remove_cols.append('Water State')                        
+                remove_cols.append('Water State')
+
+            if surface != 'Buildings':
+                remove_cols.append('Spartacus Surface')
+                remove_cols.append('ESTM')          
 
             for col in remove_cols:
                 try:
@@ -76,20 +80,29 @@ def setup_urban_elements_creator(self, dlg, db_dict, db_path):
 
             #     # Fill in name of table
                 Oc.setText(table_name_str)
-                if table_name_str.startswith('OHM'):
-                    table = db_dict['OHM']
+
+
+                if table_name_str == 'Spartacus Surface':
+                    table_sel = db_dict[table_name_str]     
+                    table_surf = table_sel.drop(columns =['descOrigin'])
+                    table_sel = table_sel.reset_index().drop(columns = ['ID'])
+
                 else:
+                    
+                    if table_name_str.startswith('OHM'):
+                        table = table_name_str = 'OHM'
+
                     table = db_dict[table_name_str]
-                table_surf = table[table['Surface'] == surface]
+                    table_surf = table[table['Surface'] == surface]
 
-                table_sel = table_surf.drop(columns =['Surface']).reset_index()
-                
-                try :
-                    table_surf.drop(columns =['descOrigin'])
-                except:
-                    pass
+                    table_sel = table_surf.drop(columns =['Surface']).reset_index()
+                    
+                    try :
+                        table_surf.drop(columns =['descOrigin'])
+                    except:
+                        pass
 
-                table_sel = table_sel.drop(columns = ['ID'])
+                    table_sel = table_sel.drop(columns = ['ID'])
 
                 Nc_fill_list = []
                 idx = 0
@@ -100,18 +113,18 @@ def setup_urban_elements_creator(self, dlg, db_dict, db_path):
         except:
             pass
     
+    def base_typology_changed():
 
-    def base_element_changed():
-        try:
+        if dlg.comboBoxBase.currentIndex() != -1: # only do below if a base typology is selected
+
             surface = dlg.comboBoxSurface.currentText()
-            base_element = dlg.comboBoxBase.currentText()
+            base_typology = dlg.comboBoxBase.currentText()
 
             surface_table = db_dict[surf_df_dict[surface]]
             surface_sel = surface_table[surface_table['Surface'] == surface]
-            surf_row = surface_sel[surface_sel['descOrigin'] == base_element]    
+            surf_row = surface_sel[surface_sel['descOrigin'] == base_typology]    
             surf_row_dict = surf_row.squeeze().to_dict()
 
-            # try:
             for i in range(0,21):
                 Cb = eval('dlg.comboBox_' + str(i))
                 Tb = eval('dlg.textBrowser_' + str(i))
@@ -119,20 +132,20 @@ def setup_urban_elements_creator(self, dlg, db_dict, db_path):
                 if len(Tb.toPlainText()) <1:
                     break
                 else: 
-                    try:
-                        cbox_table_indexer = Tb.toPlainText()
-                        surf_row_id = surf_row_dict[cbox_table_indexer]
-                        if cbox_table_indexer.startswith('OHM'):
-                            cbox_table = db_dict['OHM']
-                        else:      
-                            cbox_table = db_dict[cbox_table_indexer]
-                        cbox_index = (cbox_table['descOrigin'][cbox_table['Surface'] == surface].tolist()).index(cbox_table.loc[surf_row_id, 'descOrigin'])
-                        Cb.setCurrentIndex(cbox_index)
 
-                    except:
-                        print('Error in' , Tb.toPlainText())
-        except:
-            pass
+                    cbox_table_indexer = Tb.toPlainText()
+                    surf_row_id = surf_row_dict[cbox_table_indexer]
+                    
+                    if cbox_table_indexer.startswith('OHM'):
+                        cbox_table = db_dict['OHM']
+                    else:      
+                        cbox_table = db_dict[cbox_table_indexer]
+
+                    if cbox_table_indexer == 'Spartacus Surface':
+                            cbox_index = (cbox_table['descOrigin'].tolist()).index(cbox_table.loc[surf_row_id, 'descOrigin'])
+                    else:
+                        cbox_index = (cbox_table['descOrigin'][cbox_table['Surface'] == surface].tolist()).index(cbox_table.loc[surf_row_id, 'descOrigin'])
+                    Cb.setCurrentIndex(cbox_index)
 
     def print_table(idx):
 
@@ -148,25 +161,40 @@ def setup_urban_elements_creator(self, dlg, db_dict, db_path):
 
             dlg.textBrowserTableLable.setText(table_var)
 
-            try:
-                table = table[table['Surface'] == surface].drop(columns = ['General Type', 'Surface', 'descOrigin']).reset_index()
-            except:
-                table = table[table['Surface'] == surface].drop(columns = ['General Type', 'Surface']).reset_index()
-            Tb = eval('dlg.textBrowserEl')
-            Tb.clear()
-            ref_show = db_dict['References']['authorYear'].to_dict()
-            table['Reference'] = '' 
-            try:
-                for i in range(len(table)):
-                    table['Reference'].iloc[i] = ref_show[table['Ref'].iloc[i]] 
-            except:
-                pass 
-            Tb.setText(str(table.drop(columns = ['ID', 'Ref']).to_html(index=True)))
-            Tb.setLineWrapMode(0)
+            if table_var == 'Spartacus Surface':
+                
+                Tb = eval('dlg.textBrowserEl')
+                Tb.clear()
+                ref_show = db_dict['References']['authorYear'].to_dict()
+                table['Reference'] = '' 
+                try:
+                    for i in range(len(table)):
+                        table['Reference'].iloc[i] = ref_show[table['Ref'].iloc[i]] 
+                except:
+                    pass 
+                Tb.setText(str(table.drop(columns = ['ID', 'Ref']).to_html(index=True)))
+                Tb.setLineWrapMode(0)
+                
+            else:
+                try:
+                    table = table[table['Surface'] == surface].drop(columns = ['General Type', 'Surface', 'descOrigin']).reset_index()
+                except:
+                    table = table[table['Surface'] == surface].drop(columns = ['General Type', 'Surface']).reset_index()
+                Tb = eval('dlg.textBrowserEl')
+                Tb.clear()
+                ref_show = db_dict['References']['authorYear'].to_dict()
+                table['Reference'] = '' 
+                try:
+                    for i in range(len(table)):
+                        table['Reference'].iloc[i] = ref_show[table['Ref'].iloc[i]] 
+                except:
+                    pass 
+                Tb.setText(str(table.drop(columns = ['ID', 'Ref']).to_html(index=True)))
+                Tb.setLineWrapMode(0)
         except:
             pass
 
-    def check_element(): # Add more checkers
+    def check_typology(): # Add more checkers
         if len(dlg.comboBoxSurface.currentText()) <1: 
             QMessageBox.warning(None, 'Surface Missing','Please select a surface')
             pass
@@ -177,10 +205,10 @@ def setup_urban_elements_creator(self, dlg, db_dict, db_path):
             QMessageBox.warning(None, 'Origin Missing','Please fill in the Origin Box')
             pass
         else:
-            generate_element()
+            generate_typology()
         
         
-    def generate_element():
+    def generate_typology():
 
         # Nonveg or veg or water?
         surface = dlg.comboBoxSurface.currentText()
@@ -205,21 +233,26 @@ def setup_urban_elements_creator(self, dlg, db_dict, db_path):
             'Origin' : str(dlg.textEditOrig.value()),
             'Description' : str(dlg.textEditDesc.value()),
         }
-        for i in range(len(col_list)-1):
-            Oc = eval('dlg.textBrowser_' + str(i))
-            oldField = Oc.toPlainText()
+        for i in range(0,21):
             Nc = eval('dlg.comboBox_' + str(i))
-            sel_att = Nc.currentText()
-            if oldField.startswith('OHM'):  
-                table = db_dict['OHM']
-            else:               
-                table = db_dict[oldField]
-            sel_att = sel_att.split(': ')[1] # Remove number added for interpretation in GUI
+            Oc = eval('dlg.textBrowser_' + str(i))
+            
+            if len(Oc.toPlainText()) <1:
+                break
+            else:
+                oldField = Oc.toPlainText()
+                sel_att = Nc.currentText()
 
-            newField = table.loc[table['descOrigin'] == sel_att].index.item()
-            dict_reclass[oldField] = newField
-            table.drop(columns = 'descOrigin')
-        
+                if oldField.startswith('OHM'):  
+                    table = db_dict['OHM']
+                else:               
+                    table = db_dict[oldField]
+                sel_att = sel_att.split(': ')[1] # Remove number added for interpretation in GUI
+
+                newField = table.loc[table['descOrigin'] == sel_att].index.item()
+                dict_reclass[oldField] = newField
+                table.drop(columns = 'descOrigin')
+            
         new_edit = pd.DataFrame([dict_reclass]).set_index('ID')
 
         # Add new line to correct tab veg, nonveg or water
@@ -232,7 +265,7 @@ def setup_urban_elements_creator(self, dlg, db_dict, db_path):
             new_edit['Water State'] = 425
         elif surface == 'Grass':
             new_edit['Water State'] = 428
-            new_edit['Por'] = 3411
+            new_edit['Porosity'] = 3411
         elif surface == 'Decidous Tree':
             new_edit['Water State'] = 427
         elif surface == 'Evergreen Tree':
@@ -248,12 +281,12 @@ def setup_urban_elements_creator(self, dlg, db_dict, db_path):
         dlg.textEditDesc.clear()
         dlg.textEditOrig.clear()
         
-        QMessageBox.information(None, 'Sucessful','Element entry added to local database')
+        QMessageBox.information(None, 'Sucessful','Typology entry added to local database')
 
         # self.dlg.tabWidget.setCurrentIndex(2)
 
-    dlg.pushButtonGen.clicked.connect(check_element)
-    dlg.comboBoxBase.currentIndexChanged.connect(base_element_changed)
+    dlg.pushButtonGen.clicked.connect(check_typology)
+    dlg.comboBoxBase.currentIndexChanged.connect(base_typology_changed)
     dlg.comboBoxSurface.currentIndexChanged.connect(changed_surface)
 
     dlg.comboBox_1.currentIndexChanged.connect(lambda: print_table(1))

@@ -102,6 +102,8 @@ code_id_dict = {
     'MVC': 33,
     'Porosity': 34,
     'Vegetation Growth': 35,
+    'Spartacus Material' : 36,
+    'Spartacus Surface': 37,
     
     'Emissivity': 40,
     'Albedo': 41,   

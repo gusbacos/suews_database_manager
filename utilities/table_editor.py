@@ -4,11 +4,11 @@ from .database_functions import param_info_dict, create_code, save_to_db, surf_d
 
 #################################################################################################
 #                                                                                               #
-#                                  Urban Table Editor                                           #
+#                                        Table Editor                                           #
 #                                                                                               #
 #################################################################################################
 
-def setup_urban_table_editor(self, dlg, db_dict, db_path):
+def setup_table_editor(self, dlg, db_dict, db_path):
 
     def fill_cbox():
         dlg.comboBoxRef.clear()
@@ -140,7 +140,7 @@ def setup_urban_table_editor(self, dlg, db_dict, db_path):
         QMessageBox.information(None, 'Succesful', table_name + ' Entry added to your local database')
 
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 3:
+        if self.dlg.tabWidget.currentIndex() == 4:
             fill_cbox()
 
     # def checker():

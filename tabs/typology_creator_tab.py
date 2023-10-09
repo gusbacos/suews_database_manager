@@ -1,15 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- SUEWSPrepareDialog
-                                 A QGIS plugin
- This pluin prepares input data to SUEWS v2015a
-                             -------------------
-        begin                : 2015-10-25
-        git sha              : $Format:%H$
-        copyright            : (C) 2015 by Fredrik Lindberg
-        email                : fredrikl@gvc.gu.se
- ***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -27,13 +18,12 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QWidget, QDialog
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'Spartacus_material_tab.ui'))
+    os.path.dirname(__file__), 'typology_creator_tab.ui'))
 
-
-class SpartacusMaterialCreator(QDialog, FORM_CLASS):
+class TypologyCreator_tab(QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
-        super(SpartacusMaterialCreator, self).__init__(parent)
+        super(TypologyCreator_tab, self).__init__(parent)
         # Set up the user interface from Designer.
         # After setupUI you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see

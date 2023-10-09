@@ -1,6 +1,6 @@
 #################################################################################################
 #                                                                                               #
-#                                  SUEWS Spartacus Editor                                       #
+#                                  Spartacus Surface Creator                                    #
 #                                                                                               #
 #################################################################################################
 import pandas as pd
@@ -10,6 +10,9 @@ from qgis.PyQt.QtWidgets import QMessageBox
 def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
 
     def fill_cboxes():
+
+        dlg.textEditDesc.clear()
+        dlg.textEditDesc.clear()
 
         surf_table = db_dict['Spartacus Surface']
         surf_list = list(surf_table['descOrigin'])
@@ -174,7 +177,7 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
             pass
 
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 4:
+        if self.dlg.tabWidget.currentIndex() == 2:
             fill_cboxes()
 
     dlg.pushButtonGen.clicked.connect(new_edit)

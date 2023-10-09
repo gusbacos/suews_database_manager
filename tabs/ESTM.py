@@ -27,13 +27,13 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QWidget, QDialog
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'urban_irrigation_tab.ui'))
+    os.path.dirname(__file__), 'urban_ESTM.ui'))
 
 
-class Irrigation_manager(QDialog, FORM_CLASS):
+class ESTM_creator_tab(QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
-        super(Irrigation_manager, self).__init__(parent)
+        super(ESTM_creator_tab, self).__init__(parent)
         # Set up the user interface from Designer.
         # After setupUI you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see

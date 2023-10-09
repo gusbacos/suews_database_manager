@@ -33,35 +33,33 @@ from .resources import *
 from .suews_database_manager_dialog import suews_database_managerDialog
 import os.path
 
-
 # Import tabs
-from .tabs.urban_type_creator_tab import UrbanTypeCreator
-from .tabs.urban_type_editor_tab import UrbanTypeEditor
-from .tabs.urban_type_db_editor_tab import UrbanTypeDBEditor
-from .tabs.urban_elements_creator_tab import UrbanElementsCreator
-from .tabs.urban_ref_manager import UrbanRefManager
-from .tabs.urban_profiles import ProfileCreator
-from .tabs.urban_irrigation import Irrigation_manager
-from .tabs.urban_anthropogenic_emission import AnthropogenicEmissionCreator
-from .tabs.urban_country_creator import CountryCreator
-from .tabs.urban_snow import SnowCreator
-from .tabs.bulk_import import BulkImport
-from .tabs.urban_SS import SS_creator
-from .tabs.Spartacus_material import SpartacusMaterialCreator
+from .tabs.reclassifier_tab import reclassifier_tab
+# from .tabs.urban_type_editor_tab import UrbanTypeEditor   Not used anymore
+from .tabs.typology_creator_tab import TypologyCreator_tab
+from .tabs.table_editor_tab import TableEditor_tab      
+from .tabs.reference_manager_tab import RefManager_tab
+from .tabs.profiles_tab import ProfileCreator_tab
+from .tabs.irrigation_tab import Irrigation_manager_tab
+from .tabs.anthropogenic_emission_tab import AnthropogenicEmissionCreator_tab
+from .tabs.country_creator_tab import CountryCreator_tab
+from .tabs.snow_tab import SnowCreator_tab
+from .tabs.bulk_import_tab import BulkImport_tab
+from .tabs.spartacus_surface_tab import spartacus_surface_tab 
+from .tabs.spartacus_material_tab import SpartacusMaterialCreator_tab
 
-from pathlib import Path
-# import geopandas as gpd
 import webbrowser
 
 from .utilities.database_functions import *
-from .utilities.reclassifier import setup_urban_type_creator
+from .utilities.reclassifier import setup_reclassifier
 # from .utilities.type_editor import setup_urban_type_editor
 from .utilities.suews_SS import setup_SUEWS_SS_creator
 from .utilities.spartacus_material import setup_SS_material_creator
-from .utilities.element_creator import setup_urban_elements_creator
-from .utilities.table_editor import setup_urban_table_editor
+from .utilities.typology_creator import setup_typology_creator
+from .utilities.table_editor import setup_table_editor
 from .utilities.profile_creator import setup_profile_creator
 from .utilities.anthropogenic_emissions_creator import setup_anthropogenic_emission_manager
+from .utilities.irrigation_manager import setup_irrigation_manager
 
 class suews_database_manager:
     """QGIS Plugin Implementation."""
@@ -69,7 +67,6 @@ class suews_database_manager:
     def __init__(self, iface):
 
 
-        
         """Constructor.
 
         :param iface: An interface instance that will be passed to this class
@@ -223,57 +220,64 @@ class suews_database_manager:
         db_dict = None
         db_dict = read_DB(db_path)
         # Type, veg, nonveg, water, ref, alb, em, OHM, LAI, st, cnd, LGP, dr, VG, ANOHM, BIOCO2, MVCND, por, reg, snow, AnEm, prof, ws, soil, ESTM, irr, country, type_id_dict = read_DB(db_path)
-
-        urban_creator = UrbanTypeCreator()
-        # self.setup_urban_type_creator(urban_creator, table_dict, Type, reg)
-        setup_urban_type_creator(self,urban_creator, db_dict)
-        self.dlg.tabWidget.addTab(urban_creator, 'Set Urban Types')
-
-        # urban_editor = UrbanTypeEditor()
-        # setup_urban_type_editor(self, urban_editor, db_dict, db_path)
-        # self.dlg.tabWidget.addTab(urban_editor, 'Edit Urban Types')
-
-        urban_elements_creator = UrbanElementsCreator()
-        setup_urban_elements_creator(self, urban_elements_creator, db_dict, db_path)
-        self.dlg.tabWidget.addTab(urban_elements_creator, 'Create Urban Elements')
-
-        urban_db_editor = UrbanTypeDBEditor()
-        setup_urban_table_editor(self, urban_db_editor, db_dict, db_path)
-        self.dlg.tabWidget.addTab(urban_db_editor, 'Table Editor??')
-
-        spartacus_creator = SS_creator()
+        
+        # Tab 0
+        reclassifier = reclassifier_tab()
+        setup_reclassifier(self,reclassifier, db_dict)
+        self.dlg.tabWidget.addTab(reclassifier, 'Typology reclassifier')
+        
+        # Tab 1
+        typology_creator = TypologyCreator_tab()
+        setup_typology_creator(self, typology_creator, db_dict, db_path)
+        self.dlg.tabWidget.addTab(typology_creator, 'Typology Creator')
+        
+        # Tab 2
+        spartacus_creator = spartacus_surface_tab()
         setup_SUEWS_SS_creator(self, spartacus_creator, db_dict, db_path)
         self.dlg.tabWidget.addTab(spartacus_creator, 'Building facets (Spartacus)')
 
-        spartacus_material_creator = SpartacusMaterialCreator()
+        # Tab 3
+        spartacus_material_creator = SpartacusMaterialCreator_tab()
         setup_SS_material_creator(self, spartacus_material_creator, db_dict, db_path)
         self.dlg.tabWidget.addTab(spartacus_material_creator, 'Materials (Spartacus)')
 
-        profile_creator = ProfileCreator()
+        # Tab 4
+        tableEditor = TableEditor_tab()
+        setup_table_editor(self, tableEditor, db_dict, db_path)
+        self.dlg.tabWidget.addTab(tableEditor, 'Parameter Editor??')
+
+        # Tab 5
+        anthropogenic_emission_creator = AnthropogenicEmissionCreator_tab()
+        setup_anthropogenic_emission_manager(self, anthropogenic_emission_creator, db_dict, db_path)
+        self.dlg.tabWidget.addTab(anthropogenic_emission_creator, 'Emissions')
+        
+        # Tab 6
+        profile_creator = ProfileCreator_tab()
         setup_profile_creator(self, profile_creator,db_dict, db_path)
         self.dlg.tabWidget.addTab(profile_creator, 'Profiles')
 
-        anthropogenic_emission_creator = AnthropogenicEmissionCreator()
-        setup_anthropogenic_emission_manager(self, anthropogenic_emission_creator, db_dict, db_path)
-        self.dlg.tabWidget.addTab(anthropogenic_emission_creator, 'Emissions')
-
-        irrigation_manager = Irrigation_manager()
-        # self.setup_irrigation_manager(irrigation_manager, ref, irr)
+        # Tab 7
+        irrigation_manager = Irrigation_manager_tab()
+        setup_irrigation_manager(self,irrigation_manager, db_dict, db_path)
         self.dlg.tabWidget.addTab(irrigation_manager, 'Irrigation')
 
-        snow_creator = SnowCreator()
+        # Tab 8
+        snow_creator = SnowCreator_tab()
         # self.setup_snow_creator(snow_creator, ref, alb, em, OHM, ANOHM, snow, ESTM,)
         self.dlg.tabWidget.addTab(snow_creator, 'Snow')
 
-        country_creator = CountryCreator()
+        # Tab 9
+        country_creator = CountryCreator_tab()
         # self.setup_country_creator(country_creator, cnd, reg, country, snow, AnEm, prof, irr, ref, table_dict_pd)
         self.dlg.tabWidget.addTab(country_creator, 'Country')
-
-        ref_manager = UrbanRefManager()
+        
+        # Tab 10
+        ref_manager = RefManager_tab()
         # self.setup_ref_manager(ref_manager, ref)
         self.dlg.tabWidget.addTab(ref_manager, 'References')
 
-        bulk_import = BulkImport()
+        # Tab 11
+        bulk_import = BulkImport_tab()
         # self.setup_bulk_import(bulk_import, alb, em, OHM, LAI, st, cnd, LGP, dr, VG, ANOHM, BIOCO2, MVCND, por,  ws, soil, ESTM, prof, table_dict_pd, table_dict_ID)
         self.dlg.tabWidget.addTab(bulk_import, 'Bulk Import')
 
