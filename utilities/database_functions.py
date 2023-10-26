@@ -7,6 +7,11 @@ from datetime import datetime
 
 
 def read_DB(db_path):
+    '''
+    function for reading database and parse it to dictionary of dataframes
+    descOrigin is used for indexing and presenting the database entries in a understandable way for the user
+    '''
+
     db_sh = pd.ExcelFile(db_path)
     sheets = db_sh.sheet_names
     db = pd.read_excel(db_path, sheet_name= sheets, index_col= 0)
@@ -16,11 +21,55 @@ def read_DB(db_path):
             db[col]['descOrigin'] = db[col]['Type'].astype(str) + ', ' + db[col]['Origin'].astype(str)
         elif col == 'References': 
             db[col]['authorYear'] = db[col]['Author'].astype(str) + ', ' + db[col]['Publication Year'].astype(str)
-        elif col == 'Country' or col == 'Region':
-            pass
+        elif col == 'Country':
+            db[col]['descOrigin'] = db[col]['Country'].astype(str) + ', ' + db[col]['City'].astype(str)  
+        elif col == 'Region':
+            pass    
+        # Calculate U-values for roof and wall new columns u_value_wall and u_value_roof
+        elif col == 'Spartacus Surface':
+            db[col]['descOrigin'] = db[col]['Description'].astype(str) + ', ' + db[col]['Origin'].astype(str)
+            for row in db['Spartacus Surface'].iterrows():
+                id = row[0]
+                SS_surf_sel = db['Spartacus Surface'].loc[id]
+                resistance_bulk_w = 0
+                resistance_bulk_r = 0
+
+                for i in range(1,4):
+                    surf_w = SS_surf_sel['w'+str(i)+'Material'].item()
+                    thickness_w = SS_surf_sel['w'+str(i)+'Thickness'].item()
+                    
+                    surf_r = SS_surf_sel['r'+str(i)+'Material'].item()
+                    thickness_r = SS_surf_sel['r'+str(i)+'Thickness'].item()
+
+                    try:
+                        Tc_w = db['Spartacus Material'].loc[surf_w, 'Thermal Conductivity']
+                        resistance_w = thickness_w / Tc_w
+                        resistance_bulk_w = resistance_bulk_w + resistance_w
+                    except:
+                        pass
+
+                    try:
+                        Tc_r = db['Spartacus Material'].loc[surf_r, 'Thermal Conductivity']
+                        resistance_r = thickness_r / Tc_r
+                        resistance_bulk_r = resistance_bulk_r + resistance_r
+
+                    except:
+                        print(id, i)
+                
+                u_value_w = 1/ resistance_bulk_w
+                u_value_r = 1/ resistance_bulk_r
+
+                
+                db['Spartacus Surface'].loc[id,'u_value_wall'] = u_value_w
+                db['Spartacus Surface'].loc[id,'u_value_roof'] = u_value_r
+
+                db['Spartacus Surface'].loc[id,'albedo_roof'] = db['Spartacus Material'].loc[SS_surf_sel['r1Material'], 'Albedo']
+                db['Spartacus Surface'].loc[id,'albedo_wall'] = db['Spartacus Material'].loc[SS_surf_sel['w1Material'], 'Albedo']
+
         else:
             db[col]['descOrigin'] = db[col]['Description'].astype(str) + ', ' + db[col]['Origin'].astype(str)
     return db
+
 
 def save_to_db(db_path, db_dict):
     for col in list(db_dict.keys()):
@@ -99,7 +148,7 @@ code_id_dict = {
     'Biogen': 30,
     'Leaf Area Index': 31,
     'Leaf Growth Power': 32,
-    'MVC': 33,
+    'Max Vegetation Conductance': 33,
     'Porosity': 34,
     'Vegetation Growth': 35,
     'Spartacus Material' : 36,
@@ -108,7 +157,7 @@ code_id_dict = {
     'Emissivity': 40,
     'Albedo': 41,   
     'Water State': 42,
-    'Storage': 43,
+    'Water Storage': 43,
     'Conductance': 44,
     'Drainage': 45,
 

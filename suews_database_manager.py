@@ -266,10 +266,10 @@ class suews_database_manager:
         # self.setup_snow_creator(snow_creator, ref, alb, em, OHM, ANOHM, snow, ESTM,)
         self.dlg.tabWidget.addTab(snow_creator, 'Snow')
 
-        # Tab 9
-        country_creator = CountryCreator_tab()
-        # self.setup_country_creator(country_creator, cnd, reg, country, snow, AnEm, prof, irr, ref, table_dict_pd)
-        self.dlg.tabWidget.addTab(country_creator, 'Country')
+        # # Tab 9
+        # country_creator = CountryCreator_tab()
+        # # self.setup_country_creator(country_creator, cnd, reg, country, snow, AnEm, prof, irr, ref, table_dict_pd)
+        # self.dlg.tabWidget.addTab(country_creator, 'Country')
         
         # Tab 10
         ref_manager = RefManager_tab()

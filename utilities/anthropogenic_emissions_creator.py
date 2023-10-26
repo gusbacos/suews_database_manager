@@ -17,7 +17,7 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
         dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear'])) 
         dlg.comboBoxRef.setCurrentIndex(-1)
 
-        for i in range(1,31):
+        for i in range(1,18):
             Le = eval('dlg.lineEdit_' + str(i))
             Le.clear()
 
@@ -30,7 +30,7 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
         AnEm_sel = db_dict['AnthropogenicEmission'][db_dict['AnthropogenicEmission']['descOrigin'] == base_irr]
 
         AnEm_sel_dict = AnEm_sel.squeeze().to_dict()        
-        for i in range(1,31):
+        for i in range(1,18):
             Tb = eval('dlg.textBrowser_' + str(i))
             Le = eval('dlg.lineEdit_' + str(i))
             Le.clear()
@@ -57,7 +57,8 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
             'Description' : dlg.textEditDesc.value(),
             'Origin' : dlg.textEditOrig.value(),
         }
-        for i in range(1,31):
+        
+        for i in range(1,18):
             Tb = eval('dlg.textBrowser_' + str(i))
             Le = eval('dlg.lineEdit_' + str(i))
             col = Tb.toPlainText()

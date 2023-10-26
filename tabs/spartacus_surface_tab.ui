@@ -292,63 +292,6 @@ p, li { white-space: pre-wrap; }
            <bool>true</bool>
           </property>
           <layout class="QGridLayout" name="gridLayout_37">
-           <item row="0" column="3">
-            <widget class="QLabel" name="label_4">
-             <property name="font">
-              <font>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Layer 4</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="wordWrap">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QLabel" name="label_3">
-             <property name="font">
-              <font>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Layer 3</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="wordWrap">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="4">
-            <widget class="QLabel" name="label_5">
-             <property name="font">
-              <font>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Layer 5</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="wordWrap">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0">
             <widget class="QLabel" name="label">
              <property name="font">
@@ -358,26 +301,7 @@ p, li { white-space: pre-wrap; }
               </font>
              </property>
              <property name="text">
-              <string>Layer 1</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="wordWrap">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="label_2">
-             <property name="font">
-              <font>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Layer 2</string>
+              <string>Outer layer</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -402,7 +326,7 @@ p, li { white-space: pre-wrap; }
                  </font>
                 </property>
                 <property name="text">
-                 <string>Thickness [m]</string>
+                 <string>Thickness [mm]</string>
                 </property>
                </widget>
               </item>
@@ -469,6 +393,25 @@ p, li { white-space: pre-wrap; }
              </layout>
             </widget>
            </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_2">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Middle layer</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="wordWrap">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="0">
             <widget class="QFrame" name="frame_r1">
              <layout class="QGridLayout" name="gridLayout_r1">
@@ -481,7 +424,7 @@ p, li { white-space: pre-wrap; }
                  </font>
                 </property>
                 <property name="text">
-                 <string>Thickness [m]</string>
+                 <string>Thickness [mm]</string>
                 </property>
                </widget>
               </item>
@@ -548,6 +491,25 @@ p, li { white-space: pre-wrap; }
              </layout>
             </widget>
            </item>
+           <item row="0" column="2">
+            <widget class="QLabel" name="label_3">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Inner layer</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="wordWrap">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="2">
             <widget class="QFrame" name="frame_r3">
              <property name="enabled">
@@ -584,7 +546,7 @@ p, li { white-space: pre-wrap; }
                  </font>
                 </property>
                 <property name="text">
-                 <string>Thickness [m]</string>
+                 <string>Thickness [mm]</string>
                 </property>
                </widget>
               </item>
@@ -619,176 +581,6 @@ p, li { white-space: pre-wrap; }
               </item>
               <item row="1" column="0" colspan="2">
                <widget class="QTextBrowser" name="textBrowser_r3">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QFrame" name="frame_r4">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_r4">
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_41">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Thickness [m]</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_42">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>50</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Material</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QComboBox" name="comboBox_r4">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>None</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEdit_r4">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0" colspan="2">
-               <widget class="QTextBrowser" name="textBrowser_r4">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="1" column="4">
-            <widget class="QFrame" name="frame_r5">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_r5">
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_43">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Thickness [m]</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_44">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Material</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QComboBox" name="comboBox_r5">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>None</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEdit_r5">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0" colspan="2">
-               <widget class="QTextBrowser" name="textBrowser_r5">
                 <property name="font">
                  <font>
                   <weight>50</weight>
@@ -835,7 +627,7 @@ p, li { white-space: pre-wrap; }
                </font>
               </property>
               <property name="text">
-               <string>Thickness [m]</string>
+               <string>Thickness [mm]</string>
               </property>
              </widget>
             </item>
@@ -902,252 +694,6 @@ p, li { white-space: pre-wrap; }
            </layout>
           </widget>
          </item>
-         <item row="0" column="4">
-          <widget class="QFrame" name="frame_w5">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_60">
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_60">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Thickness [m]</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_61">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Material</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QComboBox" name="comboBox_w5">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <item>
-               <property name="text">
-                <string>None</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="lineEdit_w5">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0" colspan="2">
-             <widget class="QTextBrowser" name="textBrowser_w5">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QFrame" name="frame_w4">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_58">
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_56">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Thickness [m]</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_57">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Material</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="lineEdit_w4">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QComboBox" name="comboBox_w4">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <item>
-               <property name="text">
-                <string>None</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="1" column="0" colspan="2">
-             <widget class="QTextBrowser" name="textBrowser_w4">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QFrame" name="frame_w3">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_57">
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_54">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Thickness [m]</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_55">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Material</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QComboBox" name="comboBox_w3">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <item>
-               <property name="text">
-                <string>None</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="lineEdit_w3">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0" colspan="2">
-             <widget class="QTextBrowser" name="textBrowser_w3">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
          <item row="0" column="1">
           <widget class="QFrame" name="frame_w2">
            <property name="enabled">
@@ -1163,7 +709,7 @@ p, li { white-space: pre-wrap; }
                </font>
               </property>
               <property name="text">
-               <string>Thickness [m]</string>
+               <string>Thickness [mm]</string>
               </property>
              </widget>
             </item>
@@ -1219,6 +765,88 @@ p, li { white-space: pre-wrap; }
             </item>
             <item row="1" column="0" colspan="2">
              <widget class="QTextBrowser" name="textBrowser_w2">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QFrame" name="frame_w3">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_57">
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_54">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Thickness [mm]</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_55">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Material</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="comboBox_w3">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <item>
+               <property name="text">
+                <string>None</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="lineEdit_w3">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="2">
+             <widget class="QTextBrowser" name="textBrowser_w3">
               <property name="font">
                <font>
                 <weight>50</weight>

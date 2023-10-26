@@ -5,29 +5,14 @@ from pathlib import Path
 
 from qgis.PyQt.QtCore import  QVariant
 from qgis.PyQt.QtWidgets import QFileDialog, QMessageBox
-from qgis.core import QgsVectorLayer, QgsMapLayerProxyModel, QgsProject, QgsField, QgsVectorFileWriter
+from qgis.core import QgsVectorLayer, QgsMapLayerProxyModel, QgsFeature, QgsProject, QgsField, QgsVectorFileWriter
 
 def setup_reclassifier(self, dlg, db_dict):
-        
-    # def clear_cbox(dlg):
-    #     dlg.layerComboManagerPoint.clear()
-        
-    #     for i in range(1,14):
-    #         # Oc == Old Class
-    #         Oc = eval('dlg.comboBoxClass' + str(i))
-    #         Oc.clear()
-    #         Oc.setDisabled(True)
-    #         vars()['dlg.comboBoxClass' + str(i)] = Oc
-    #         # Nc == New Class
-    #         Nc = eval('dlg.comboBoxNew' + str(i))
-    #         Nc.setCurrentIndex(-1)
-    #         Nc.setDisabled(True)
-    #         vars()['dlg.comboBoxNew' + str(i)] = Nc
 
     def fill_cbox(dlg):        
         typology_list = list(db_dict['NonVeg'].loc[db_dict['NonVeg']['Surface'] == 'Buildings', 'descOrigin'])
 
-        for i in range(1,14):
+        for i in range(1,23):
             Nc = eval('dlg.comboBoxNew' + str(i))
             Nc.addItems(typology_list)
             Nc.setCurrentIndex(-1)
@@ -55,7 +40,7 @@ def setup_reclassifier(self, dlg, db_dict):
             # Ensure always String 
             unique_values = ([str(x) for x in unique_values])
 
-            for i in range(1,14):
+            for i in range(1,23):
                 # Oc == Old Class
                 Oc = eval('dlg.comboBoxClass' + str(i))
                 Oc.clear()
@@ -70,7 +55,7 @@ def setup_reclassifier(self, dlg, db_dict):
             # Add Items to left side Comboboxes and enable right side comboboxes 
             for i in range(len_uv):
                 idx = i+1
-                if idx > 13:
+                if idx > 22:
                     break 
                 Oc = eval('dlg.comboBoxClass' + str(idx))
                 Oc.addItems(unique_values)
@@ -110,7 +95,6 @@ def setup_reclassifier(self, dlg, db_dict):
                 'More....'
                 )
         
-        
     def savefile():
         # Add possibilites to save as other format? Is .shp only format used in SUEWS Prepare?
         self.outputfile = self.fileDialog.getSaveFileName(None, 'Save File As:', None, 'Shapefiles (*.shp)')
@@ -121,15 +105,20 @@ def setup_reclassifier(self, dlg, db_dict):
         vlayer = self.layerComboManagerPoint.currentLayer()
         att_list = []
 
+        QgsVectorFileWriter.writeAsVectorFormat(vlayer, dlg.textOutput.text(), "UTF-8", vlayer.crs(), "ESRI Shapefile")
+        vlayer = QgsVectorLayer(self.outputfile[0], Path(self.outputfile[0]).name[:-4])
+
         for fieldName in vlayer.fields():
             att_list.append(fieldName.name())
 
-        att_column = dlg.comboBoxField.currentText()
+        att_column = dlg.comboBoxField.currentText() # Selected columns in  vectorlayer
         att_index = att_list.index(att_column)
         
         unique_values = list(vlayer.uniqueValues(att_index))
-        dict_reclass = {}
         
+        dict_reclass = {}       # dict for reclassifying typologynames as string
+        dict_reclassID = {}     # dict for reclassifying typologyID as integer
+
         idx = 1
         for i in range(len(unique_values)): #FIX CORRECT
         
@@ -142,35 +131,39 @@ def setup_reclassifier(self, dlg, db_dict):
             # Right Side
             Nc = eval('dlg.comboBoxNew' + str(idx))
             newField = Nc.currentText()                
-            dict_reclass[str(oldField)] = str(newField)
+            dict_reclass[str(oldField)] = str(newField) 
+            dict_reclassID[str(oldField)] = db_dict['NonVeg'].loc[db_dict['NonVeg']['descOrigin'] == str(newField)].index.item()
             idx += 1
 
-        # Add new field # TODO perhaps make it able for user to select field name
-        newFieldName = dlg.lineEditFilename.text()
+        newFieldName = 'TypologyNA' # New field for typology name
+        newFieldID = 'TypologyID'   # New field for typologyID
 
-        vlayer.dataProvider().addAttributes([QgsField(newFieldName,QVariant.String)])
+        # Add fields in vectorlayer
+        fields = [
+            QgsField(newFieldName, QVariant.String),
+            QgsField(newFieldID, QVariant.Int),
+        ]
+
+        vlayer.startEditing()
+        vlayer.dataProvider().addAttributes(fields)
         vlayer.updateFields()
+        
+        # Reclassify new fields using reclassify dictionaries created above
+        for feature in vlayer.getFeatures():
+            old_value = feature[att_column] 
+            new_value1 = dict_reclass.get(old_value, None)
+            new_value2 = dict_reclassID.get(old_value, None)
+            
+            if new_value1 is not None:
+                feature[newFieldName] = new_value1
+            if new_value2 is not None:
+                feature[newFieldID] = new_value2
+            
+            vlayer.updateFeature(feature)
 
-        newfieldindex = vlayer.fields().indexFromName(newFieldName) #The field needs to be created in advance
-        attrmap = {} #dictionary of feature id: {field index: new value}
-        for f in vlayer.getFeatures():
-            if f[att_column] in dict_reclass:
-                attrmap[f.id()] = {newfieldindex:dict_reclass[f[att_column]]}
+        vlayer.commitChanges()
 
-        vlayer.dataProvider().changeAttributeValues(attrmap)
-
-        QgsVectorFileWriter.writeAsVectorFormat(vlayer, dlg.textOutput.text(), "UTF-8", vlayer.crs(), "ESRI Shapefile")
-
-        att_list = []
-        for fieldName in vlayer.fields():
-            att_list.append(fieldName.name())
-
-        att_index = att_list.index(newFieldName)
-        vlayer.dataProvider().deleteAttributes([att_index])
-        vlayer.updateFields()
-
-        vlayer = QgsVectorLayer(self.outputfile[0], Path(self.outputfile[0]).name[:-4])
-        QgsProject.instance().addMapLayer(vlayer)
+        QgsProject.instance().addMapLayer(vlayer) # Add vectorlayer to QGIS-project
 
         QMessageBox.information(None, 'Process Complete', 'Your reclassified shapefile has been added to project. Proceed to SUEWS-Preprare')
         dlg.textOutput.clear()
