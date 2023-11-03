@@ -135,8 +135,8 @@ def setup_reclassifier(self, dlg, db_dict):
             dict_reclassID[str(oldField)] = db_dict['NonVeg'].loc[db_dict['NonVeg']['descOrigin'] == str(newField)].index.item()
             idx += 1
 
-        newFieldName = 'TypologyNA' # New field for typology name
-        newFieldID = 'TypologyID'   # New field for typologyID
+        newFieldName = 'TypolName' # New field for typology name
+        newFieldID = 'TypolID'   # New field for typologyID
 
         # Add fields in vectorlayer
         fields = [

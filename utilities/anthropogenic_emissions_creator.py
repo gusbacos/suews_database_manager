@@ -36,6 +36,24 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
             Le.clear()
             Le.setText(str(AnEm_sel_dict[Tb.toPlainText()]))
     
+    def model_changed():
+        model = dlg.comboBoxModel.currentText()
+
+        if model == str(2):
+            for i in range(7,18):   
+                Tb = eval('dlg.textBrowser_' + str(i))
+                Le = eval('dlg.lineEdit_' + str(i))
+                Tb.setDisabled(True)
+                Le.setDisabled(True)
+        elif model == str(4):
+            for i in range(7,18):   
+                Tb = eval('dlg.textBrowser_' + str(i))
+                Le = eval('dlg.lineEdit_' + str(i))
+                Tb.setEnabled(True)
+                Le.setEnabled(True)
+        else:
+            pass       
+
     def ref_changed():
         dlg.textBrowserRef.clear()
 
@@ -80,7 +98,9 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
     dlg.pushButtonGen.clicked.connect(add_AnEm)
     dlg.comboBoxRef.currentIndexChanged.connect(ref_changed)
     dlg.comboBoxBaseAnEm.currentIndexChanged.connect(base_AnEm_changed)
+    dlg.comboBoxModel.currentIndexChanged.connect(model_changed)
     self.dlg.tabWidget.currentChanged.connect(tab_update)
+    
 
 
     

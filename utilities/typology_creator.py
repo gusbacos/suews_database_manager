@@ -12,7 +12,7 @@ from .database_functions import create_code, save_to_db, surf_df_dict
 def setup_typology_creator(self, dlg, db_dict, db_path):
     
     dlg.comboBoxSurface.setCurrentIndex(-1)
-    dlg.comboBoxPeriod.setCurrentIndex(-1)
+    dlg.comboBoxProfileType.setCurrentIndex(-1)
     dlg.comboBoxBase.setCurrentIndex(-1)
 
     def changed_surface():
@@ -35,14 +35,14 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
 
             # Select correct tab fom DB (Veg, NonVeg or Water)
             if surface == 'Buildings':
-                dlg.textBrowserPeriod.setEnabled(True)
-                dlg.comboBoxPeriod.setEnabled(True)
-                dlg.comboBoxPeriod.setCurrentIndex(0)
+                dlg.textBrowserProfileType.setEnabled(True)
+                dlg.comboBoxProfileType.setEnabled(True)
+                dlg.comboBoxProfileType.setCurrentIndex(0)
 
             else: 
-                dlg.textBrowserPeriod.setDisabled(True)
-                dlg.comboBoxPeriod.setCurrentIndex(-1)
-                dlg.comboBoxPeriod.setDisabled(True)
+                dlg.textBrowserProfileType.setDisabled(True)
+                dlg.comboBoxProfileType.setCurrentIndex(-1)
+                dlg.comboBoxProfileType.setDisabled(True)
 
             table = db_dict[surf_df_dict[surface]]
 
@@ -259,7 +259,7 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
         if surface == 'Paved': 
             new_edit['Water State'] = 424
         elif surface == 'Buildings':
-            new_edit['Period'] = dlg.comboBoxPeriod.currentText()
+            new_edit['Period'] = dlg.comboBoxProfileType.currentText()
             new_edit['Water State'] = 424
         elif surface == 'Bare Soil':
             new_edit['Water State'] = 425
@@ -276,7 +276,7 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
     
         save_to_db(db_path, db_dict)
         dlg.comboBoxSurface.setCurrentIndex(-1)
-        dlg.comboBoxPeriod.setCurrentIndex(-1)
+        dlg.comboBoxProfileType.setCurrentIndex(-1)
         dlg.comboBoxBase.setCurrentIndex(-1)
         dlg.textEditDesc.clear()
         dlg.textEditOrig.clear()

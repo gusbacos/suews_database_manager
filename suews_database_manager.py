@@ -60,6 +60,7 @@ from .utilities.table_editor import setup_table_editor
 from .utilities.profile_creator import setup_profile_creator
 from .utilities.anthropogenic_emissions_creator import setup_anthropogenic_emission_manager
 from .utilities.irrigation_manager import setup_irrigation_manager
+from .utilities.references import setup_ref_manager
 
 class suews_database_manager:
     """QGIS Plugin Implementation."""
@@ -273,7 +274,7 @@ class suews_database_manager:
         
         # Tab 10
         ref_manager = RefManager_tab()
-        # self.setup_ref_manager(ref_manager, ref)
+        setup_ref_manager(self, ref_manager, db_dict, db_path)
         self.dlg.tabWidget.addTab(ref_manager, 'References')
 
         # Tab 11

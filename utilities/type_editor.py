@@ -4,7 +4,7 @@ from qgis.PyQt.QtWidgets import QMessageBox
 
 #################################################################################################
 #                                                                                               #
-#                                     Urban Type Editor                                         #
+#                                     Typology Editor                                           #
 #                                                                                               #
 #################################################################################################
 
@@ -26,7 +26,7 @@ def setup_urban_type_editor(self, dlg, db_dict, db_path):
             i.setCurrentIndex(-1)
         dlg.comboBoxProf.setCurrentIndex(0)
 
-  
+
     def check_type():
         if dlg.textEditName.isNull():
             QMessageBox.warning(None, 'Error in Name','Enter a name for new type')

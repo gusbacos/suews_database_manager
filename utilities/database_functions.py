@@ -70,7 +70,6 @@ def read_DB(db_path):
             db[col]['descOrigin'] = db[col]['Description'].astype(str) + ', ' + db[col]['Origin'].astype(str)
     return db
 
-
 def save_to_db(db_path, db_dict):
     for col in list(db_dict.keys()):
         if col == 'References':
@@ -124,6 +123,18 @@ def save_to_db(db_path, db_dict):
         else:
             db_dict[col]['descOrigin'] = db_dict[col]['Description'].astype(str) + ', ' + db_dict[col]['Origin'].astype(str)
 
+
+def update_db(db_dict, db_path, updated_db_path, backup_path):
+    
+    db_dict_update = read_DB(updated_db_path)   # This dict is the database that is to be updated from 
+    updated_db_dict = db_dict | db_dict_update  # Merge the two dicts   
+
+    save_to_db(updated_db_dict, db_path)        # Save to db
+    save_to_db(db_dict, backup_path)            # Save to db
+
+    return updated_db_dict
+
+
 surf_df_dict = {
     'Paved' : 'NonVeg',
     'Buildings' : 'NonVeg',
@@ -169,7 +180,7 @@ code_id_dict = {
     'Profiles': 60,
     'Irrigation': 61,
     
-    'Ref': 90,
+    'Reference': 90,
 }
 
 def create_code(table_name):
