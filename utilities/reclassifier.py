@@ -9,7 +9,8 @@ from qgis.core import QgsVectorLayer, QgsMapLayerProxyModel, QgsFeature, QgsProj
 
 def setup_reclassifier(self, dlg, db_dict):
 
-    def fill_cbox(dlg):        
+    def fill_cbox():
+        dlg.comboBoxType.clear()        
         typology_list = list(db_dict['NonVeg'].loc[db_dict['NonVeg']['Surface'] == 'Buildings', 'descOrigin'])
 
         for i in range(1,23):
@@ -26,7 +27,7 @@ def setup_reclassifier(self, dlg, db_dict):
     def field_changed():
 
         layer = self.layerComboManagerPoint.currentLayer()
-
+        
         att_list = []
         for fieldName in layer.fields():
             att_list.append(fieldName.name())
@@ -168,9 +169,9 @@ def setup_reclassifier(self, dlg, db_dict):
         QMessageBox.information(None, 'Process Complete', 'Your reclassified shapefile has been added to project. Proceed to SUEWS Preprare Database Typologies')
         dlg.textOutput.clear()
 
-    def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 0:
-            fill_cbox(dlg)
+    # def tab_update():
+    #     if self.dlg.tabWidget.currentIndex() == 0:
+    #         fill_cbox()
     
     def to_type_edit():
         self.dlg.tabWidget.setCurrentIndex(1)
@@ -179,7 +180,7 @@ def setup_reclassifier(self, dlg, db_dict):
     self.layerComboManagerPoint.setCurrentIndex(-1)
     self.layerComboManagerPoint.setFilters(QgsMapLayerProxyModel.PolygonLayer)
 
-    # fill_cbox()
+    fill_cbox()
     dlg.editTypeButton.clicked.connect(to_type_edit)
 
     dlg.comboBoxVector.currentIndexChanged.connect(layer_changed)
@@ -191,11 +192,7 @@ def setup_reclassifier(self, dlg, db_dict):
     # Set up for the run button
     dlg.runButton.clicked.connect(start_progress)
 
-    def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 0:
-            fill_cbox(dlg)
-    
-    self.dlg.tabWidget.currentChanged.connect(tab_update)
+    # self.dlg.tabWidget.currentChanged.connect(tab_update)
     dlg.comboBoxType.currentIndexChanged.connect(typology_info)
 
         

@@ -92,7 +92,7 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
 
 
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 5:
+        if self.dlg.tabWidget.currentIndex() == 3:
             fill_cboxes()
 
     dlg.pushButtonGen.clicked.connect(add_AnEm)

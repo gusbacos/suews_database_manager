@@ -3,7 +3,7 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=suews_database_manager
+name=SUEWS Database Manager
 qgisMinimumVersion=3.0
 description=Database manager for SUEWS parameter Database
 version=0.1

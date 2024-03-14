@@ -91,7 +91,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         fill_cbox()
     
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 6:
+        if self.dlg.tabWidget.currentIndex() == 4:
             fill_cbox()
     
 

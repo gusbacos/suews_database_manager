@@ -140,7 +140,7 @@ def setup_table_editor(self, dlg, db_dict, db_path):
         QMessageBox.information(None, 'Succesful', table_name + ' Entry added to your local database')
 
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 4:
+        if self.dlg.tabWidget.currentIndex() == 2:
             fill_cbox()
 
     # def checker():

@@ -55,7 +55,7 @@ def setup_SS_material_creator(self, dlg, db_dict, db_path):
             pass
 
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 3:
+        if self.dlg.tabWidget.currentIndex() == 8:
             start_material_creator(dlg)
     
     self.dlg.tabWidget.currentChanged.connect(tab_update)

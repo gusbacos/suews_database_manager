@@ -142,16 +142,16 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
             else:
                 pass 
 
-        for i in [1,2,3,4,5]:
-            r_insulation = eval('dlg.radioButton_r' + str(i))
-            w_insulation = eval('dlg.radioButton_w' + str(i))
-            if r_insulation.isChecked() == True:
-                spartacus_dict['rInsulation'] = i
+        # for i in [1,2,3,4,5]:
+        #     r_insulation = eval('dlg.radioButton_r' + str(i))
+        #     w_insulation = eval('dlg.radioButton_w' + str(i))
+        #     if r_insulation.isChecked() == True:
+        #         spartacus_dict['rInsulation'] = i
             
-            if w_insulation.isChecked() == True:
-                spartacus_dict['wInsulation'] = i
+        #     if w_insulation.isChecked() == True:
+        #         spartacus_dict['wInsulation'] = i
         
-        print(spartacus_dict)
+        # print(spartacus_dict)
                 
         new_edit = pd.DataFrame([spartacus_dict]).set_index('ID')
         db_dict['Spartacus Surface'] = pd.concat([db_dict['Spartacus Surface'], new_edit])
@@ -187,19 +187,19 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
                         thickness = spartacus_sel.loc[:,(roofwall + str(layer) + 'Thickness')].item()
                         lineEdit.setText(str(thickness))
 
-            wInsulation = spartacus_sel['wInsulation'].item()
-            w_insulation = eval('dlg.radioButton_w' + str(wInsulation))
-            w_insulation.setChecked(True)
+            # wInsulation = spartacus_sel['wInsulation'].item()
+            # w_insulation = eval('dlg.radioButton_w' + str(wInsulation))
+            # w_insulation.setChecked(True)
 
-            rInsulation = spartacus_sel['rInsulation'].item()
-            r_insulation = eval('dlg.radioButton_r' + str(rInsulation))
-            r_insulation.setChecked(True)
+            # rInsulation = spartacus_sel['rInsulation'].item()
+            # r_insulation = eval('dlg.radioButton_r' + str(rInsulation))
+            # r_insulation.setChecked(True)
 
         else:
             pass
 
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 2:
+        if self.dlg.tabWidget.currentIndex() == 7:
             fill_cboxes()
 
     dlg.pushButtonGen.clicked.connect(new_edit)

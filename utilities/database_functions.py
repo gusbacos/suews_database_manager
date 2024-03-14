@@ -24,7 +24,9 @@ def read_DB(db_path):
         elif col == 'Country':
             db[col]['descOrigin'] = db[col]['Country'].astype(str) + ', ' + db[col]['City'].astype(str)  
         elif col == 'Region':
-            pass    
+            pass
+        elif col == 'Spartacus Material':
+            db[col]['descOrigin'] = db[col]['Description'].astype(str) + '; ' + db[col]['Color'].astype(str) + '; ' + db[col]['Origin'].astype(str)    
         # Calculate U-values for roof and wall new columns u_value_wall and u_value_roof
         elif col == 'Spartacus Surface':
             db[col]['descOrigin'] = db[col]['Description'].astype(str) + ', ' + db[col]['Origin'].astype(str)

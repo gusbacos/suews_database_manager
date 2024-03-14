@@ -76,7 +76,7 @@ def setup_irrigation_manager(self, dlg, db_dict, db_path):
         QMessageBox.information(None, 'Succesful', 'Irrigation Entry added to your local database')
 
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 7:
+        if self.dlg.tabWidget.currentIndex() == 5:
             fill_cboxes(dlg)
     
     self.dlg.tabWidget.currentChanged.connect(tab_update)
