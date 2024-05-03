@@ -47,7 +47,7 @@ def setup_SS_material_creator(self, dlg, db_dict, db_path):
             ID = ref[ref['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
             dlg.textBrowserRef.setText(
                 '<b>Author: ' +'</b>' + str(ref.loc[ID, 'Author']) + '<br><br><b>' +
-                'Year: ' + '</b> '+ str(ref.loc[ID, 'Publication Year']) + '<br><br><b>' +
+                'Year: ' + '</b> '+ str(ref.loc[ID, 'Year']) + '<br><br><b>' +
                 'Title: ' + '</b> ' +  str(ref.loc[ID, 'Title']) + '<br><br><b>' +
                 'Journal: ' + '</b>' + str(ref.loc[ID, 'Journal']) + '<br><br><b>'
             )
@@ -55,9 +55,13 @@ def setup_SS_material_creator(self, dlg, db_dict, db_path):
             pass
 
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 8:
+        if self.dlg.tabWidget.currentIndex() == 9:
             start_material_creator(dlg)
+
+    def to_ref_edit():
+        self.dlg.tabWidget.setCurrentIndex(10)
     
+    dlg.pushButtonToRefManager.clicked.connect(to_ref_edit)
     self.dlg.tabWidget.currentChanged.connect(tab_update)
     dlg.comboBoxRef.currentIndexChanged.connect(ref_changed)
     dlg.pushButtonGen.clicked.connect(generate_material)

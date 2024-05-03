@@ -77,7 +77,7 @@ def setup_snow_creator(self, dlg, db_dict, db_path ):
         snow = snow.append(df_new_edit)
         self.write_to_db(Type, veg, nonveg, water, ref, alb, em, OHM, LAI, st, cnd, LGP, dr, VG, ANOHM, BIOCO2, MVCND, por, reg, snow, AnEm, prof, ws, soil, ESTM, irr)
         self.setup_tabs()
-        self.dlg.tabWidget.setCurrentIndex(8)
+        self.dlg.tabWidget.setCurrentIndex(7)
         QMessageBox.information(None, 'Succesful', 'Snow Entry added to your local database')
 
     dlg.comboBoxBase.currentIndexChanged.connect(base_snow_changed)

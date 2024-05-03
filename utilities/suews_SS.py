@@ -74,14 +74,14 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
         r1_mat = dlg.comboBox_r1.currentText()
         r2_mat = dlg.comboBox_r2.currentText()
         r3_mat = dlg.comboBox_r3.currentText()
-        # r4_mat = dlg.comboBox_r4.currentText()
-        # r5_mat = dlg.comboBox_r5.currentText()
+        r4_mat = dlg.comboBox_r4.currentText()
+        r5_mat = dlg.comboBox_r5.currentText()
 
         w1_mat = dlg.comboBox_w1.currentText()
         w2_mat = dlg.comboBox_w2.currentText()
         w3_mat = dlg.comboBox_w3.currentText()
-        # w4_mat = dlg.comboBox_w4.currentText()
-        # w5_mat = dlg.comboBox_w5.currentText()
+        w4_mat = dlg.comboBox_w4.currentText()
+        w5_mat = dlg.comboBox_w5.currentText()
         
         mat_table = db_dict['Spartacus Material']
 
@@ -103,16 +103,16 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
                 if r3_mat != 'None':
                     spartacus_dict['r3Material'] = mat_table[mat_table['descOrigin'] == r3_mat].index.item()
                     spartacus_dict['r3Thickness'] = float(dlg.lineEdit_r3.text())
-                    # if r4_mat != 'None':
-                    #     spartacus_dict['r4Material'] = mat_table[mat_table['descOrigin'] == r4_mat].index.item()
-                    #     spartacus_dict['r4Thickness'] = float(dlg.lineEdit_r4.text())
-                    #     if r5_mat != 'None':
-                    #         spartacus_dict['r5Material'] = mat_table[mat_table['descOrigin'] == r5_mat].index.item()
-                    #         spartacus_dict['r5Thickness'] = float(dlg.lineEdit_r5.text())
-                    #     else:
-                    #         pass
-                    # else:
-                    #     pass
+                    if r4_mat != 'None':
+                        spartacus_dict['r4Material'] = mat_table[mat_table['descOrigin'] == r4_mat].index.item()
+                        spartacus_dict['r4Thickness'] = float(dlg.lineEdit_r4.text())
+                        if r5_mat != 'None':
+                            spartacus_dict['r5Material'] = mat_table[mat_table['descOrigin'] == r5_mat].index.item()
+                            spartacus_dict['r5Thickness'] = float(dlg.lineEdit_r5.text())
+                        else:
+                            pass
+                    else:
+                        pass
                 else:
                     pass   
             else:
@@ -127,16 +127,16 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
                 if w3_mat != 'None':
                     spartacus_dict['w3Material'] = mat_table[mat_table['descOrigin'] == w3_mat].index.item()
                     spartacus_dict['w3Thickness'] = float(dlg.lineEdit_w3.text())
-                    # if w4_mat != 'None':
-                    #     spartacus_dict['w4Material'] = mat_table[mat_table['descOrigin'] == w4_mat].index.item()
-                    #     spartacus_dict['w4Thickness'] = float(dlg.lineEdit_w4.text())
-                    #     if w5_mat != 'None':
-                    #         spartacus_dict['w5Material'] = mat_table[mat_table['descOrigin'] == w5_mat].index.item()
-                    #         spartacus_dict['w5Thickness'] = float(dlg.lineEdit_w5.text())
-                    #     else:
-                    #         pass
-                    # else:
-                    #     pass
+                    if w4_mat != 'None':
+                        spartacus_dict['w4Material'] = mat_table[mat_table['descOrigin'] == w4_mat].index.item()
+                        spartacus_dict['w4Thickness'] = float(dlg.lineEdit_w4.text())
+                        if w5_mat != 'None':
+                            spartacus_dict['w5Material'] = mat_table[mat_table['descOrigin'] == w5_mat].index.item()
+                            spartacus_dict['w5Thickness'] = float(dlg.lineEdit_w5.text())
+                        else:
+                            pass
+                    else:
+                        pass
                 else:
                     pass   
             else:
@@ -199,7 +199,7 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
             pass
 
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 7:
+        if self.dlg.tabWidget.currentIndex() == 8:
             fill_cboxes()
 
     dlg.pushButtonGen.clicked.connect(new_edit)
@@ -207,13 +207,13 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
     dlg.comboBox_r1.currentIndexChanged.connect(lambda: print_table(dlg,1,'r'))
     dlg.comboBox_r2.currentIndexChanged.connect(lambda: print_table(dlg,2,'r'))
     dlg.comboBox_r3.currentIndexChanged.connect(lambda: print_table(dlg,3,'r'))
-    # dlg.comboBox_r4.currentIndexChanged.connect(lambda: print_table(dlg,4,'r'))
-    # dlg.comboBox_r5.currentIndexChanged.connect(lambda: print_table(dlg,5,'r'))
+    dlg.comboBox_r4.currentIndexChanged.connect(lambda: print_table(dlg,4,'r'))
+    dlg.comboBox_r5.currentIndexChanged.connect(lambda: print_table(dlg,5,'r'))
     dlg.comboBox_w1.currentIndexChanged.connect(lambda: print_table(dlg,1,'w'))
     dlg.comboBox_w2.currentIndexChanged.connect(lambda: print_table(dlg,2,'w'))
     dlg.comboBox_w3.currentIndexChanged.connect(lambda: print_table(dlg,3,'w'))
-    # dlg.comboBox_w4.currentIndexChanged.connect(lambda: print_table(dlg,4,'w'))
-    # dlg.comboBox_w5.currentIndexChanged.connect(lambda: print_table(dlg,5,'w'))
+    dlg.comboBox_w4.currentIndexChanged.connect(lambda: print_table(dlg,4,'w'))
+    dlg.comboBox_w5.currentIndexChanged.connect(lambda: print_table(dlg,5,'w'))
     # self.dlg.tabWidget.tabBarClicked.connect(fill_cboxes)
     self.dlg.tabWidget.currentChanged.connect(tab_update)
     

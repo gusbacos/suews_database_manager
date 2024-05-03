@@ -44,7 +44,7 @@ def setup_irrigation_manager(self, dlg, db_dict, db_path):
             ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
             dlg.textBrowserRef.setText(
                 '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
-                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Publication Year']) + '<br><br><b>' +
+                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
                 'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
                 'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>'
             )
@@ -76,7 +76,7 @@ def setup_irrigation_manager(self, dlg, db_dict, db_path):
         QMessageBox.information(None, 'Succesful', 'Irrigation Entry added to your local database')
 
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 5:
+        if self.dlg.tabWidget.currentIndex() == 6:
             fill_cboxes(dlg)
     
     self.dlg.tabWidget.currentChanged.connect(tab_update)

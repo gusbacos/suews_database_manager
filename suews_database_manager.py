@@ -32,19 +32,19 @@ from .resources import *
 # Import the code for the dialog
 from .suews_database_manager_dialog import suews_database_managerDialog
 import os.path
-
+import shutil
 # Import tabs
 from .tabs.reclassifier_tab import reclassifier_tab
-# from .tabs.urban_type_editor_tab import UrbanTypeEditor   Not used anymore
+from .tabs.type_editor_tab import UrbanTypeEditor   #Not used anymore but used again
 from .tabs.typology_creator_tab import TypologyCreator_tab
 from .tabs.table_editor_tab import TableEditor_tab      
 from .tabs.reference_manager_tab import RefManager_tab
 from .tabs.profiles_tab import ProfileCreator_tab
 from .tabs.irrigation_tab import Irrigation_manager_tab
 from .tabs.anthropogenic_emission_tab import AnthropogenicEmissionCreator_tab
-from .tabs.country_creator_tab import CountryCreator_tab
+#from .tabs.country_creator_tab import CountryCreator_tab
 from .tabs.snow_tab import SnowCreator_tab
-from .tabs.bulk_import_tab import BulkImport_tab
+#from .tabs.bulk_import_tab import BulkImport_tab
 from .tabs.spartacus_surface_tab import spartacus_surface_tab 
 from .tabs.spartacus_material_tab import SpartacusMaterialCreator_tab
 
@@ -52,7 +52,7 @@ import webbrowser
 
 from .utilities.database_functions import read_DB
 from .utilities.reclassifier import setup_reclassifier
-# from .utilities.type_editor import setup_urban_type_editor
+from .utilities.type_editor import setup_urban_type_editor
 from .utilities.suews_SS import setup_SUEWS_SS_creator
 from .utilities.spartacus_material import setup_SS_material_creator
 from .utilities.typology_creator import setup_typology_creator
@@ -61,6 +61,8 @@ from .utilities.profile_creator import setup_profile_creator
 from .utilities.anthropogenic_emissions_creator import setup_anthropogenic_emission_manager
 from .utilities.irrigation_manager import setup_irrigation_manager
 from .utilities.references import setup_ref_manager
+
+from.utilities.database_functions import save_to_db
 
 class suews_database_manager:
     """QGIS Plugin Implementation."""
@@ -118,42 +120,6 @@ class suews_database_manager:
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('suews_database_manager', message)
     
-    # def add_action(
-    #     self,
-    #     icon_path,
-    #     text,
-    #     callback,
-    #     enabled_flag=True,
-    #     add_to_menu=True,
-    #     add_to_toolbar=True,
-    #     status_tip=None,
-    #     whats_this=None,
-    #     parent=None):
-
-    #     icon = QIcon(icon_path)
-    #     action = QAction(icon, text, parent)
-    #     action.triggered.connect(callback)
-    #     action.setEnabled(enabled_flag)
-        
-    #     if status_tip is not None:
-    #         action.setStatusTip(status_tip)
-
-    #     if whats_this is not None:
-    #         action.setWhatsThis(whats_this)
-
-    #     if add_to_toolbar:
-    #         # Adds plugin icon to Plugins toolbar
-    #         self.iface.addToolBarIcon(action)
-
-    #     if add_to_menu:
-    #         self.iface.addPluginToMenu(
-    #             self.menu,
-    #             action)
-
-    #     self.actions.append(action)
-
-    #     return action
-
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
@@ -174,7 +140,7 @@ class suews_database_manager:
         
         # connect the action to the run method
         self.action.triggered.connect(self.run)
-
+        
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu(self.tr("&SUEWS Database Manager"), self.action)
@@ -194,65 +160,68 @@ class suews_database_manager:
 
         # self.dlg.tabWidget.clear()
 
-        db_path = self.plugin_dir + '/data/database.xlsx' #C:/GitHub/suews_prepare_database/Input/database.xlsx' #TODO Set to UMEP Folder Path 
-        db_dict = None
-        db_dict = read_DB(db_path)
+        self.db_path = self.plugin_dir + '/data/database.xlsx' #C:/GitHub/suews_prepare_database/Input/database.xlsx' #TODO Set to UMEP Folder Path 
+        self.db_pathCopy = self.plugin_dir + '/data/databaseCopy.xlsx' #TODO Set to UMEP Folder Path 
+        self.db_dict = None
+        self.db_dict = read_DB(self.db_path)
+
+        try:
+            shutil.copy(self.db_path, self.db_pathCopy)
+        except:
+            os.remove(self.db_path)
+            shutil.copy(self.db_path, self.db_pathCopy)
+
         # Type, veg, nonveg, water, ref, alb, em, OHM, LAI, st, cnd, LGP, dr, VG, ANOHM, BIOCO2, MVCND, por, reg, snow, AnEm, prof, ws, soil, ESTM, irr, country, type_id_dict = read_DB(db_path)
         
         # Tab 0
         reclassifier = reclassifier_tab()
-        setup_reclassifier(self,reclassifier, db_dict)
-        self.dlg.tabWidget.addTab(reclassifier, 'Typology reclassifier')
-        
-        # Tab 1
-        typology_creator = TypologyCreator_tab()
-        setup_typology_creator(self, typology_creator, db_dict, db_path)
-        self.dlg.tabWidget.addTab(typology_creator, 'Typology Creator')
-        
-        # Tab 2 moved
-        # spartacus_creator = spartacus_surface_tab()
-        # setup_SUEWS_SS_creator(self, spartacus_creator, db_dict, db_path)
-        # self.dlg.tabWidget.addTab(spartacus_creator, 'Building facets (Spartacus)')
+        setup_reclassifier(self,reclassifier, self.db_dict)
+        self.dlg.tabWidget.addTab(reclassifier, 'Main tab - Reclassifier')
 
-        # # Tab 3 moved
-        # spartacus_material_creator = SpartacusMaterialCreator_tab()
-        # setup_SS_material_creator(self, spartacus_material_creator, db_dict, db_path)
-        # self.dlg.tabWidget.addTab(spartacus_material_creator, 'Materials (Spartacus)')
+        # Tab 1
+        type_creator = UrbanTypeEditor()
+        setup_urban_type_editor(self, type_creator, self.db_dict, self.db_path)
+        self.dlg.tabWidget.addTab(type_creator, 'Typologies')
+        
+        # Tab 2
+        typology_creator = TypologyCreator_tab()
+        setup_typology_creator(self, typology_creator, self.db_dict, self.db_path)
+        self.dlg.tabWidget.addTab(typology_creator, 'Land Cover')
+
+        # Tab 3
+        tableEditor = TableEditor_tab()
+        setup_table_editor(self, tableEditor, self.db_dict, self.db_path)
+        self.dlg.tabWidget.addTab(tableEditor, 'Parameters')
 
         # Tab 4
-        tableEditor = TableEditor_tab()
-        setup_table_editor(self, tableEditor, db_dict, db_path)
-        self.dlg.tabWidget.addTab(tableEditor, 'Parameter Editor')
-
-        # Tab 5
         anthropogenic_emission_creator = AnthropogenicEmissionCreator_tab()
-        setup_anthropogenic_emission_manager(self, anthropogenic_emission_creator, db_dict, db_path)
+        setup_anthropogenic_emission_manager(self, anthropogenic_emission_creator, self.db_dict, self.db_path)
         self.dlg.tabWidget.addTab(anthropogenic_emission_creator, 'Emissions')
         
-        # Tab 6
+        # Tab 5
         profile_creator = ProfileCreator_tab()
-        setup_profile_creator(self, profile_creator,db_dict, db_path)
+        setup_profile_creator(self, profile_creator, self.db_dict, self.db_path)
         self.dlg.tabWidget.addTab(profile_creator, 'Profiles')
 
-        # Tab 7
+        # Tab 6
         irrigation_manager = Irrigation_manager_tab()
-        setup_irrigation_manager(self,irrigation_manager, db_dict, db_path)
+        setup_irrigation_manager(self,irrigation_manager, self.db_dict, self.db_path)
         self.dlg.tabWidget.addTab(irrigation_manager, 'Irrigation')
 
-        # Tab 8
+        # Tab 7
         snow_creator = SnowCreator_tab()
         # self.setup_snow_creator(snow_creator, ref, alb, em, OHM, ANOHM, snow, ESTM,)
         self.dlg.tabWidget.addTab(snow_creator, 'Snow')
 
-        # Tab 2
+        # Tab 8
         spartacus_creator = spartacus_surface_tab()
-        setup_SUEWS_SS_creator(self, spartacus_creator, db_dict, db_path)
-        self.dlg.tabWidget.addTab(spartacus_creator, 'Building facets (Spartacus)')
+        setup_SUEWS_SS_creator(self, spartacus_creator, self.db_dict, self.db_path)
+        self.dlg.tabWidget.addTab(spartacus_creator, 'Building facets')
 
-        # Tab 3
+        # Tab 9
         spartacus_material_creator = SpartacusMaterialCreator_tab()
-        setup_SS_material_creator(self, spartacus_material_creator, db_dict, db_path)
-        self.dlg.tabWidget.addTab(spartacus_material_creator, 'Materials (Spartacus)')
+        setup_SS_material_creator(self, spartacus_material_creator, self.db_dict, self.db_path)
+        self.dlg.tabWidget.addTab(spartacus_material_creator, 'Building Materials')
 
         # # Tab 9
         # country_creator = CountryCreator_tab()
@@ -261,7 +230,7 @@ class suews_database_manager:
         
         # Tab 10
         ref_manager = RefManager_tab()
-        setup_ref_manager(self, ref_manager, db_dict, db_path)
+        setup_ref_manager(self, ref_manager, self.db_dict, self.db_path)
         self.dlg.tabWidget.addTab(ref_manager, 'References')
 
         # Tab 11 # Hidded for now
@@ -274,6 +243,25 @@ class suews_database_manager:
         # To readthedocs? 
         webbrowser.open_new_tab(url)
 
+    def closePlugin(self):
+        if QMessageBox.question(None, "Updating database",
+              "Do you want to update your database with any changes made? \r\n"
+              "Also, consider to export your database and submit to the UMEP repo. \r\n"
+              "See help for more info.",
+               QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+            try:
+                shutil.copy(self.db_pathCopy, self.db_path)
+                os.remove(self.db_pathCopy)
+            except:
+                pass
+        else:
+            try:
+                os.remove(self.db_pathCopy)
+            except:
+                pass
+
+        self.dlg.close()
+
     def run(self):
         """Run method that performs all the real work"""
 
@@ -285,6 +273,7 @@ class suews_database_manager:
         self.setup_tabs()
 
         self.dlg.helpButton.clicked.connect(self.help)
+        self.dlg.pushButtonClose.clicked.connect(self.closePlugin)
 
         # show the dialog
         self.dlg.show()

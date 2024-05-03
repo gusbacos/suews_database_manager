@@ -32,13 +32,13 @@ def setup_ref_manager(self, dlg, db_dict, db_path):
             ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
             dlg.textBrowserRef.setText(
                 '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
-                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Publication Year']) + '<br><br><b>' +
+                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
                 'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
                 'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>'
             )
         except:
             pass
-
+            
     def check_reference():
 
         dlg.pushButtonAddRef.setEnabled(True)
@@ -100,7 +100,7 @@ def setup_ref_manager(self, dlg, db_dict, db_path):
         ref_dict = {
             'ID' : create_code('Reference'),
             'Author' : (' '.join(author_list)),
-            'Publication Year' : dlg.textEditYear.value(),
+            'Year' : dlg.textEditYear.value(),
             'Title' : dlg.textEditTitle.value(),
             'Journal' : dlg.textEditJournal.value(),
             'DOI' : dlg.textEditDOI.value()
@@ -113,8 +113,26 @@ def setup_ref_manager(self, dlg, db_dict, db_path):
         QMessageBox.information(None, 'Succesful', 'New edit added to your local database')
         fill_cboxes()
 
+    # def ref_info():
+        
+    #     dlg.textBrowserRef.clear()
+    #     if dlg.textBrowserRef.currentIndex() != -1:
+    #         #typology_sel = db_dict['NonVeg'].loc[db_dict['NonVeg']['descOrigin'] == typology_str]
+    #         ref_sel = db_dict['Types'].loc[db_dict['Types']['descOrigin'] == typology_str]
+    #         buildID = typology_sel['Buildings'].item()
+    #         PavedID  = typology_sel['Paved'].item()
+
+    #         dlg.textBrowserRef.setText(
+    #             'URBAN TYPOLOGY:' + '\n' +
+    #             'Typology: ' + typology_sel['Description'].item() + '\n' +
+    #             'Origin: ' + typology_sel['Origin'].item() + '\n' +
+    #             'Construction perion: ' +  typology_sel['Period'].item() + '\n' +
+    #             ' '  + '\n' +
+    #             'ASSOCIATED BUILDING TYPE:' + '\n'
+    #         )
+
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 9:
+        if self.dlg.tabWidget.currentIndex() == 10:
             fill_cboxes()
 
     # dlg.pushButtonCheck.clicked.connect(check_reference)

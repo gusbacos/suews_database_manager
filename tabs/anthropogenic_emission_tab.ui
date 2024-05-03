@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>881</width>
-    <height>535</height>
+    <width>885</width>
+    <height>544</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -374,6 +374,9 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;SUEWS_AnthropogenicEmission.txt provides the parameters needed to model the anthropogenic heat flux using either the method of Järvi et al. (2011) based on heating and cooling degree days (&lt;/span&gt;&lt;a href=&quot;https://suews.readthedocs.io/en/latest/input_files/RunControl/scheme_options.html#cmdoption-arg-EmissionsMethod&quot;&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;EmissionsMethod&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; = 2 in &lt;/span&gt;&lt;a href=&quot;https://suews.readthedocs.io/en/latest/input_files/RunControl/RunControl.html#runcontrol-nml&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;RunControl.nml&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;) or the method of Loridan et al. (2011) based on air temperature (&lt;/span&gt;&lt;a href=&quot;https://suews.readthedocs.io/en/latest/input_files/RunControl/scheme_options.html#cmdoption-arg-EmissionsMethod&quot;&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;EmissionsMethod&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; = 1 in &lt;/span&gt;&lt;a href=&quot;https://suews.readthedocs.io/en/latest/input_files/RunControl/RunControl.html#runcontrol-nml&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;RunControl.nml&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;).&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;The sub-daily variation in anthropogenic heat flux is modelled according to the daily cycles specified in SUEWS_Profiles.txt.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Alternatively, if available, the anthropogenic heat flux can be provided in the met forcing file (and set &lt;/span&gt;&lt;a href=&quot;https://suews.readthedocs.io/en/latest/input_files/RunControl/scheme_options.html#cmdoption-arg-EmissionsMethod&quot;&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;EmissionsMethod&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; = 0 in &lt;/span&gt;&lt;a href=&quot;https://suews.readthedocs.io/en/latest/input_files/RunControl/RunControl.html#runcontrol-nml&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;RunControl.nml&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;) by filling the &lt;/span&gt;&lt;a href=&quot;https://suews.readthedocs.io/en/latest/input_files/SUEWS_SiteInfo/Input_Options.html#cmdoption-arg-qf&quot;&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;qf&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; column with valid values.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

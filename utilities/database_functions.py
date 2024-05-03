@@ -20,7 +20,7 @@ def read_DB(db_path):
         if col == 'Types':
             db[col]['descOrigin'] = db[col]['Type'].astype(str) + ', ' + db[col]['Origin'].astype(str)
         elif col == 'References': 
-            db[col]['authorYear'] = db[col]['Author'].astype(str) + ', ' + db[col]['Publication Year'].astype(str)
+            db[col]['authorYear'] = db[col]['Author'].astype(str) + ', ' + db[col]['Year'].astype(str)
         elif col == 'Country':
             db[col]['descOrigin'] = db[col]['Country'].astype(str) + ', ' + db[col]['City'].astype(str)  
         elif col == 'Region':
@@ -33,40 +33,41 @@ def read_DB(db_path):
             for row in db['Spartacus Surface'].iterrows():
                 id = row[0]
                 SS_surf_sel = db['Spartacus Surface'].loc[id]
-                resistance_bulk_w = 0
-                resistance_bulk_r = 0
+                if SS_surf_sel['Surface'] == 'Buildings':
+                    resistance_bulk_w = 0
+                    resistance_bulk_r = 0
 
-                for i in range(1,4):
-                    surf_w = SS_surf_sel['w'+str(i)+'Material'].item()
-                    thickness_w = SS_surf_sel['w'+str(i)+'Thickness'].item()
+                    for i in range(1,4):
+                        surf_w = SS_surf_sel['w'+str(i)+'Material'].item()
+                        thickness_w = SS_surf_sel['w'+str(i)+'Thickness'].item()
+                        
+                        surf_r = SS_surf_sel['r'+str(i)+'Material'].item()
+                        thickness_r = SS_surf_sel['r'+str(i)+'Thickness'].item()
+
+                        try:
+                            Tc_w = db['Spartacus Material'].loc[surf_w, 'Thermal Conductivity']
+                            resistance_w = thickness_w / Tc_w
+                            resistance_bulk_w = resistance_bulk_w + resistance_w
+                        except:
+                            pass
+
+                        try:
+                            Tc_r = db['Spartacus Material'].loc[surf_r, 'Thermal Conductivity']
+                            resistance_r = thickness_r / Tc_r
+                            resistance_bulk_r = resistance_bulk_r + resistance_r
+
+                        except:
+                            print(id, i)
                     
-                    surf_r = SS_surf_sel['r'+str(i)+'Material'].item()
-                    thickness_r = SS_surf_sel['r'+str(i)+'Thickness'].item()
+                    u_value_w = 1/ resistance_bulk_w
+                    u_value_r = 1/ resistance_bulk_r
 
-                    try:
-                        Tc_w = db['Spartacus Material'].loc[surf_w, 'Thermal Conductivity']
-                        resistance_w = thickness_w / Tc_w
-                        resistance_bulk_w = resistance_bulk_w + resistance_w
-                    except:
-                        pass
+                    
+                    db['Spartacus Surface'].loc[id,'u_value_wall'] = u_value_w
+                    db['Spartacus Surface'].loc[id,'u_value_roof'] = u_value_r
 
-                    try:
-                        Tc_r = db['Spartacus Material'].loc[surf_r, 'Thermal Conductivity']
-                        resistance_r = thickness_r / Tc_r
-                        resistance_bulk_r = resistance_bulk_r + resistance_r
-
-                    except:
-                        print(id, i)
-                
-                u_value_w = 1/ resistance_bulk_w
-                u_value_r = 1/ resistance_bulk_r
-
-                
-                db['Spartacus Surface'].loc[id,'u_value_wall'] = u_value_w
-                db['Spartacus Surface'].loc[id,'u_value_roof'] = u_value_r
-
-                db['Spartacus Surface'].loc[id,'albedo_roof'] = db['Spartacus Material'].loc[SS_surf_sel['r1Material'], 'Albedo']
-                db['Spartacus Surface'].loc[id,'albedo_wall'] = db['Spartacus Material'].loc[SS_surf_sel['w1Material'], 'Albedo']
+                    db['Spartacus Surface'].loc[id,'albedo_roof'] = db['Spartacus Material'].loc[SS_surf_sel['r1Material'], 'Albedo']
+                    db['Spartacus Surface'].loc[id,'albedo_wall'] = db['Spartacus Material'].loc[SS_surf_sel['w1Material'], 'Albedo']
 
         else:
             db[col]['descOrigin'] = db[col]['Description'].astype(str) + ', ' + db[col]['Origin'].astype(str)
@@ -119,7 +120,7 @@ def save_to_db(db_path, db_dict):
         if col == 'Types':
             db_dict[col]['descOrigin'] = db_dict[col]['Type'].astype(str) + ', ' + db_dict[col]['Origin'].astype(str)
         elif col == 'References': 
-            db_dict[col]['authorYear'] = db_dict[col]['Author'].astype(str) + ', ' + db_dict[col]['Publication Year'].astype(str)
+            db_dict[col]['authorYear'] = db_dict[col]['Author'].astype(str) + ', ' + db_dict[col]['Year'].astype(str)
         elif col == 'Country' or col == 'Region':
             pass
         else:
@@ -208,16 +209,16 @@ param_info_dict = {
                 'tooltip': 'Effective surface albedo (middle of the day value) for summertime.'}
                 }
             },
-    'ANOHM': {'surface': ['Paved','Buildings','Decidous Tree', 'Evergreen Tree','Grass','Bare Soil','Water','Snow'],
-            'param': {'AnOHM_Cp': {'min': 0,
-                'max': 1,
-                'tooltip': 'Volumetric heat capacity for this surface to use in AnOHM [J |m^-3|]'},
-            'AnOHM_Kk': {'min': 0,
-                'max': 1,
-                'tooltip': 'Thermal conductivity for this surface to use in AnOHM [W m |K^-1|]'},
-            'AnOHM_Ch': {'min': 0,
-                'max': 1,
-                'tooltip': 'Bulk transfer coefficient for this surface to use in AnOHM [-]'}}},
+    # 'ANOHM': {'surface': ['Paved','Buildings','Decidous Tree', 'Evergreen Tree','Grass','Bare Soil','Water','Snow'],
+    #         'param': {'AnOHM_Cp': {'min': 0,
+    #             'max': 1,
+    #             'tooltip': 'Volumetric heat capacity for this surface to use in AnOHM [J |m^-3|]'},
+    #         'AnOHM_Kk': {'min': 0,
+    #             'max': 1,
+    #             'tooltip': 'Thermal conductivity for this surface to use in AnOHM [W m |K^-1|]'},
+    #         'AnOHM_Ch': {'min': 0,
+    #             'max': 1,
+    #             'tooltip': 'Bulk transfer coefficient for this surface to use in AnOHM [-]'}}},
 
     'Biogen CO2': {
         'surface': ['Decidous Tree', 'Evergreen Tree', 'Grass'],

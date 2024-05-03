@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>922</width>
-    <height>555</height>
+    <width>918</width>
+    <height>546</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -40,7 +40,7 @@
     </spacer>
    </item>
    <item row="2" column="2">
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="pushButtonClose">
      <property name="text">
       <string>Close</string>
      </property>
@@ -78,22 +78,5 @@
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>pushButton</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Urban_type_creatorDialogBase</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>860</x>
-     <y>520</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>458</x>
-     <y>272</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -4,7 +4,7 @@ from qgis.PyQt.QtWidgets import QMessageBox
 
 #################################################################################################
 #                                                                                               #
-#                                  Profile creator                                              #
+#                                  Profile creator (Profiles)                                   #
 #                                                                                               #
 #################################################################################################
 
@@ -55,7 +55,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
             ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
             dlg.textBrowserRef.setText(
                 '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
-                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Publication Year']) + '<br><br><b>' +
+                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
                 'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
                 'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>'
             )
@@ -91,10 +91,14 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         fill_cbox()
     
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 4:
+        if self.dlg.tabWidget.currentIndex() == 5:
             fill_cbox()
+
+    def to_ref_edit():
+        self.dlg.tabWidget.setCurrentIndex(10)
     
 
+    dlg.pushButtonToRefManager.clicked.connect(to_ref_edit)
     self.dlg.tabWidget.currentChanged.connect(tab_update)
     dlg.pushButtonGen.clicked.connect(add_profile)
     dlg.comboBoxRef.currentIndexChanged.connect(ref_changed) 

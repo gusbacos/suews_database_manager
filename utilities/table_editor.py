@@ -77,7 +77,7 @@ def setup_table_editor(self, dlg, db_dict, db_path):
             ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
             dlg.textBrowserRef.setText(
                 '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
-                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Publication Year']) + '<br><br><b>' +
+                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
                 'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
                 'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' 
             )
@@ -140,7 +140,7 @@ def setup_table_editor(self, dlg, db_dict, db_path):
         QMessageBox.information(None, 'Succesful', table_name + ' Entry added to your local database')
 
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 2:
+        if self.dlg.tabWidget.currentIndex() == 3:
             fill_cbox()
 
     # def checker():
@@ -260,6 +260,10 @@ def setup_table_editor(self, dlg, db_dict, db_path):
     #         except:
     #             pass
 
+    def to_ref_edit():
+        self.dlg.tabWidget.setCurrentIndex(10)
+
+    dlg.pushButtonToRefManager.clicked.connect(to_ref_edit)
     dlg.comboBoxTableSelect.currentIndexChanged.connect(table_changed) 
     dlg.pushButtonGen.clicked.connect(add_table)
     dlg.comboBoxRef.currentIndexChanged.connect(ref_changed)

@@ -27,7 +27,7 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QWidget, QDialog
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'urban_type_editor_tab.ui'))
+    os.path.dirname(__file__), 'type_editor_tab.ui'))
 
 
 class UrbanTypeEditor(QDialog, FORM_CLASS):

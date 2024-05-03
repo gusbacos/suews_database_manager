@@ -61,7 +61,7 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
             ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
             dlg.textBrowserRef.setText(
                 '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
-                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Publication Year']) + '<br><br><b>' +
+                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
                 'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
                 'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>'
             )
@@ -92,9 +92,13 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
 
 
     def tab_update():
-        if self.dlg.tabWidget.currentIndex() == 3:
+        if self.dlg.tabWidget.currentIndex() == 4:
             fill_cboxes()
 
+    def to_ref_edit():
+        self.dlg.tabWidget.setCurrentIndex(10)
+
+    dlg.pushButtonToRefManager.clicked.connect(to_ref_edit)
     dlg.pushButtonGen.clicked.connect(add_AnEm)
     dlg.comboBoxRef.currentIndexChanged.connect(ref_changed)
     dlg.comboBoxBaseAnEm.currentIndexChanged.connect(base_AnEm_changed)
