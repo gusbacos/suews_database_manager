@@ -1,7 +1,5 @@
 import pandas as pd
 import numpy as np
-import webbrowser
-from pathlib import Path
 from time import sleep
 from datetime import datetime
 
@@ -71,6 +69,9 @@ def read_DB(db_path):
 
         else:
             db[col]['descOrigin'] = db[col]['Description'].astype(str) + ', ' + db[col]['Origin'].astype(str)
+
+    db_sh.close() # trying this to close excelfile
+    
     return db
 
 def save_to_db(db_path, db_dict):
@@ -142,7 +143,7 @@ surf_df_dict = {
     'Paved' : 'NonVeg',
     'Buildings' : 'NonVeg',
     'Evergreen Tree' : 'Veg',
-    'Decidous Tree' : 'Veg',
+    'Deciduous Tree' : 'Veg',
     'Grass' : 'Veg',
     'Bare Soil' : 'NonVeg',
     'Water' : 'Water',           
@@ -197,7 +198,7 @@ def create_code(table_name):
 
 param_info_dict = {
     'Albedo': {
-        'surface': ['Paved','Buildings','Decidous Tree',  'Evergreen Tree','Grass', 'Bare Soil','Water', 'Snow'],
+        'surface': ['Paved','Buildings','Deciduous Tree',  'Evergreen Tree','Grass', 'Bare Soil','Water', 'Snow'],
         'param': {
             'Alb_min': {
                 'min': 0,
@@ -209,7 +210,7 @@ param_info_dict = {
                 'tooltip': 'Effective surface albedo (middle of the day value) for summertime.'}
                 }
             },
-    # 'ANOHM': {'surface': ['Paved','Buildings','Decidous Tree', 'Evergreen Tree','Grass','Bare Soil','Water','Snow'],
+    # 'ANOHM': {'surface': ['Paved','Buildings','Deciduous Tree', 'Evergreen Tree','Grass','Bare Soil','Water','Snow'],
     #         'param': {'AnOHM_Cp': {'min': 0,
     #             'max': 1,
     #             'tooltip': 'Volumetric heat capacity for this surface to use in AnOHM [J |m^-3|]'},
@@ -221,7 +222,7 @@ param_info_dict = {
     #             'tooltip': 'Bulk transfer coefficient for this surface to use in AnOHM [-]'}}},
 
     'Biogen CO2': {
-        'surface': ['Decidous Tree', 'Evergreen Tree', 'Grass'],
+        'surface': ['Deciduous Tree', 'Evergreen Tree', 'Grass'],
         'param': {'alpha': {'min': 0,
             'max': 1,
             'tooltip': 'The mean apparent ecosystem quantum. Represents the initial slope of the light-response curve. [umol CO2 umol photons^-1]'},
@@ -238,7 +239,7 @@ param_info_dict = {
             }
         },
     'Conductance': {
-        'surface': ['Paved','Buildings','Decidous Tree','Evergreen Tree','Grass','Bare Soil'],
+        'surface': ['Paved','Buildings','Deciduous Tree','Evergreen Tree','Grass','Bare Soil'],
         'param': {
             'G1': {'min': 0,
             'max': 1,
@@ -275,7 +276,7 @@ param_info_dict = {
             }
         },
     'Drainage': {
-        'surface': ['Paved','Buildings','Decidous Tree','Evergreen Tree','Grass','Bare Soil'],
+        'surface': ['Paved','Buildings','Deciduous Tree','Evergreen Tree','Grass','Bare Soil'],
     'param': {
         'DrainageCoef1': {'min': 0,
         'max': 1,
@@ -295,14 +296,14 @@ param_info_dict = {
         }
     },
     'Emissivity': {
-        'surface':  ['Paved','Buildings','Decidous Tree','Evergreen Tree','Grass','Bare Soil'],
+        'surface':  ['Paved','Buildings','Deciduous Tree','Evergreen Tree','Grass','Bare Soil'],
         'param': {'Emissivity': {'min': 0,
             'max': 1,
             'tooltip': 'Effective surface emissivity.'}
                  }
              },
     'Leaf Area Index': {
-        'surface': ['Decidous Tree', 'Evergreen Tree', 'Grass'],
+        'surface': ['Deciduous Tree', 'Evergreen Tree', 'Grass'],
         'param': {'LAIEq': {'min': 0,
             'max': 1,
             'tooltip': 'LAI calculation choice.'},
@@ -311,7 +312,7 @@ param_info_dict = {
             'max': 1,
             'tooltip': 'full leaf-on summertime value'}}},
     'Leaf Growth Power': {
-        'surface': ['Decidous Tree', 'Evergreen Tree', 'Grass'],
+        'surface': ['Deciduous Tree', 'Evergreen Tree', 'Grass'],
         'param': {'LeafGrowthPower1': {'min': 0,
             'max': 1,
             'tooltip': 'a parameter required by LAI calculation in `LAIEq`'},
@@ -327,14 +328,14 @@ param_info_dict = {
             },
     }, 
     'Max Vegetation Conductance': {
-        'surface': ['Decidous Tree','Evergreen Tree','Grass'],
+        'surface': ['Deciduous Tree','Evergreen Tree','Grass'],
         'param': {'MaxConductance': {'min': 0, 'max': 1, 'tooltip' : 'The maximum conductance of each vegetation or surface type. [mm s-1]'}}},
     'Porosity': {
-        'surface': ['Decidous Tree'],
+        'surface': ['Deciduous Tree'],
         'param': {'PorosityMin': {'min': 0, 'max': 1, 'tooltip': 'leaf-off wintertime value Used only for DecTr (can affect roughness calculation)'},
         'PorosityMax': {'min': 0, 'max': 1, 'tooltip' : 'full leaf-on summertime value Used only for DecTr (can affect roughness calculation)'}}},
     'Vegetation Growth': {
-        'surface': ['Decidous Tree', 'Evergreen Tree', 'Grass'],
+        'surface': ['Deciduous Tree', 'Evergreen Tree', 'Grass'],
         'param': {
             'BaseT': {'min': 0, 'max': 1, 'tooltip':'Base Temperature for initiating growing degree days (GDD) for leaf growth. [°C]'},
             'BaseTe': {'min': 0, 'max': 1, 'tooltip': 'Base temperature for initiating sensesance degree days (SDD) for leaf off. [°C]'},
@@ -348,7 +349,7 @@ param_info_dict = {
     'Water Storage': {
         'surface': ['Paved',
         'Buildings',
-        'Decidous Tree',
+        'Deciduous Tree',
         'Evergreen Tree',
         'Grass',
         'Bare Soil',
@@ -371,7 +372,7 @@ param_info_dict = {
             'OBS_SoilNotRocks': {'min': 0, 'max': 1, 'tooltip':'Fraction of soil without rocks. [-]'}}},
 
     'OHM': {
-        'surface' : ['Paved','Buildings','Decidous Tree',  'Evergreen Tree','Grass', 'Bare Soil','Water', 'Snow'],
+        'surface' : ['Paved','Buildings','Deciduous Tree',  'Evergreen Tree','Grass', 'Bare Soil','Water', 'Snow'],
         'param'   : {
             'a1': {'tooltip' : 'Coefficient for Q* term [-]'},
             'a2': {'tooltip' : 'Coefficient for dQ*/dt term [h]'},
