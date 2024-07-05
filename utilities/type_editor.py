@@ -1,6 +1,10 @@
 import pandas as pd
 from .database_functions import create_code, save_to_db
 from qgis.PyQt.QtWidgets import QMessageBox
+from qgis.PyQt.QtGui import QImage, QPixmap
+import urllib.request, urllib.error, urllib.parse
+from qgis.core import QgsMessageLog, Qgis
+import math
 
 #################################################################################################
 #                                                                                               #
@@ -127,6 +131,7 @@ def setup_urban_type_editor(self, dlg, db_dict, db_path):
                 'Typology: ' + typology_sel['Description'].item() + '\n' +
                 'Origin: ' + typology_sel['Origin'].item() + '\n' +
                 'Construction perion: ' +  typology_sel['Period'].item() + '\n' +
+                'Type of land use: ' + typology_sel['ProfileType'].item() + '\n' +
                 ' '  + '\n' +
                 'ASSOCIATED BUILDING TYPE:' + '\n' +
                 'Description: ' + db_dict['NonVeg'].loc[buildID]['Description'] + '\n' +
@@ -142,17 +147,50 @@ def setup_urban_type_editor(self, dlg, db_dict, db_path):
                 'Outer roof material: ' + roof1Type + ', thickness = ' + roof1Th + ' cm' + '\n' +
                 'Middle roof material: ' + roof2Type + ', thickness = ' + roof2Th + ' cm' + '\n' +
                 'Inner roof material: ' + roof3Type + ', thickness = ' + roof3Th + ' cm' + '\n' +
-                'More?....' + '\n' +
+                # 'More?....' + '\n' +
                 ' '  + '\n' +
                 'ASSOCIATED PAVED TYPE:' + '\n' +
                 'Description: ' + db_dict['NonVeg'].loc[PavedID]['Description'] + '\n' +
                 'Origin: ' + db_dict['NonVeg'].loc[PavedID]['Origin'] + '\n' +
                 'Mean albedo (min): ' + str(round(db_dict['Albedo'].loc[db_dict['NonVeg'].loc[PavedID]['Albedo']]['Alb_min'].item(), 2)) + '\n' +
                 'Mean albedo (max): ' + str(round(db_dict['Albedo'].loc[db_dict['NonVeg'].loc[PavedID]['Albedo']]['Alb_min'].item(), 2)) + '\n' +
-                'Effective Surface Emissivity: ' + str(round(db_dict['Emissivity'].loc[db_dict['NonVeg'].loc[PavedID]['Emissivity']]['Emissivity'].item(), 2)) + '\n' +
-                'More?....'
+                'Effective Surface Emissivity: ' + str(round(db_dict['Emissivity'].loc[db_dict['NonVeg'].loc[PavedID]['Emissivity']]['Emissivity'].item(), 2))
+         
                 )
+            
+            if typology_sel['Url'].item() == None:
+                dlg.label_2.clear()
+            else:
+                setup_image(dlg.label_2, typology_sel['Url'].item())
 
+    def setup_image(widget, url):
+        # if math.isnan(url):
+            # widget.clear()
+        # else:
+        if type(url) == str:
+            req = urllib.request.Request(str(url))
+            try:
+                resp = urllib.request.urlopen(req)
+            except urllib.error.HTTPError as e:
+                if e.code == 404:
+                    QgsMessageLog.logMessage("Image URL encountered a 404 problem", level=Qgis.Critical)
+                    widget.clear()
+                else:
+                    QgsMessageLog.logMessage("SUEWSPrepare encountered a problem: " + str(e), level=Qgis.Critical)
+                    widget.clear()
+            except urllib.error.URLError as e:
+                QgsMessageLog.logMessage("SUEWSPrepare encountered a problem: " + str(e), level=Qgis.Critical)
+                widget.clear()
+            else:
+                data = resp.read()
+                image = QImage()
+                image.loadFromData(data)
+
+                widget.setPixmap(QPixmap(image).scaledToWidth(450))
+        else:
+            widget.clear()
+            widget.setText('No example picture available in database')
+    
     def generate_type():
 
         dict_reclass = {
@@ -225,6 +263,7 @@ def setup_urban_type_editor(self, dlg, db_dict, db_path):
     def tab_update():
         if self.dlg.tabWidget.currentIndex() == 1:
             fill_cbox()
+        dlg.label_2.clear()
 
     def to_type_edit():
         self.dlg.tabWidget.setCurrentIndex(2)
