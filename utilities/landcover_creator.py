@@ -9,7 +9,7 @@ from .database_functions import create_code, save_to_db, surf_df_dict
 #                                                                                               #
 #################################################################################################
 
-def setup_typology_creator(self, dlg, db_dict, db_path):
+def setup_landcover_creator(self, dlg, db_dict, db_path):
     
     dlg.comboBoxSurface.setCurrentIndex(-1)
     dlg.comboBoxProfileType.setCurrentIndex(-1)
@@ -300,7 +300,7 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
         db_dict[surf_df_dict[surface]] = pd.concat([db_dict[surf_df_dict[surface]], new_edit])
     
         save_to_db(db_path, db_dict)
-        dlg.comboBoxSurface.setCurrentIndex(-1)
+        # dlg.comboBoxSurface.setCurrentIndex(-1)
         dlg.comboBoxProfileType.setCurrentIndex(-1)
         dlg.comboBoxBase.setCurrentIndex(-1)
         dlg.textEditDesc.clear()

@@ -36,7 +36,7 @@ import shutil
 # Import tabs
 from .tabs.reclassifier_tab import reclassifier_tab
 from .tabs.type_editor_tab import UrbanTypeEditor   #Not used anymore but used again
-from .tabs.typology_creator_tab import TypologyCreator_tab
+from .tabs.landcover_creator_tab import LandcoverCreator_tab
 from .tabs.table_editor_tab import TableEditor_tab      
 from .tabs.reference_manager_tab import RefManager_tab
 from .tabs.profiles_tab import ProfileCreator_tab
@@ -55,7 +55,7 @@ from .utilities.reclassifier import setup_reclassifier
 from .utilities.type_editor import setup_urban_type_editor
 from .utilities.suews_SS import setup_SUEWS_SS_creator
 from .utilities.spartacus_material import setup_SS_material_creator
-from .utilities.typology_creator import setup_typology_creator
+from .utilities.landcover_creator import setup_landcover_creator
 from .utilities.table_editor import setup_table_editor
 from .utilities.profile_creator import setup_profile_creator
 from .utilities.anthropogenic_emissions_creator import setup_anthropogenic_emission_manager
@@ -184,9 +184,9 @@ class suews_database_manager:
         self.dlg.tabWidget.addTab(type_creator, 'Typologies')
         
         # Tab 2
-        typology_creator = TypologyCreator_tab()
-        setup_typology_creator(self, typology_creator, self.db_dict, self.db_path)
-        self.dlg.tabWidget.addTab(typology_creator, 'Land Cover')
+        landcover_creator = LandcoverCreator_tab()
+        setup_landcover_creator(self, landcover_creator, self.db_dict, self.db_path)
+        self.dlg.tabWidget.addTab(landcover_creator, 'Land Cover')
 
         # Tab 3
         tableEditor = TableEditor_tab()

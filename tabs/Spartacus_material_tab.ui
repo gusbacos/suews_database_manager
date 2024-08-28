@@ -324,7 +324,7 @@ p, li { white-space: pre-wrap; }
          </font>
         </property>
         <property name="text">
-         <string>Spartacus Material Creator</string>
+         <string>Material Creator</string>
         </property>
        </widget>
       </item>

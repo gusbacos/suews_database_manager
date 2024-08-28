@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>typology_creatorDialogBase</class>
- <widget class="QDialog" name="typology_creatorDialogBase">
+ <class>landcover_creatorDialogBase</class>
+ <widget class="QDialog" name="landcover_creatorDialogBase">
   <property name="geometry">
    <rect>
     <x>0</x>
