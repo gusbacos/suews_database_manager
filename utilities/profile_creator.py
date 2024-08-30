@@ -42,11 +42,26 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         prof_sel.columns = prof_sel.columns.map(str)
         prof_sel_dict = prof_sel.squeeze().to_dict()
 
+        plotValues = []
         for i in range(0,24):
             Tb = eval('dlg.textBrowser_' + str(i))
             Le = eval('dlg.lineEdit_' + str(i))
             Le.clear()
             Le.setText(str(prof_sel_dict[str(Tb.toPlainText())]))
+            # str(prof_sel_dict[str(Tb.toPlainText())])
+            # 
+            try:
+                plotValues.append(float(prof_sel_dict[str(Tb.toPlainText())]))
+            except:
+                pass
+        print(str(plotValues))
+        
+        plot_profile(dlg.PlotProfile, plotValues)
+
+    def plot_profile(widget, plotValues):
+        
+        widget.clear()
+        widget.setText('Here, plot will appear' + str(plotValues))
 
     def ref_changed():
         dlg.textBrowserRef.clear()

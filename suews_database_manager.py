@@ -35,9 +35,9 @@ import os.path
 import shutil
 # Import tabs
 from .tabs.reclassifier_tab import reclassifier_tab
-from .tabs.type_editor_tab import UrbanTypeEditor   #Not used anymore but used again
+from .tabs.typology_creator_tab import TypologyCreator_tab
 from .tabs.landcover_creator_tab import LandcoverCreator_tab
-from .tabs.table_editor_tab import TableEditor_tab      
+from .tabs.parameter_creator_tab import ParameterCreator_tab      
 from .tabs.reference_manager_tab import RefManager_tab
 from .tabs.profiles_tab import ProfileCreator_tab
 from .tabs.irrigation_tab import Irrigation_manager_tab
@@ -52,11 +52,11 @@ import webbrowser
 
 from .utilities.database_functions import read_DB
 from .utilities.reclassifier import setup_reclassifier
-from .utilities.type_editor import setup_urban_type_editor
+from .utilities.typology_creator import setup_typology_creator
 from .utilities.suews_SS import setup_SUEWS_SS_creator
 from .utilities.spartacus_material import setup_SS_material_creator
 from .utilities.landcover_creator import setup_landcover_creator
-from .utilities.table_editor import setup_table_editor
+from .utilities.parameter_creator import setup_parameter_creator
 from .utilities.profile_creator import setup_profile_creator
 from .utilities.anthropogenic_emissions_creator import setup_anthropogenic_emission_manager
 from .utilities.irrigation_manager import setup_irrigation_manager
@@ -179,9 +179,9 @@ class suews_database_manager:
         self.dlg.tabWidget.addTab(reclassifier, 'Main tab - Reclassifier')
 
         # Tab 1
-        type_creator = UrbanTypeEditor()
-        setup_urban_type_editor(self, type_creator, self.db_dict, self.db_path)
-        self.dlg.tabWidget.addTab(type_creator, 'Typologies')
+        typology_creator = TypologyCreator_tab()
+        setup_typology_creator(self, typology_creator, self.db_dict, self.db_path)
+        self.dlg.tabWidget.addTab(typology_creator, 'Typologies')
         
         # Tab 2
         landcover_creator = LandcoverCreator_tab()
@@ -189,9 +189,9 @@ class suews_database_manager:
         self.dlg.tabWidget.addTab(landcover_creator, 'Land Cover')
 
         # Tab 3
-        tableEditor = TableEditor_tab()
-        setup_table_editor(self, tableEditor, self.db_dict, self.db_path)
-        self.dlg.tabWidget.addTab(tableEditor, 'Parameters')
+        parameter_creator = ParameterCreator_tab()
+        setup_parameter_creator(self, parameter_creator, self.db_dict, self.db_path)
+        self.dlg.tabWidget.addTab(parameter_creator, 'Parameters')
 
         # Tab 4
         anthropogenic_emission_creator = AnthropogenicEmissionCreator_tab()

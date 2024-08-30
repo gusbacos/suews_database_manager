@@ -8,11 +8,11 @@ import math
 
 #################################################################################################
 #                                                                                               #
-#                                     Typologies                                                #
+#                                     Typology Creator                                          #
 #                                                                                               #
 #################################################################################################
 
-def setup_urban_type_editor(self, dlg, db_dict, db_path):
+def setup_typology_creator(self, dlg, db_dict, db_path):
 
     def fill_cbox():
 
@@ -27,26 +27,10 @@ def setup_urban_type_editor(self, dlg, db_dict, db_path):
         dlg.comboBoxPavedType.addItems((db_dict['NonVeg']['descOrigin'][db_dict['NonVeg']['Surface'] == 'Paved']))
         dlg.comboBoxBuildingType.clear()
         dlg.comboBoxBuildingType.addItems((db_dict['NonVeg']['descOrigin'][db_dict['NonVeg']['Surface'] == 'Buildings']))
-        # dlg.comboBoxProf.clear()
-        # dlg.comboBoxProf.addItems(db_dict['Types']['descOrigin'][db_dict['Types']['Profiles'])
         for i in [dlg.comboBoxPavedType,dlg.comboBoxBuildingType]:
             i.setCurrentIndex(-1)
         dlg.comboBoxProf.setCurrentIndex(0)
         dlg.comboBoxPeriod.setCurrentIndex(0)
-
-        # dlg.comboBoxType.clear()
-            #     #typology_list = list(db_dict['NonVeg'].loc[db_dict['NonVeg']['Surface'] == 'Buildings', 'descOrigin'])
-        # typology_list = list(db_dict['Types']['descOrigin'])
-        # for i in range(1,23):
-        #     Nc = eval('dlg.comboBoxNew' + str(i))
-        #     Nc.addItems(typology_list)
-        #     Nc.setCurrentIndex(-1)
-        #     Nc.setDisabled(True)
-        #     vars()['dlg.comboBoxNew' + str(i)] = Nc
-        
-        # dlg.comboBoxType.clear()
-        # dlg.comboBoxType.addItems(typology_list)
-        # dlg.comboBoxType.setCurrentIndex(-1)
 
 
     def check_type():
@@ -140,7 +124,7 @@ def setup_urban_type_editor(self, dlg, db_dict, db_path):
                 'Mean albedo (max): ' + str(db_dict['Albedo'].loc[db_dict['NonVeg'].loc[buildID]['Albedo']]['Alb_min'].item()) + '\n' +
                 'Effective Surface Emissivity: ' + str(db_dict['Emissivity'].loc[db_dict['NonVeg'].loc[buildID]['Emissivity']]['Emissivity'].item()) + '\n' +
                 'U-value (roof): ' + str(round(db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID]['Spartacus Surface']]['u_value_roof'].item(), 2)) + '\n' +
-                'U-value (walls): ' + str(round(db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID]['Spartacus Surface']]['u_value_wall'], 2)) + '\n' +
+                'U-value (walls): ' + str(round(db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID]['Spartacus Surface']]['u_value_wall'].item(), 2)) + '\n' +
                 'Outer wall material: ' + wall1Type + ', thickness = ' + wall1Th + ' cm' + '\n' +
                 'Middle wall material: ' + wall2Type + ', thickness = ' + wall2Th + ' cm' + '\n' +
                 'Inner wall material: ' + wall3Type + ', thickness = ' + wall3Th + ' cm' + '\n' +

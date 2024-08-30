@@ -4,11 +4,11 @@ from .database_functions import param_info_dict, create_code, save_to_db, surf_d
 
 #################################################################################################
 #                                                                                               #
-#                                        Table Editor                                           #
+#                                        Parameter Creator                                       #
 #                                                                                               #
 #################################################################################################
 
-def setup_table_editor(self, dlg, db_dict, db_path):
+def setup_parameter_creator(self, dlg, db_dict, db_path):
 
     def fill_cbox():
         dlg.comboBoxRef.clear()
