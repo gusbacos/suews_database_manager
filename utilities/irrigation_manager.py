@@ -11,7 +11,7 @@ from qgis.PyQt.QtWidgets import QMessageBox
 
 def setup_irrigation_manager(self, dlg, db_dict, db_path):
 
-    def fill_cboxes(dlg):
+    def fill_cboxes():
         dlg.comboBoxBaseIrr.clear()
         dlg.comboBoxRef.clear()
         dlg.textEditDesc.clear()
@@ -74,10 +74,11 @@ def setup_irrigation_manager(self, dlg, db_dict, db_path):
         save_to_db(db_path, db_dict)
 
         QMessageBox.information(None, 'Succesful', 'Irrigation Entry added to your local database')
+        fill_cboxes()
 
     def tab_update():
         if self.dlg.tabWidget.currentIndex() == 6:
-            fill_cboxes(dlg)
+            fill_cboxes()
     
     self.dlg.tabWidget.currentChanged.connect(tab_update)
 

@@ -15,6 +15,8 @@ def read_DB(db_path):
     db = pd.read_excel(db_path, sheet_name= sheets, index_col= 0)
     # add 
     for col in sheets:
+        # Fill empty cells with NaN
+        db[col] = db[col].fillna(db[col])
         if col == 'Types':
             db[col]['descOrigin'] = db[col]['Type'].astype(str) + ', ' + db[col]['Origin'].astype(str)
         elif col == 'References': 

@@ -18,7 +18,11 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
         dlg.comboBoxTableSelect.clear()
         dlg.comboBoxTableSelect.addItems(sorted(param_info_dict.keys()))
         dlg.comboBoxTableSelect.setCurrentIndex(-1)
-    
+
+        dlg.textEditDesc.clear()
+        dlg.textEditOrig.clear()
+
+
         for i in range(0,15):
             Oc = eval('dlg.textBrowser_' + str(i))
             Oc.clear()
@@ -138,6 +142,7 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
         # self.setup_tabs()
         # self.dlg.tabWidget.setCurrentIndex(3)
         QMessageBox.information(None, 'Succesful', table_name + ' Entry added to your local database')
+        tab_update()
 
     def tab_update():
         if self.dlg.tabWidget.currentIndex() == 3:

@@ -12,7 +12,7 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
     def fill_cboxes():
 
         dlg.textEditDesc.clear()
-        dlg.textEditDesc.clear()
+        dlg.textEditOrig.clear()
 
         surf_table = db_dict['Spartacus Surface']
         surf_list = list(surf_table['descOrigin'])

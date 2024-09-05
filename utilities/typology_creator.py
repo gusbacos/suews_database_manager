@@ -5,6 +5,7 @@ from qgis.PyQt.QtGui import QImage, QPixmap
 import urllib.request, urllib.error, urllib.parse
 from qgis.core import QgsMessageLog, Qgis
 import math
+import numpy as np
 
 #################################################################################################
 #                                                                                               #
@@ -31,6 +32,7 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
             i.setCurrentIndex(-1)
         dlg.comboBoxProf.setCurrentIndex(0)
         dlg.comboBoxPeriod.setCurrentIndex(0)
+        dlg.label_2.clear()
 
 
     def check_type():
@@ -185,7 +187,7 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
             'ProfileType' : dlg.comboBoxProf.currentText(),
             'Period' : dlg.comboBoxPeriod.currentText(),
             'Author' : str(dlg.textEditAuthor.value()),
-            'Url' : '', 
+            'Url' : np.nan, 
         }
 
         cbox_list = [dlg.comboBoxPavedType, dlg.comboBoxBuildingType]#, dlg.comboBoxGrassType, dlg.comboBoxDecType, dlg.comboBoxEvrType,dlg.comboBoxBsoilType, dlg.comboBoxWaterType]
