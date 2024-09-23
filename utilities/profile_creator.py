@@ -28,7 +28,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
     def prof_type_changed():
         prof_type = dlg.comboBoxProfType.currentText()
         dlg.comboBoxBaseProfile.clear()
-        dlg.comboBoxDay.setCurrentIndex(1)
+        # dlg.comboBoxDay.setCurrentIndex(0)
         day = dlg.comboBoxDay.currentText()
 
         prof_types = db_dict['Profiles'][db_dict['Profiles']['Profile Type'] == prof_type]
@@ -47,6 +47,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         dlg.comboBoxBaseProfile.setEnabled(True)
 
     def base_prof_changed():
+        prof_type = dlg.comboBoxProfType.currentText()
         base_prof = dlg.comboBoxBaseProfile.currentText()
         prof_sel = db_dict['Profiles'][(db_dict['Profiles']['descOrigin'] == base_prof) & (db_dict['Profiles']['Day'] == dlg.comboBoxDay.currentText()) & (db_dict['Profiles']['Profile Type'] == dlg.comboBoxProfType.currentText())]
         prof_sel.columns = prof_sel.columns.map(str)

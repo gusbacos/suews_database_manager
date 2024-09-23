@@ -190,13 +190,28 @@ code_id_dict = {
 }
 
 def create_code(table_name):
+    '''
+    Create new unique codes for DB and for SUEWS_table.txt files
 
-    sleep(0.0000000000001) # Slow down to make code unique
+    Syntax of code 8 digits.
+    
+    aa-bb-cccc
+    aa = code that refers to code_id_dict. OHM code become 50 and Profiles 60 etc.
+    bb = year. Last 2 digits. 24 for 2024 etc.
+    cccc = milliseconds. Just a way to make the codes unique. 
+
+    ex. 20244307 is a NonVeg code created sometime during 2024
+
+    '''
+
+    sleep(0.000001) # Slow down to make code unique
     table_code = str(code_id_dict[table_name]) 
-    doy = str(datetime.now().timetuple().tm_yday)
-    ms = str(datetime.utcnow().strftime('%S%f')) # Year%DOY#Minute#millisecond
-    code = int(table_code + doy + ms[3:])
+    year = str(datetime.utcnow().strftime('%Y'))[2:]
+    ms = str(datetime.utcnow().strftime('%S%f')) 
+    code = np.int32(table_code + year + ms[4:])
+    
     return code
+
 
 param_info_dict = {
     'Albedo': {

@@ -14,45 +14,45 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
     def fill_cbox():
         dlg.comboBoxProfileType.setCurrentIndex(-1)
 
-        for i in range(0,20): 
-            Oc = eval('dlg.textBrowser_' + str(i))
-            Oc.clear()
-            Oc.setDisabled(True)
-            Nc = eval('dlg.comboBox_' + str(i))
-            Nc.clear()
-            Nc.setDisabled(True)        
+        for i in range(20): 
+            Oc = getattr(dlg, f'textBrowser_{i}', None)
+            if Oc:
+                Oc.clear()
+                Oc.setDisabled(True)
+            Nc = getattr(dlg, f'comboBox_{i}', None)
+            if Nc:
+                Nc.clear()
+                Nc.setDisabled(True)        
             
         dlg.comboBoxBase.setCurrentIndex(-1)
         dlg.comboBoxSurface.setCurrentIndex(-1)
         
         dlg.textEditDesc.clear()
         dlg.textEditOrig.clear()
-
+        
     def changed_surface():
-
-        # try:
-        # # Clear and enable ComboBox
+    # Clear and enable ComboBox
         dlg.comboBoxBase.clear()
         dlg.comboBoxBase.setEnabled(True)
-    
 
-        for i in range(0,20): 
-            Oc = eval('dlg.textBrowser_' + str(i))
-            Oc.clear()
-            Oc.setDisabled(True)
-            Nc = eval('dlg.comboBox_' + str(i))
-            Nc.clear()
-            Nc.setDisabled(True)         
+        for i in range(20): 
+            Oc = getattr(dlg, f'textBrowser_{i}', None)
+            if Oc:
+                Oc.clear()
+                Oc.setDisabled(True)
+            Nc = getattr(dlg, f'comboBox_{i}', None)
+            if Nc:
+                Nc.clear()
+                Nc.setDisabled(True)  # Initialt inaktivera alla comboBox_{i}
 
         # Read what surface user has chosen
         surface = dlg.comboBoxSurface.currentText()
-        if surface != '': 
-            # Select correct tab fom DB (Veg, NonVeg or Water)
+        if surface:
+            # Select correct tab from DB (Veg, NonVeg or Water)
             if surface == 'Buildings':
                 dlg.textBrowserProfileType.setEnabled(True)
                 dlg.comboBoxProfileType.setEnabled(True)
                 dlg.comboBoxProfileType.setCurrentIndex(0)
-
             else: 
                 dlg.textBrowserProfileType.setDisabled(True)
                 dlg.comboBoxProfileType.setCurrentIndex(-1)
@@ -61,15 +61,15 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
             table = db_dict[surf_df_dict[surface]]
 
             dlg.comboBoxBase.addItems(table['descOrigin'][table['Surface'] == surface])
-            dlg.comboBoxBase.setCurrentIndex(0) # -1 before
+            dlg.comboBoxBase.setCurrentIndex(0)
 
             col_list = list(table)
             remove_cols = ['ID', 'Surface', 'Period', 'Origin', 'Description', 'Ref', 'typeOrigin', 'descOrigin', 'Color']
 
             if surface != 'Deciduous Tree':
-                remove_cols.append('Porosity') # Exception for just Deciduous tree in Veg
+                remove_cols.append('Porosity')  # Exception for just Deciduous tree in Veg
 
-            if surface != 'Water': # Exception for just Water
+            if surface != 'Water':  # Exception for just Water
                 remove_cols.append('Water State')
 
             if surface != 'Buildings':
@@ -77,70 +77,51 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
                 remove_cols.append('ESTM')          
 
             for col in remove_cols:
-                try:
+                if col in col_list:
                     col_list.remove(col)
-                except:
-                    pass
             
-            for i in range(len(col_list)-1): 
-                Oc = eval('dlg.textBrowser_' + str(i))
-                Oc.clear()
-                Oc.setEnabled(True)
-                Nc = eval('dlg.comboBox_' + str(i))
-                Nc.clear()
-                Nc.setEnabled(True)
+            for i, col_name in enumerate(col_list):
+                if i >= 20:
+                    break
+                Oc = getattr(dlg, f'textBrowser_{i}', None)
+                if Oc:
+                    Oc.clear()
+                    Oc.setEnabled(True)
+                Nc = getattr(dlg, f'comboBox_{i}', None)
+                if Nc:
+                    Nc.clear()
+                    Nc.setEnabled(True)  # Aktivera comboBox_{i} när den används
 
-                table_name_str = col_list[i]
+                Oc.setText(col_name)
 
-            #     # Fill in name of table
-                Oc.setText(table_name_str)
-
-
-                if table_name_str == 'Spartacus Surface':
-                    table_sel = db_dict[table_name_str]     
-                    table_surf = table_sel.drop(columns =['descOrigin'])
-                    table_sel = table_sel.reset_index().drop(columns = ['ID'])
-
+                if col_name == 'Spartacus Surface':
+                    table_sel = db_dict[col_name]
+                    table_surf = table_sel.drop(columns=['descOrigin'])
+                    table_sel = table_sel.reset_index().drop(columns=['ID'])
                 else:
-                    
-                    if table_name_str.startswith('OHM'):
-                        table = table_name_str = 'OHM'
-
-                    table = db_dict[table_name_str]
+                    if col_name.startswith('OHM'):
+                        table = db_dict['OHM']
+                    else:
+                        table = db_dict[col_name]
                     table_surf = table[table['Surface'] == surface]
+                    table_sel = table_surf.drop(columns=['Surface']).reset_index()
 
-                    table_sel = table_surf.drop(columns =['Surface']).reset_index()
-                    if table_name_str.startswith('OHM'):
-                        if surface == 'Grass' or surface == 'Evergreen Tree' or surface == 'Deciduous Tree':
-                            table_surf2 = table[table['Surface'] == 'All vegetation']
-                            table_surf = pd.concat([table_surf, table_surf2])
-                        if surface == 'Buildings' or surface == 'Paved' or surface == 'Bare Soil':
-                            table_surf2 = table[table['Surface'] == 'All Nonveg']
-                            table_surf = pd.concat([table_surf, table_surf2])
-                            # a = 7/0
-                    try :
-                        table_surf.drop(columns =['descOrigin'])
-                    except:
-                        pass
+                    if col_name.startswith('OHM'):
+                        if surface in ['Grass', 'Evergreen Tree', 'Deciduous Tree']:
+                            table_surf = table[(table['Surface'] == surface) | (table['Surface'] == 'All vegetation')]
+                        elif surface in ['Buildings', 'Paved', 'Bare Soil']:
+                            table_surf = table[(table['Surface'] == surface) | (table['Surface'] == 'All nonveg')]
 
-                    table_sel = table_sel.drop(columns = ['ID'])
+                    table_surf = table_surf.drop(columns=['descOrigin'], errors='ignore')
+                    table_sel = table_sel.drop(columns=['ID'], errors='ignore')
 
-                Nc_fill_list = []
-                idx = 0
-                for desc, orig, idx in zip(table_surf['Description'].tolist() ,table_surf['Origin'].tolist(), list(range(len(table_surf['Origin'].tolist())))):
-                    Nc_fill_list.append((str(idx) + ': ' + str(desc) + ', ' + str(orig)))
-                
+                Nc_fill_list = [f"{idx}: {desc}, {orig}" for idx, (desc, orig) in enumerate(zip(table_surf['Description'], table_surf['Origin']))]
                 Nc.addItems(Nc_fill_list)
-            else:
-                pass
-        # except:
-        #     pass
-        #     print('ops')
+                Nc.setEnabled(True)
     
     def base_typology_changed():
 
-        if dlg.comboBoxBase.currentIndex() != -1: # only do below if a base typology is selected
-
+        if dlg.comboBoxBase.currentIndex() != -1:  # only do below if a base typology is selected
             surface = dlg.comboBoxSurface.currentText()
             base_typology = dlg.comboBoxBase.currentText()
 
@@ -152,14 +133,13 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
             dlg.textEditDesc.setText(surf_row['Description'].item())
             dlg.textEditOrig.setText(surf_row['Origin'].item())
 
-            for i in range(0,21):
-                Cb = eval('dlg.comboBox_' + str(i))
-                Tb = eval('dlg.textBrowser_' + str(i))
+            for i in range(21):
+                Cb = getattr(dlg, f'comboBox_{i}', None)
+                Tb = getattr(dlg, f'textBrowser_{i}', None)
 
-                if len(Tb.toPlainText()) <1:
+                if Tb and len(Tb.toPlainText()) < 1:
                     break
-                else: 
-
+                elif Tb and Cb:
                     cbox_table_indexer = Tb.toPlainText()
                     surf_row_id = surf_row_dict[cbox_table_indexer]
                     
@@ -169,10 +149,21 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
                         cbox_table = db_dict[cbox_table_indexer]
 
                     if cbox_table_indexer == 'Spartacus Surface':
-                            cbox_index = (cbox_table['descOrigin'].tolist()).index(cbox_table.loc[surf_row_id, 'descOrigin'])
+                        cbox_index = cbox_table['descOrigin'].tolist().index(cbox_table.loc[surf_row_id, 'descOrigin'])
+                    
+                    elif cbox_table_indexer.startswith('OHM'):
+                        if surface in ['Grass', 'Evergreen Tree', 'Deciduous Tree']:
+                            cbox_index = cbox_table[(cbox_table['Surface'] == surface) | (cbox_table['Surface'] == 'All vegetation')]['descOrigin'].tolist().index(cbox_table.loc[surf_row_id, 'descOrigin'])
+                        elif surface in ['Buildings', 'Paved', 'Bare Soil']:
+                            cbox_index = cbox_table[(cbox_table['Surface'] == surface) | (cbox_table['Surface'] == 'All nonveg')]['descOrigin'].tolist().index(cbox_table.loc[surf_row_id, 'descOrigin'])
                     else:
-                        cbox_index = (cbox_table['descOrigin'][cbox_table['Surface'] == surface].tolist()).index(cbox_table.loc[surf_row_id, 'descOrigin'])
+                        try:
+                            cbox_index = cbox_table['descOrigin'][cbox_table['Surface'] == surface].tolist().index(cbox_table.loc[surf_row_id, 'descOrigin'])
+                        except:
+                            # This is a exception for bad ANOHM-codes
+                            cbox_index = 0                    
                     Cb.setCurrentIndex(cbox_index)
+
 
     def print_table(idx):
 
@@ -209,11 +200,10 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
                 # table_sel = table_surf.drop(columns =['Surface']).reset_index()
                 if table_var.startswith('OHM'):
                     if surface == 'Grass' or surface == 'Evergreen Tree' or surface == 'Deciduous Tree':
-                        table_surf2 = table[table['Surface'] == 'All vegetation']
-                        table_surf = pd.concat([table_surf, table_surf2])
-                    if surface == 'Buildings' or surface == 'Paved' or surface == 'Bare Soil':
-                        table_surf2 = table[table['Surface'] == 'All Nonveg']
-                        table_surf = pd.concat([table_surf, table_surf2])
+                        table_surf = table[(table['Surface'] == surface) | (table['Surface'] == 'All vegetation')]
+
+                    elif surface == 'Buildings' or surface == 'Paved' or surface == 'Bare Soil':
+                        table_surf = table[(table['Surface'] == surface) | (table['Surface'] == 'All nonveg')]
 
                 try:
                     # table = table[table['Surface'] == surface].drop(columns = ['General Type', 'Surface', 'descOrigin']).reset_index()
@@ -274,9 +264,13 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
             'Origin' : str(dlg.textEditOrig.value()),
             'Description' : str(dlg.textEditDesc.value()),
         }
-        for i in range(0,21):
-            Nc = eval('dlg.comboBox_' + str(i))
-            Oc = eval('dlg.textBrowser_' + str(i))
+        
+        for i in range(21):
+            NC = getattr(dlg, f'comboBox_{i}', None)
+            Oc = getattr(dlg, f'textBrowser_{i}', None)
+        # for i in range(0,21):
+        #     Nc = eval('dlg.comboBox_' + str(i))
+        #     Oc = eval('dlg.textBrowser_' + str(i))
             
             if len(Oc.toPlainText()) <1:
                 break
@@ -316,15 +310,9 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
         db_dict[surf_df_dict[surface]] = pd.concat([db_dict[surf_df_dict[surface]], new_edit])
     
         save_to_db(db_path, db_dict)
-        # dlg.comboBoxSurface.setCurrentIndex(-1)
-        # dlg.comboBoxProfileType.setCurrentIndex(-1)
-        # dlg.comboBoxBase.setCurrentIndex(-1)
-        # dlg.textEditDesc.clear()
-        # dlg.textEditOrig.clear()
-        
+   
         QMessageBox.information(None, 'Sucessful','Typology entry added to local database')
-        fill_cbox()
-        # self.dlg.tabWidget.setCurrentIndex(2)
+        fill_cbox() # reset tab
 
     def tab_update():
         if self.dlg.tabWidget.currentIndex() == 2:
