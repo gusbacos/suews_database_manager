@@ -19,14 +19,15 @@ def setup_reclassifier(self, dlg, db_dict):
     def fill_cbox():
         # dlg.comboBoxType.clear()
         dlg.comboBoxNew1.clear()        
-        #typology_list = list(db_dict['NonVeg'].loc[db_dict['NonVeg']['Surface'] == 'Buildings', 'descOrigin'])
+
         typology_list = list(db_dict['Types']['descOrigin'])
-        for i in range(1,23):
-            Nc = eval('dlg.comboBoxNew' + str(i))
+        for i in range(1, 23):
+            Nc = getattr(dlg, f'comboBoxNew{i}')
             Nc.addItems(typology_list)
             Nc.setCurrentIndex(-1)
             Nc.setDisabled(True)
-            vars()['dlg.comboBoxNew' + str(i)] = Nc
+            vars()[f'dlg.comboBoxNew{i}'] = Nc
+
         
         # dlg.comboBoxType.clear()
         # dlg.comboBoxType.addItems(typology_list)
@@ -49,31 +50,36 @@ def setup_reclassifier(self, dlg, db_dict):
             # Ensure always String 
             unique_values = ([str(x) for x in unique_values])
 
-            for i in range(1,23):
+            for i in range(1, 23):
                 # Oc == Old Class
-                Oc = eval('dlg.comboBoxClass' + str(i))
+                Oc = getattr(dlg, f'comboBoxClass{i}')
                 Oc.clear()
                 Oc.setDisabled(True)
-                vars()['dlg.comboBoxClass' + str(i)] = Oc
+                vars()[f'dlg.comboBoxClass{i}'] = Oc
+                
                 # Nc == New Class
-                Nc = eval('dlg.comboBoxNew' + str(i))
+                Nc = getattr(dlg, f'comboBoxNew{i}')
                 Nc.setCurrentIndex(-1)
                 Nc.setDisabled(True)
-                vars()['dlg.comboBoxNew' + str(i)] = Nc
-            
-            # Add Items to left side Comboboxes and enable right side comboboxes 
-            for i in range(len_uv):
-                idx = i+1
-                if idx > 22:
-                    break 
-                Oc = eval('dlg.comboBoxClass' + str(idx))
-                Oc.addItems(unique_values)
-                Oc.setCurrentIndex(i)
-                vars()['dlg.comboBoxClass' + str(idx)] = Oc
+                vars()[f'dlg.comboBoxNew{i}'] = Nc
 
-                Nc = eval('dlg.comboBoxNew' + str(idx))
-                Nc.setEnabled(True)
-                vars()['dlg.comboBoxNew' + str(idx)] = Nc
+
+        for i in range(len_uv):
+            idx = i + 1
+            if idx > 22:
+                break
+            
+            # Oc == Old Class
+            Oc = getattr(dlg, f'comboBoxClass{idx}')
+            Oc.addItems(unique_values)
+            Oc.setCurrentIndex(i)
+            vars()[f'dlg.comboBoxClass{idx}'] = Oc
+
+            # Nc == New Class
+            Nc = getattr(dlg, f'comboBoxNew{idx}')
+            Nc.setEnabled(True)
+            vars()[f'dlg.comboBoxNew{idx}'] = Nc
+
 
     def layer_changed():
 
@@ -156,20 +162,21 @@ def setup_reclassifier(self, dlg, db_dict):
         dict_reclassID = {}     # dict for reclassifying typologyID as integer
 
         idx = 1
-        for i in range(len(unique_values)): #FIX CORRECT
-        
+        for i in range(len(unique_values)):  
             if idx > 13:
-                break 
+                break
+            
             # Left side
-            Oc = eval('dlg.comboBoxClass' + str(idx))
+            Oc = getattr(dlg, f'comboBoxClass{idx}')
             oldField = Oc.currentText()
             
-            # Right Side
-            Nc = eval('dlg.comboBoxNew' + str(idx))
-            newField = Nc.currentText()                
-            dict_reclass[str(oldField)] = str(newField) 
-            #dict_reclassID[str(oldField)] = db_dict['NonVeg'].loc[db_dict['NonVeg']['descOrigin'] == str(newField)].index.item()
+            # Right side
+            Nc = getattr(dlg, f'comboBoxNew{idx}')
+            newField = Nc.currentText()
+            
+            dict_reclass[str(oldField)] = str(newField)
             dict_reclassID[str(oldField)] = db_dict['Types'].loc[db_dict['Types']['descOrigin'] == str(newField)].index.item()
+            
             idx += 1
 
         newFieldName = 'TypolName' # New field for typology name

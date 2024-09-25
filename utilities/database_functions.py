@@ -9,14 +9,11 @@ def read_DB(db_path):
     function for reading database and parse it to dictionary of dataframes
     descOrigin is used for indexing and presenting the database entries in a understandable way for the user
     '''
-
     db_sh = pd.ExcelFile(db_path)
     sheets = db_sh.sheet_names
     db = pd.read_excel(db_path, sheet_name= sheets, index_col= 0)
     # add 
     for col in sheets:
-        # Fill empty cells with NaN
-        db[col] = db[col].fillna(db[col])
         if col == 'Types':
             db[col]['descOrigin'] = db[col]['Type'].astype(str) + ', ' + db[col]['Origin'].astype(str)
         elif col == 'References': 
@@ -28,106 +25,130 @@ def read_DB(db_path):
         elif col == 'Spartacus Material':
             db[col]['descOrigin'] = db[col]['Description'].astype(str) + '; ' + db[col]['Color'].astype(str) + '; ' + db[col]['Origin'].astype(str)    
         # Calculate U-values for roof and wall new columns u_value_wall and u_value_roof
+        elif col == 'Profiles':
+            # Normalise traffic and energy use profiles to ensure that mean == 1
+            normalisation_rows = db[col][(db[col]['Profile Type'] == 'Traffic') | (db[col]['Profile Type'] == 'Energy use')]
+            cols = list(range(24))
+            normalisation_rows_index = list(normalisation_rows.index)
+
+            # # # Calculate the sum of the values for each row
+            sums = db[col].loc[normalisation_rows_index, cols].sum(axis=1)
+
+            # Avoid division by zero by replacing zero sums with NaN
+            sums.replace(0, np.nan, inplace=True)
+
+            # # Calculate the scaling factor to make the sum equal to the number of columns (24)
+            scaling_factors = 24 / sums
+
+            # Scale the values
+            db[col].loc[normalisation_rows_index, cols] = db[col].loc[normalisation_rows_index, cols].multiply(scaling_factors, axis=0)
+
+            db[col]['descOrigin'] = db[col]['Description'].astype(str) + ', ' + db[col]['Origin'].astype(str)
+
         elif col == 'Spartacus Surface':
             db[col]['descOrigin'] = db[col]['Description'].astype(str) + ', ' + db[col]['Origin'].astype(str)
-            for row in db['Spartacus Surface'].iterrows():
-                id = row[0]
-                SS_surf_sel = db['Spartacus Surface'].loc[id]
-                if SS_surf_sel['Surface'] == 'Buildings':
-                    resistance_bulk_w = 0
-                    resistance_bulk_r = 0
+        # Filter rows where Surface is 'Buildings'
+            buildings = db['Spartacus Surface'][db['Spartacus Surface']['Surface'] == 'Buildings']
 
-                    for i in range(1,4):
-                        surf_w = SS_surf_sel['w'+str(i)+'Material'].item()
-                        thickness_w = SS_surf_sel['w'+str(i)+'Thickness'].item()
-                        
-                        surf_r = SS_surf_sel['r'+str(i)+'Material'].item()
-                        thickness_r = SS_surf_sel['r'+str(i)+'Thickness'].item()
+            # Calculate resistances and U-values
+            for prefix in ['w', 'r']:
+                materials = buildings[[f'{prefix}{i}Material' for i in range(1, 4)]].values
+                thicknesses = buildings[[f'{prefix}{i}Thickness' for i in range(1, 4)]].values
 
-                        try:
-                            Tc_w = db['Spartacus Material'].loc[surf_w, 'Thermal Conductivity']
-                            resistance_w = thickness_w / Tc_w
-                            resistance_bulk_w = resistance_bulk_w + resistance_w
-                        except:
-                            pass
+                thermal_conductivities = np.vectorize(lambda x: db['Spartacus Material'].loc[x, 'Thermal Conductivity'])(materials)
+                resistances = thicknesses / thermal_conductivities
+                resistance_bulk = resistances.sum(axis=1)
 
-                        try:
-                            Tc_r = db['Spartacus Material'].loc[surf_r, 'Thermal Conductivity']
-                            resistance_r = thickness_r / Tc_r
-                            resistance_bulk_r = resistance_bulk_r + resistance_r
+                u_values = 1 / resistance_bulk
+                db['Spartacus Surface'].loc[buildings.index, f'u_value_{prefix}all'] = u_values
 
-                        except:
-                            print(id, i)
-                    
-                    u_value_w = 1/ resistance_bulk_w
-                    u_value_r = 1/ resistance_bulk_r
-
-                    
-                    db['Spartacus Surface'].loc[id,'u_value_wall'] = u_value_w
-                    db['Spartacus Surface'].loc[id,'u_value_roof'] = u_value_r
-
-                    db['Spartacus Surface'].loc[id,'albedo_roof'] = db['Spartacus Material'].loc[SS_surf_sel['r1Material'], 'Albedo']
-                    db['Spartacus Surface'].loc[id,'albedo_wall'] = db['Spartacus Material'].loc[SS_surf_sel['w1Material'], 'Albedo']
-
+            # Calculate albedo and emissivity
+            for prop in ['Albedo', 'Emissivity']:
+                for prefix in ['w', 'r']:
+                    material_col = f'{prefix}1Material'
+                    db['Spartacus Surface'].loc[buildings.index, f'{prop.lower()}_{prefix}all'] = db['Spartacus Material'].loc[buildings[material_col], prop].values
         else:
+            print(col)
             db[col]['descOrigin'] = db[col]['Description'].astype(str) + ', ' + db[col]['Origin'].astype(str)
 
     db_sh.close() # trying this to close excelfile
-    
+
     return db
 
 def save_to_db(db_path, db_dict):
-    for col in list(db_dict.keys()):
+    # Drop columns in a vectorized manner
+    for col in db_dict.keys():
         if col == 'References':
-            db_dict[col] = db_dict[col].drop(columns = 'authorYear')
-        elif col == 'Country' or col == 'Region':
-            pass
-        else:
-            try:
-                db_dict[col] = db_dict[col].drop(columns = 'descOrigin')
-            except:
-                print('ERROR IN SAVE TO DB IN: ' + col)
+            db_dict[col] = db_dict[col].drop(columns='authorYear', errors='ignore')
+        elif col not in ['Country', 'Region']:
+            db_dict[col] = db_dict[col].drop(columns='descOrigin', errors='ignore')
 
-    with pd.ExcelWriter(db_path) as writer: 
-        db_dict['Region'].to_excel(writer, sheet_name='Region')
-        db_dict['Country'].to_excel(writer, sheet_name='Country')
-        db_dict['Types'].to_excel(writer, sheet_name='Types')
-        db_dict['Veg'].to_excel(writer, sheet_name='Veg')
-        db_dict['NonVeg'].to_excel(writer, sheet_name='NonVeg')
-        db_dict['Water'].to_excel(writer, sheet_name='Water')
-        db_dict['Emissivity'].to_excel(writer, sheet_name='Emissivity')
-        db_dict['Vegetation Growth'].to_excel(writer, sheet_name='Vegetation Growth')
-        db_dict['Water State'].to_excel(writer, sheet_name='Water State')
-        db_dict['OHM'].to_excel(writer, sheet_name='OHM')
-        db_dict['Albedo'].to_excel(writer, sheet_name='Albedo')
-        db_dict['ANOHM'].to_excel(writer, sheet_name='ANOHM')
-        db_dict['Biogen CO2'].to_excel(writer, sheet_name='Biogen CO2')
-        db_dict['Leaf Area Index'].to_excel(writer, sheet_name='Leaf Area Index')
-        db_dict['Water Storage'].to_excel(writer, sheet_name='Water Storage')
-        db_dict['Conductance'].to_excel(writer, sheet_name='Conductance')
-        db_dict['Leaf Growth Power'].to_excel(writer, sheet_name='Leaf Growth Power')
-        db_dict['Drainage'].to_excel(writer, sheet_name='Drainage')
-        db_dict['Max Vegetation Conductance'].to_excel(writer, sheet_name='Max Vegetation Conductance')
-        db_dict['Porosity'].to_excel(writer, sheet_name='Porosity')
-        db_dict['ESTM'].to_excel(writer, sheet_name='ESTM')
-        db_dict['Profiles'].to_excel(writer, sheet_name='Profiles')
-        db_dict['Irrigation'].to_excel(writer, sheet_name='Irrigation')
-        db_dict['Soil'].to_excel(writer, sheet_name='Soil')
-        db_dict['Snow'].to_excel(writer, sheet_name='Snow')
-        db_dict['AnthropogenicEmission'].to_excel(writer, sheet_name='AnthropogenicEmission')
-        db_dict['Spartacus Surface'].to_excel(writer, sheet_name = 'Spartacus Surface')
-        db_dict['Spartacus Material'].to_excel(writer, sheet_name = 'Spartacus Material')
-        db_dict['References'].to_excel(writer, sheet_name='References')
+    # Save to Excel
+    with pd.ExcelWriter(db_path) as writer:
+        for sheet_name, df in db_dict.items():
+            df.to_excel(writer, sheet_name=sheet_name)
 
-    for col in list(db_dict.keys()):
-        if col == 'Types':
-            db_dict[col]['descOrigin'] = db_dict[col]['Type'].astype(str) + ', ' + db_dict[col]['Origin'].astype(str)
-        elif col == 'References': 
-            db_dict[col]['authorYear'] = db_dict[col]['Author'].astype(str) + ', ' + db_dict[col]['Year'].astype(str)
-        elif col == 'Country' or col == 'Region':
-            pass
-        else:
+    # Add 'descOrigin' and 'authorYear' columns back in a vectorized manner
+    if 'Types' in db_dict:
+        db_dict['Types']['descOrigin'] = db_dict['Types']['Type'].astype(str) + ', ' + db_dict['Types']['Origin'].astype(str)
+    if 'References' in db_dict:
+        db_dict['References']['authorYear'] = db_dict['References']['Author'].astype(str) + ', ' + db_dict['References']['Year'].astype(str)
+    for col in db_dict.keys():
+        if col not in ['Types', 'References', 'Country', 'Region']:
             db_dict[col]['descOrigin'] = db_dict[col]['Description'].astype(str) + ', ' + db_dict[col]['Origin'].astype(str)
+
+# def save_to_db(db_path, db_dict):
+#     for col in list(db_dict.keys()):
+#         if col == 'References':
+#             db_dict[col] = db_dict[col].drop(columns = 'authorYear')
+#         elif col == 'Country' or col == 'Region':
+#             pass
+#         else:
+#             try:
+#                 db_dict[col] = db_dict[col].drop(columns = 'descOrigin')
+#             except:
+#                 print('ERROR IN SAVE TO DB IN: ' + col)
+
+#     with pd.ExcelWriter(db_path) as writer: 
+#         db_dict['Region'].to_excel(writer, sheet_name='Region')
+#         db_dict['Country'].to_excel(writer, sheet_name='Country')
+#         db_dict['Types'].to_excel(writer, sheet_name='Types')
+#         db_dict['Veg'].to_excel(writer, sheet_name='Veg')
+#         db_dict['NonVeg'].to_excel(writer, sheet_name='NonVeg')
+#         db_dict['Water'].to_excel(writer, sheet_name='Water')
+#         db_dict['Emissivity'].to_excel(writer, sheet_name='Emissivity')
+#         db_dict['Vegetation Growth'].to_excel(writer, sheet_name='Vegetation Growth')
+#         db_dict['Water State'].to_excel(writer, sheet_name='Water State')
+#         db_dict['OHM'].to_excel(writer, sheet_name='OHM')
+#         db_dict['Albedo'].to_excel(writer, sheet_name='Albedo')
+#         db_dict['ANOHM'].to_excel(writer, sheet_name='ANOHM')
+#         db_dict['Biogen CO2'].to_excel(writer, sheet_name='Biogen CO2')
+#         db_dict['Leaf Area Index'].to_excel(writer, sheet_name='Leaf Area Index')
+#         db_dict['Water Storage'].to_excel(writer, sheet_name='Water Storage')
+#         db_dict['Conductance'].to_excel(writer, sheet_name='Conductance')
+#         db_dict['Leaf Growth Power'].to_excel(writer, sheet_name='Leaf Growth Power')
+#         db_dict['Drainage'].to_excel(writer, sheet_name='Drainage')
+#         db_dict['Max Vegetation Conductance'].to_excel(writer, sheet_name='Max Vegetation Conductance')
+#         db_dict['Porosity'].to_excel(writer, sheet_name='Porosity')
+#         db_dict['ESTM'].to_excel(writer, sheet_name='ESTM')
+#         db_dict['Profiles'].to_excel(writer, sheet_name='Profiles')
+#         db_dict['Irrigation'].to_excel(writer, sheet_name='Irrigation')
+#         db_dict['Soil'].to_excel(writer, sheet_name='Soil')
+#         db_dict['Snow'].to_excel(writer, sheet_name='Snow')
+#         db_dict['AnthropogenicEmission'].to_excel(writer, sheet_name='AnthropogenicEmission')
+#         db_dict['Spartacus Surface'].to_excel(writer, sheet_name = 'Spartacus Surface')
+#         db_dict['Spartacus Material'].to_excel(writer, sheet_name = 'Spartacus Material')
+#         db_dict['References'].to_excel(writer, sheet_name='References')
+
+#     for col in list(db_dict.keys()):
+#         if col == 'Types':
+#             db_dict[col]['descOrigin'] = db_dict[col]['Type'].astype(str) + ', ' + db_dict[col]['Origin'].astype(str)
+#         elif col == 'References': 
+#             db_dict[col]['authorYear'] = db_dict[col]['Author'].astype(str) + ', ' + db_dict[col]['Year'].astype(str)
+#         elif col == 'Country' or col == 'Region':
+#             pass
+#         else:
+#             db_dict[col]['descOrigin'] = db_dict[col]['Description'].astype(str) + ', ' + db_dict[col]['Origin'].astype(str)
 
 
 def update_db(db_dict, db_path, updated_db_path, backup_path):

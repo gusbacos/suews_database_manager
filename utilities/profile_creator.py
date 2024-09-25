@@ -15,8 +15,8 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
 
     def fill_cbox():
         dlg.comboBoxRef.clear()
-        # dlg.comboBoxProfType.clear()
-        # dlg.comboBoxDay.clear()
+        dlg.textEditDesc.clear()
+        dlg.textEditOrig.clear()
         dlg.comboBoxBaseProfile.clear()
         
         dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear'])) 
@@ -54,13 +54,12 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         prof_sel_dict = prof_sel.squeeze().to_dict()
 
         plotValues = []
-        for i in range(0,24):
-            Tb = eval('dlg.textBrowser_' + str(i))
-            Le = eval('dlg.lineEdit_' + str(i))
+        for i in range(24):
+            Tb = getattr(dlg, f'textBrowser_{i}')
+            Le = getattr(dlg, f'lineEdit_{i}')
             Le.clear()
             Le.setText(str(prof_sel_dict[str(Tb.toPlainText())]))
-            # str(prof_sel_dict[str(Tb.toPlainText())])
-            # 
+            
             try:
                 plotValues.append(float(prof_sel_dict[str(Tb.toPlainText())]))
             except:
@@ -107,8 +106,8 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         a =  dlg.comboBoxProfType.currentText() # Not sure why this has to be here, but if i remove it, nothing works...
 
         plotValues = []
-        for i in range(0, 24): 
-            Le = eval('dlg.lineEdit_' + str(i))
+        for i in range(24):
+            Le = getattr(dlg, f'lineEdit_{i}')
             val = Le.text()
             plotValues.append(float(val))
 
@@ -152,7 +151,9 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
                 '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
                 'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
                 'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
-                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>'
+                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
+                'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' +
+                
             )
         except:
             pass
@@ -171,14 +172,14 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         for i in range(0, 24): 
             Tb = eval('dlg.textBrowser_' + str(i))
             Le = eval('dlg.lineEdit_' + str(i))
-            col = Tb.toPlainText()
+            col = int(Tb.toPlainText())
             val = Le.text()
             dict_reclass[col] = val
 
         dict_reclass['Ref'] = db_dict[  'References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
         new_edit = pd.DataFrame([dict_reclass]).set_index('ID')
         db_dict['Profiles'] = pd.concat([db_dict['Profiles'], new_edit])
-    
+
         # Write to db
         save_to_db(db_path, db_dict)
 

@@ -14,6 +14,7 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
         dlg.comboBoxRef.clear()
         dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear'])) 
         dlg.comboBoxRef.setCurrentIndex(-1)
+        dlg.comboBoxBase.clear()
 
         dlg.comboBoxTableSelect.clear()
         dlg.comboBoxTableSelect.addItems(sorted(param_info_dict.keys()))
@@ -24,10 +25,10 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
 
 
         for i in range(0,15):
-            Oc = eval('dlg.textBrowser_' + str(i))
+            Oc = getattr(dlg, f'textBrowser_{i}')
             Oc.clear()
             Oc.setDisabled(True)
-            Nc = eval('dlg.textEdit_Edit_' + str(i))
+            Nc = getattr(dlg, f'textEdit_Edit_{i}')
             Nc.clear()
             Nc.setDisabled(True)
 
@@ -37,15 +38,16 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
             dlg.comboBoxSeason.setDisabled(True)
             dlg.comboBoxSeason.setCurrentIndex(-1)
             dlg.textBrowserSeason.setDisabled(True)
-            
+            dlg.comboBoxBase.clear()
+        
             table_name = dlg.comboBoxTableSelect.currentText()
             dlg.textBrowserDf.clear()
-
+            
             for i in range(0,15):
-                Oc = eval('dlg.textBrowser_' + str(i))
+                Oc = getattr(dlg, f'textBrowser_{i}')
                 Oc.clear()
                 Oc.setDisabled(True)
-                Nc = eval('dlg.textEdit_Edit_' + str(i))
+                Nc = getattr(dlg, f'textEdit_Edit_{i}')
                 Nc.clear()
                 Nc.setDisabled(True)
 
@@ -60,21 +62,65 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
                 params = list(param_info_dict[table_name]['param'].keys())
             
                 for idx in range(len(params)):
-                    Oc = eval('dlg.textBrowser_' + str(idx))
+                    Oc = getattr(dlg, f'textBrowser_' + str(idx))
                     Oc.setEnabled(True)
                     Oc.setText(str(params[idx]))
                     Oc.setToolTip(param_info_dict[table_name]['param'][params[idx]]['tooltip'])
-                    Nc = eval('dlg.textEdit_Edit_' + str(idx))
+                    Nc = getattr(dlg, f'textEdit_Edit_' + str(idx))
                     Nc.setEnabled(True)
 
             if table_name == 'OHM':
                 dlg.comboBoxSeason.setEnabled(True)
                 dlg.comboBoxSeason.setCurrentIndex(0)
                 dlg.textBrowserSeason.setEnabled(True)
+
+            surface_sel = dlg.comboBoxSurface.currentText()
+            current_parameters = db_dict[table_name][db_dict[table_name]['Surface'] == surface_sel]
+            dlg.comboBoxBase.addItems(current_parameters['descOrigin'].tolist())
+            dlg.comboBoxBase.setEnabled(True)
+            dlg.comboBoxBase.setCurrentIndex(-1)
+            
         except:
             pass
 
-    
+    def surface_changed():
+        try:
+            dlg.comboBoxBase.clear()
+            surface_sel = dlg.comboBoxSurface.currentText()
+            table_name = dlg.comboBoxTableSelect.currentText()
+       
+            current_parameters = db_dict[table_name][db_dict[table_name]['Surface'] == surface_sel]
+            dlg.comboBoxBase.addItems(current_parameters['descOrigin'].tolist())
+            dlg.comboBoxBase.setEnabled(True)
+            dlg.comboBoxBase.setCurrentIndex(-1)
+
+            params = list(param_info_dict[table_name]['param'].keys())
+                   
+            for idx in range(len(params)):
+                Nc = getattr(dlg, f'textEdit_Edit_' + str(idx))
+                Nc.clear()
+     
+        except:
+            pass
+
+    def base_parameter_changed():
+
+        base_str = dlg.comboBoxBase.currentText()
+        if base_str != '': 
+            table_name = dlg.comboBoxTableSelect.currentText()
+            
+            base_parameter = db_dict[table_name].loc[db_dict[table_name]['descOrigin'] == base_str]
+                        
+            params = list(param_info_dict[table_name]['param'].keys())
+            try:
+                for idx in range(len(params)):
+                    Oc = getattr(dlg, f'textBrowser_' + str(idx))
+                    Nc = getattr(dlg, f'textEdit_Edit_' + str(idx))
+                    param_sel = base_parameter[Oc.toPlainText()]
+                    Nc.setValue(str(round(param_sel.item(),3)))
+            except:
+                pass
+
     def ref_changed():
         dlg.textBrowserRef.clear()
         try:
@@ -123,12 +169,12 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
     
         for idx in range(len_list):
             # Left side
-            Oc = eval('dlg.textBrowser_' + str(idx))
+            Oc = getattr(dlg, f'textBrowser_' + str(idx))
             if len(Oc.toPlainText()) <1:
                 break
             oldField = Oc.toPlainText()
             # Right Side
-            Nc = eval('dlg.textEdit_Edit_' + str(idx))
+            Nc = getattr(dlg, f'textEdit_Edit_' + str(idx))
             newField = float(Nc.value())
             dict_reclass[oldField] =  newField
 
@@ -179,11 +225,11 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
 
     #     for idx in range(len_list):
     #         # Left side
-    #         Oc = eval('dlg.textBrowser_' + str(idx))
+    #         Oc = getattr(dlg, f'textBrowser_' + str(idx))
     #         oldField = Oc.toPlainText()
-    #         vars()['dlg.textBrowser_' + str(idx)] = Oc
+    #         vars()[dlg, f'textBrowser_' + str(idx)] = Oc
     #         # Right Side
-    #         Nc = eval('dlg.textEdit_Edit_' + str(idx))
+    #         Nc = getattr(dlg, f'textEdit_Edit_' + str(idx))
 
     #         if(len(Nc.value())) <1:
     #             # Something strange with OHM here!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -196,7 +242,7 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
     #                 break
     #         try:
     #             newField = float(Nc.value())
-    #             # vars()['dlg.textEdit_Edit_' + str(idx)] = Nc
+    #             # vars()[dlg, f'textEdit_Edit_' + str(idx)] = Nc
     #             # dict_reclass[oldField] =  [newField]
     #             # col_list.append(Oc.toPlainText())
 
@@ -272,4 +318,7 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
     dlg.comboBoxTableSelect.currentIndexChanged.connect(table_changed) 
     dlg.pushButtonGen.clicked.connect(add_table)
     dlg.comboBoxRef.currentIndexChanged.connect(ref_changed)
+    dlg.comboBoxBase.currentIndexChanged.connect(base_parameter_changed)
+    dlg.comboBoxSurface.currentIndexChanged.connect(surface_changed)
+
     self.dlg.tabWidget.currentChanged.connect(tab_update)

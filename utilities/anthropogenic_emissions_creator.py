@@ -18,7 +18,7 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
         dlg.comboBoxRef.setCurrentIndex(-1)
 
         for i in range(1,18):
-            Le = eval('dlg.lineEdit_' + str(i))
+            Le = getattr(dlg, f'lineEdit_{i}')
             Le.clear()
 
         dlg.textEditDesc.clear()
@@ -31,8 +31,8 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
 
         AnEm_sel_dict = AnEm_sel.squeeze().to_dict()        
         for i in range(1,18):
-            Tb = eval('dlg.textBrowser_' + str(i))
-            Le = eval('dlg.lineEdit_' + str(i))
+            Tb = getattr(dlg, f'textBrowser_{i}')
+            Le = getattr(dlg, f'lineEdit_{i}')
             Le.clear()
             Le.setText(str(AnEm_sel_dict[Tb.toPlainText()]))
     
@@ -41,14 +41,14 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
 
         if model == str(2):
             for i in range(7,18):   
-                Tb = eval('dlg.textBrowser_' + str(i))
-                Le = eval('dlg.lineEdit_' + str(i))
+                Tb = getattr(dlg, f'textBrowser_{i}')
+                Le = getattr(dlg, f'lineEdit_{i}')
                 Tb.setDisabled(True)
                 Le.setDisabled(True)
         elif model == str(4):
             for i in range(7,18):   
-                Tb = eval('dlg.textBrowser_' + str(i))
-                Le = eval('dlg.lineEdit_' + str(i))
+                Tb = getattr(dlg, f'textBrowser_{i}')
+                Le = getattr(dlg, f'lineEdit_{i}')
                 Tb.setEnabled(True)
                 Le.setEnabled(True)
         else:
@@ -77,8 +77,8 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
         }
         
         for i in range(1,18):
-            Tb = eval('dlg.textBrowser_' + str(i))
-            Le = eval('dlg.lineEdit_' + str(i))
+            Tb = getattr(dlg, f'textBrowser_{i}')
+            Le = getattr(dlg, f'lineEdit_{i}')
             col = Tb.toPlainText()
             val = Le.text()
             dict_reclass[col] = val
