@@ -15,7 +15,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
 
     def fill_cbox():
         dlg.comboBoxRef.clear()
-        dlg.textEditDesc.clear()
+        dlg.textEditName.clear()
         dlg.textEditOrig.clear()
         dlg.comboBoxBaseProfile.clear()
         
@@ -32,7 +32,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         day = dlg.comboBoxDay.currentText()
 
         prof_types = db_dict['Profiles'][db_dict['Profiles']['Profile Type'] == prof_type]
-        prof_types = prof_types['descOrigin'][db_dict['Profiles']['Day'] == day]
+        prof_types = prof_types['nameOrigin'][db_dict['Profiles']['Day'] == day]
         dlg.comboBoxBaseProfile.addItems(prof_types.tolist())
     
     def day_changed():
@@ -41,7 +41,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         dlg.comboBoxBaseProfile.clear()
 
         prof_types = db_dict['Profiles'][db_dict['Profiles']['Profile Type'] == prof_type]
-        prof_types = prof_types['descOrigin'][db_dict['Profiles']['Day'] == day]
+        prof_types = prof_types['nameOrigin'][db_dict['Profiles']['Day'] == day]
 
         dlg.comboBoxBaseProfile.addItems(prof_types.tolist())
         dlg.comboBoxBaseProfile.setEnabled(True)
@@ -49,7 +49,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
     def base_prof_changed():
         prof_type = dlg.comboBoxProfType.currentText()
         base_prof = dlg.comboBoxBaseProfile.currentText()
-        prof_sel = db_dict['Profiles'][(db_dict['Profiles']['descOrigin'] == base_prof) & (db_dict['Profiles']['Day'] == dlg.comboBoxDay.currentText()) & (db_dict['Profiles']['Profile Type'] == dlg.comboBoxProfType.currentText())]
+        prof_sel = db_dict['Profiles'][(db_dict['Profiles']['nameOrigin'] == base_prof) & (db_dict['Profiles']['Day'] == dlg.comboBoxDay.currentText()) & (db_dict['Profiles']['Profile Type'] == dlg.comboBoxProfType.currentText())]
         prof_sel.columns = prof_sel.columns.map(str)
         prof_sel_dict = prof_sel.squeeze().to_dict()
 
@@ -144,17 +144,18 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         
     def ref_changed():
         dlg.textBrowserRef.clear()
-
         try:
             ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
             dlg.textBrowserRef.setText(
                 '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
                 'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
                 'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
-                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>') 
-                # 'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' )
+                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
+                'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
+            )
         except:
             pass
+
     def add_profile():
 
         dict_reclass = {
@@ -162,7 +163,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
             'General Type' : 'Reg',
             'Profile Type' : dlg.comboBoxProfType.currentText(), 
             'Day' : dlg.comboBoxDay.currentText(),
-            'Description' : dlg.textEditDesc.value(),
+            'Name' : dlg.textEditName.value(),
             'Origin' : dlg.textEditOrig.value(),
             'Ref' : db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
         }

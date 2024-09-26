@@ -27,7 +27,7 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
         dlg.comboBoxBase.setCurrentIndex(-1)
         dlg.comboBoxSurface.setCurrentIndex(-1)
         
-        dlg.textEditDesc.clear()
+        dlg.textEditName.clear()
         dlg.textEditOrig.clear()
         
     def changed_surface():
@@ -60,11 +60,11 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
 
             table = db_dict[surf_df_dict[surface]]
 
-            dlg.comboBoxBase.addItems(table['descOrigin'][table['Surface'] == surface])
+            dlg.comboBoxBase.addItems(table['nameOrigin'][table['Surface'] == surface])
             dlg.comboBoxBase.setCurrentIndex(0)
 
             col_list = list(table)
-            remove_cols = ['ID', 'Surface', 'Period', 'Origin', 'Description', 'Ref', 'typeOrigin', 'descOrigin', 'Color']
+            remove_cols = ['ID', 'Surface', 'Period', 'Origin', 'Name', 'Ref', 'typeOrigin', 'nameOrigin', 'Color']
 
             if surface != 'Deciduous Tree':
                 remove_cols.append('Porosity')  # Exception for just Deciduous tree in Veg
@@ -96,7 +96,7 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
 
                 if col_name == 'Spartacus Surface':
                     table_sel = db_dict[col_name]
-                    table_surf = table_sel.drop(columns=['descOrigin'])
+                    table_surf = table_sel.drop(columns=['nameOrigin'])
                     table_sel = table_sel.reset_index().drop(columns=['ID'])
                 else:
                     if col_name.startswith('OHM'):
@@ -112,10 +112,10 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
                         elif surface in ['Buildings', 'Paved', 'Bare Soil']:
                             table_surf = table[(table['Surface'] == surface) | (table['Surface'] == 'All nonveg')]
 
-                    table_surf = table_surf.drop(columns=['descOrigin'], errors='ignore')
+                    table_surf = table_surf.drop(columns=['nameOrigin'], errors='ignore')
                     table_sel = table_sel.drop(columns=['ID'], errors='ignore')
 
-                Nc_fill_list = [f"{idx}: {desc}, {orig}" for idx, (desc, orig) in enumerate(zip(table_surf['Description'], table_surf['Origin']))]
+                Nc_fill_list = [f"{idx}: {desc}, {orig}" for idx, (desc, orig) in enumerate(zip(table_surf['Name'], table_surf['Origin']))]
                 Nc.addItems(Nc_fill_list)
                 Nc.setEnabled(True)
     
@@ -127,10 +127,10 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
 
             surface_table = db_dict[surf_df_dict[surface]]
             surface_sel = surface_table[surface_table['Surface'] == surface]
-            surf_row = surface_sel[surface_sel['descOrigin'] == base_typology]    
+            surf_row = surface_sel[surface_sel['nameOrigin'] == base_typology]    
             surf_row_dict = surf_row.squeeze().to_dict()
 
-            dlg.textEditDesc.setText(surf_row['Description'].item())
+            dlg.textEditName.setText(surf_row['Name'].item())
             dlg.textEditOrig.setText(surf_row['Origin'].item())
 
             for i in range(21):
@@ -149,16 +149,16 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
                         cbox_table = db_dict[cbox_table_indexer]
 
                     if cbox_table_indexer == 'Spartacus Surface':
-                        cbox_index = cbox_table['descOrigin'].tolist().index(cbox_table.loc[surf_row_id, 'descOrigin'])
+                        cbox_index = cbox_table['nameOrigin'].tolist().index(cbox_table.loc[surf_row_id, 'nameOrigin'])
                     
                     elif cbox_table_indexer.startswith('OHM'):
                         if surface in ['Grass', 'Evergreen Tree', 'Deciduous Tree']:
-                            cbox_index = cbox_table[(cbox_table['Surface'] == surface) | (cbox_table['Surface'] == 'All vegetation')]['descOrigin'].tolist().index(cbox_table.loc[surf_row_id, 'descOrigin'])
+                            cbox_index = cbox_table[(cbox_table['Surface'] == surface) | (cbox_table['Surface'] == 'All vegetation')]['nameOrigin'].tolist().index(cbox_table.loc[surf_row_id, 'nameOrigin'])
                         elif surface in ['Buildings', 'Paved', 'Bare Soil']:
-                            cbox_index = cbox_table[(cbox_table['Surface'] == surface) | (cbox_table['Surface'] == 'All nonveg')]['descOrigin'].tolist().index(cbox_table.loc[surf_row_id, 'descOrigin'])
+                            cbox_index = cbox_table[(cbox_table['Surface'] == surface) | (cbox_table['Surface'] == 'All nonveg')]['nameOrigin'].tolist().index(cbox_table.loc[surf_row_id, 'nameOrigin'])
                     else:
                         try:
-                            cbox_index = cbox_table['descOrigin'][cbox_table['Surface'] == surface].tolist().index(cbox_table.loc[surf_row_id, 'descOrigin'])
+                            cbox_index = cbox_table['nameOrigin'][cbox_table['Surface'] == surface].tolist().index(cbox_table.loc[surf_row_id, 'nameOrigin'])
                         except:
                             # This is a exception for bad ANOHM-codes
                             cbox_index = 0                    
@@ -206,8 +206,8 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
                         table_surf = table[(table['Surface'] == surface) | (table['Surface'] == 'All nonveg')]
 
                 try:
-                    # table = table[table['Surface'] == surface].drop(columns = ['General Type', 'Surface', 'descOrigin']).reset_index()
-                    table = table_surf.drop(columns = ['General Type', 'Surface', 'descOrigin']).reset_index()
+                    # table = table[table['Surface'] == surface].drop(columns = ['General Type', 'Surface', 'nameOrigin']).reset_index()
+                    table = table_surf.drop(columns = ['General Type', 'Surface', 'nameOrigin']).reset_index()
                 except:
                     # table = table[table['Surface'] == surface].drop(columns = ['General Type', 'Surface']).reset_index()
                     table = table_surf.drop(columns = ['General Type', 'Surface']).reset_index()
@@ -229,8 +229,8 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
         if len(dlg.comboBoxSurface.currentText()) <1: 
             QMessageBox.warning(None, 'Surface Missing','Please select a surface')
             pass
-        elif len(dlg.textEditDesc.text()) <1: 
-            QMessageBox.warning(None, 'Description Missing','Please fill in the Description Box')
+        elif len(dlg.textEditName.text()) <1: 
+            QMessageBox.warning(None, 'Name Missing','Please fill in the Name Box')
             pass
         elif len(dlg.textEditOrig.text()) <1: 
             QMessageBox.warning(None, 'Origin Missing','Please fill in the Origin Box')
@@ -246,7 +246,7 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
 
         table = db_dict[surf_df_dict[surface]]
         col_list = list(table)
-        remove_cols = ['ID', 'Description', 'Surface', 'Period', 'Origin', 'Type', 'descOrigin']
+        remove_cols = ['ID', 'Name', 'Surface', 'Period', 'Origin', 'Type', 'nameOrigin']
         
         if surface != 'Water':
             remove_cols.append('Water State')
@@ -262,11 +262,11 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
             'ID' : create_code(surf_df_dict[surface]),
             'Surface' : surface,
             'Origin' : str(dlg.textEditOrig.value()),
-            'Description' : str(dlg.textEditDesc.value()),
+            'Name' : str(dlg.textEditName.value()),
         }
         
         for i in range(21):
-            NC = getattr(dlg, f'comboBox_{i}', None)
+            Nc = getattr(dlg, f'comboBox_{i}', None)
             Oc = getattr(dlg, f'textBrowser_{i}', None)
         # for i in range(0,21):
         #     Nc = eval('dlg.comboBox_' + str(i))
@@ -284,9 +284,9 @@ def setup_landcover_creator(self, dlg, db_dict, db_path):
                     table = db_dict[oldField]
                 sel_att = sel_att.split(': ')[1] # Remove number added for interpretation in GUI
 
-                newField = table.loc[table['descOrigin'] == sel_att].index.item()
+                newField = table.loc[table['nameOrigin'] == sel_att].index.item()
                 dict_reclass[oldField] = newField       
-                table.drop(columns = 'descOrigin')
+                table.drop(columns = 'nameOrigin')
             
         new_edit = pd.DataFrame([dict_reclass]).set_index('ID')
 

@@ -20,7 +20,7 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
         dlg.comboBoxTableSelect.addItems(sorted(param_info_dict.keys()))
         dlg.comboBoxTableSelect.setCurrentIndex(-1)
 
-        dlg.textEditDesc.clear()
+        dlg.textEditName.clear()
         dlg.textEditOrig.clear()
 
 
@@ -76,7 +76,7 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
 
             surface_sel = dlg.comboBoxSurface.currentText()
             current_parameters = db_dict[table_name][db_dict[table_name]['Surface'] == surface_sel]
-            dlg.comboBoxBase.addItems(current_parameters['descOrigin'].tolist())
+            dlg.comboBoxBase.addItems(current_parameters['nameOrigin'].tolist())
             dlg.comboBoxBase.setEnabled(True)
             dlg.comboBoxBase.setCurrentIndex(-1)
             
@@ -90,7 +90,7 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
             table_name = dlg.comboBoxTableSelect.currentText()
        
             current_parameters = db_dict[table_name][db_dict[table_name]['Surface'] == surface_sel]
-            dlg.comboBoxBase.addItems(current_parameters['descOrigin'].tolist())
+            dlg.comboBoxBase.addItems(current_parameters['nameOrigin'].tolist())
             dlg.comboBoxBase.setEnabled(True)
             dlg.comboBoxBase.setCurrentIndex(-1)
 
@@ -109,7 +109,7 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
         if base_str != '': 
             table_name = dlg.comboBoxTableSelect.currentText()
             
-            base_parameter = db_dict[table_name].loc[db_dict[table_name]['descOrigin'] == base_str]
+            base_parameter = db_dict[table_name].loc[db_dict[table_name]['nameOrigin'] == base_str]
                         
             params = list(param_info_dict[table_name]['param'].keys())
             try:
@@ -129,7 +129,8 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
                 '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
                 'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
                 'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
-                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' 
+                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
+                'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
             )
         except:
             pass
@@ -139,7 +140,7 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
         table_name = dlg.comboBoxTableSelect.currentText()
 
         table = db_dict[table_name]
-        columns_to_remove = ['General Type', 'Surface', 'Description','Origin','Ref','References', 'descOrigin']
+        columns_to_remove = ['General Type', 'Surface', 'Name','Origin','Ref','References', 'nameOrigin']
 
         for remove in columns_to_remove:
             try:
@@ -153,7 +154,7 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
                 'ID' : create_code['NonVeg'],
                 'General Type' : 'NonVeg',
                 'Surface' : 'NaN', 
-                'Description' : dlg.textEditDesc.value(),
+                'Name' : dlg.textEditName.value(),
                 'Origin' : dlg.textEditOrig.value()
             }
         else:
@@ -161,7 +162,7 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
                 'ID' : create_code(table_name),
                 'General Type' : surf_df_dict[dlg.comboBoxSurface.currentText()],
                 'Surface' : dlg.comboBoxSurface.currentText(), 
-                'Description' : dlg.textEditDesc.value(),
+                'Name' : dlg.textEditName.value(),
                 'Origin' : dlg.textEditOrig.value() 
             }
             if dlg.comboBoxTableSelect.currentText() == 'OHM':
@@ -205,8 +206,8 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
     #             if var != 'Soil':
     #                 QMessageBox.warning(None, 'Surface Missing','Please select a surface')
     #                 return
-    #         elif len(dlg.textEditDesc.value()) <1: 
-    #             QMessageBox.warning(None, 'Description Missing','Please fill in the Description Box')
+    #         elif len(dlg.textEditName.value()) <1: 
+    #             QMessageBox.warning(None, 'Name Missing','Please fill in the Name Box')
     #             return
     #         elif len(dlg.textEditOrig.value()) <1: 
     #             QMessageBox.warning(None, 'Origin Missing','Please fill in the Origin Box')
@@ -302,7 +303,7 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
     #                     if checker == col:
     #                         QMessageBox.information(None, 'Information',
     #                             'Another entry in the database with same Values and Referece is found in the Database' +
-    #                             '\n\n[ ' +  str(table.loc[table.index[i], 'Description']) + ', ' + str(table.loc[table.index[i], 'Origin']) + 
+    #                             '\n\n[ ' +  str(table.loc[table.index[i], 'Name']) + ', ' + str(table.loc[table.index[i], 'Origin']) + 
     #                             ', ' + str(table.loc[table.index[i], 'References'] + ' ]' +
     #                             '\n\nYou are able to add the entry if you think this is different from what already exist in the database!'))
                 

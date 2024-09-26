@@ -11,16 +11,16 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
 
     def fill_cboxes():
 
-        dlg.textEditDesc.clear()
+        dlg.textEditName.clear()
         dlg.textEditOrig.clear()
 
         surf_table = db_dict['Spartacus Surface']
-        surf_list = list(surf_table['descOrigin'])
+        surf_list = list(surf_table['nameOrigin'])
         dlg.comboBoxBase.clear()
         dlg.comboBoxBase.addItems(surf_list) 
         dlg.comboBoxBase.setCurrentIndex(-1)
     
-        mat_list = list(db_dict['Spartacus Material']['descOrigin'])
+        mat_list = list(db_dict['Spartacus Material']['nameOrigin'])
         mat_list.sort()
         mat_list.insert(0,'None')
 
@@ -44,7 +44,7 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
             if material != 'None':
                 
                 mat_table = db_dict['Spartacus Material']                   # Set correct table from db
-                material_sel = mat_table[mat_table['descOrigin'] == material]   # Slice correct material from table
+                material_sel = mat_table[mat_table['nameOrigin'] == material]   # Slice correct material from table
 
                 Tb.setText(                                             # Write texts of the selected material in the textbrowser
                     'Albedo: ' + str(material_sel['Albedo'].item()) + '\n' + 
@@ -86,28 +86,28 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
         mat_table = db_dict['Spartacus Material']
 
         for cols in db_dict['Spartacus Surface'].columns:
-            if cols != 'descOrigin':
+            if cols != 'nameOrigin':
                 spartacus_dict[cols] = -9999
 
         spartacus_dict['ID'] = create_code('Spartacus Surface')
-        spartacus_dict['Description'] = str(dlg.textEditDesc.value())
+        spartacus_dict['Name'] = str(dlg.textEditName.value())
         spartacus_dict['Origin'] = str(dlg.textEditOrig.value())
 
         # Roof 
         if r1_mat != 'None':
-            spartacus_dict['r1Material'] = mat_table[mat_table['descOrigin'] == r1_mat].index.item()
+            spartacus_dict['r1Material'] = mat_table[mat_table['nameOrigin'] == r1_mat].index.item()
             spartacus_dict['r1Thickness'] = float(dlg.lineEdit_r1.text())
             if r2_mat != 'None':
-                spartacus_dict['r2Material'] = mat_table[mat_table['descOrigin'] == r2_mat].index.item()
+                spartacus_dict['r2Material'] = mat_table[mat_table['nameOrigin'] == r2_mat].index.item()
                 spartacus_dict['r2Thickness'] = float(dlg.lineEdit_r2.text())
                 if r3_mat != 'None':
-                    spartacus_dict['r3Material'] = mat_table[mat_table['descOrigin'] == r3_mat].index.item()
+                    spartacus_dict['r3Material'] = mat_table[mat_table['nameOrigin'] == r3_mat].index.item()
                     spartacus_dict['r3Thickness'] = float(dlg.lineEdit_r3.text())
                     if r4_mat != 'None':
-                        spartacus_dict['r4Material'] = mat_table[mat_table['descOrigin'] == r4_mat].index.item()
+                        spartacus_dict['r4Material'] = mat_table[mat_table['nameOrigin'] == r4_mat].index.item()
                         spartacus_dict['r4Thickness'] = float(dlg.lineEdit_r4.text())
                         if r5_mat != 'None':
-                            spartacus_dict['r5Material'] = mat_table[mat_table['descOrigin'] == r5_mat].index.item()
+                            spartacus_dict['r5Material'] = mat_table[mat_table['nameOrigin'] == r5_mat].index.item()
                             spartacus_dict['r5Thickness'] = float(dlg.lineEdit_r5.text())
                         else:
                             pass
@@ -119,19 +119,19 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
                 pass    
         # Wall 
         if w1_mat != 'None':
-            spartacus_dict['w1Material'] = mat_table[mat_table['descOrigin'] == w1_mat].index.item()
+            spartacus_dict['w1Material'] = mat_table[mat_table['nameOrigin'] == w1_mat].index.item()
             spartacus_dict['w1Thickness'] = float(dlg.lineEdit_w1.text())
             if w2_mat != 'None':
-                spartacus_dict['w2Material'] = mat_table[mat_table['descOrigin'] == w2_mat].index.item()
+                spartacus_dict['w2Material'] = mat_table[mat_table['nameOrigin'] == w2_mat].index.item()
                 spartacus_dict['w2Thickness'] = float(dlg.lineEdit_w2.text())
                 if w3_mat != 'None':
-                    spartacus_dict['w3Material'] = mat_table[mat_table['descOrigin'] == w3_mat].index.item()
+                    spartacus_dict['w3Material'] = mat_table[mat_table['nameOrigin'] == w3_mat].index.item()
                     spartacus_dict['w3Thickness'] = float(dlg.lineEdit_w3.text())
                     if w4_mat != 'None':
-                        spartacus_dict['w4Material'] = mat_table[mat_table['descOrigin'] == w4_mat].index.item()
+                        spartacus_dict['w4Material'] = mat_table[mat_table['nameOrigin'] == w4_mat].index.item()
                         spartacus_dict['w4Thickness'] = float(dlg.lineEdit_w4.text())
                         if w5_mat != 'None':
-                            spartacus_dict['w5Material'] = mat_table[mat_table['descOrigin'] == w5_mat].index.item()
+                            spartacus_dict['w5Material'] = mat_table[mat_table['nameOrigin'] == w5_mat].index.item()
                             spartacus_dict['w5Thickness'] = float(dlg.lineEdit_w5.text())
                         else:
                             pass
@@ -166,9 +166,9 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
             surf_table = db_dict['Spartacus Surface']
             mat_table = db_dict['Spartacus Material']
 
-            spartacus_sel = surf_table[surf_table['descOrigin'] == spartacus_str]
+            spartacus_sel = surf_table[surf_table['nameOrigin'] == spartacus_str]
 
-            mat_list = list(db_dict['Spartacus Material']['descOrigin'])
+            mat_list = list(db_dict['Spartacus Material']['nameOrigin'])
             mat_list.sort()
             mat_list.insert(0,'None')
             
@@ -180,8 +180,8 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
                     mat_idx = spartacus_sel.loc[:,(roofwall + str(layer) + 'Material')].item()
 
                     if mat_idx != -9999:
-                        material = mat_table.loc[mat_idx, 'descOrigin']
-                        mat_table.loc[mat_idx, 'descOrigin']
+                        material = mat_table.loc[mat_idx, 'nameOrigin']
+                        mat_table.loc[mat_idx, 'nameOrigin']
                         cbox_index = mat_list.index(material)
                         cbox.setCurrentIndex(cbox_index)
                         thickness = spartacus_sel.loc[:,(roofwall + str(layer) + 'Thickness')].item()

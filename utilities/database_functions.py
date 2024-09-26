@@ -7,23 +7,23 @@ from datetime import datetime
 def read_DB(db_path):
     '''
     function for reading database and parse it to dictionary of dataframes
-    descOrigin is used for indexing and presenting the database entries in a understandable way for the user
+    nameOrigin is used for indexing and presenting the database entries in a understandable way for the user
     '''
     db_sh = pd.ExcelFile(db_path)
     sheets = db_sh.sheet_names
     db = pd.read_excel(db_path, sheet_name= sheets, index_col= 0)
     # add 
     for col in sheets:
-        if col == 'Types':
-            db[col]['descOrigin'] = db[col]['Type'].astype(str) + ', ' + db[col]['Origin'].astype(str)
+        if col == 'Name':
+            db[col]['nameOrigin'] = db[col]['Name'].astype(str) + ', ' + db[col]['Origin'].astype(str)
         elif col == 'References': 
             db[col]['authorYear'] = db[col]['Author'].astype(str) + ', ' + db[col]['Year'].astype(str)
         elif col == 'Country':
-            db[col]['descOrigin'] = db[col]['Country'].astype(str) + ', ' + db[col]['City'].astype(str)  
+            db[col]['nameOrigin'] = db[col]['Country'].astype(str) + ', ' + db[col]['City'].astype(str)  
         elif col == 'Region':
             pass
         elif col == 'Spartacus Material':
-            db[col]['descOrigin'] = db[col]['Description'].astype(str) + '; ' + db[col]['Color'].astype(str) + '; ' + db[col]['Origin'].astype(str)    
+            db[col]['nameOrigin'] = db[col]['Name'].astype(str) + '; ' + db[col]['Color'].astype(str) + '; ' + db[col]['Origin'].astype(str)    
         # Calculate U-values for roof and wall new columns u_value_wall and u_value_roof
         elif col == 'Profiles':
             # Normalise traffic and energy use profiles to ensure that mean == 1
@@ -43,10 +43,10 @@ def read_DB(db_path):
             # Scale the values
             db[col].loc[normalisation_rows_index, cols] = db[col].loc[normalisation_rows_index, cols].multiply(scaling_factors, axis=0)
 
-            db[col]['descOrigin'] = db[col]['Description'].astype(str) + ', ' + db[col]['Origin'].astype(str)
+            db[col]['nameOrigin'] = db[col]['Name'].astype(str) + ', ' + db[col]['Origin'].astype(str)
 
         elif col == 'Spartacus Surface':
-            db[col]['descOrigin'] = db[col]['Description'].astype(str) + ', ' + db[col]['Origin'].astype(str)
+            db[col]['nameOrigin'] = db[col]['Name'].astype(str) + ', ' + db[col]['Origin'].astype(str)
         # Filter rows where Surface is 'Buildings'
             buildings = db['Spartacus Surface'][db['Spartacus Surface']['Surface'] == 'Buildings']
 
@@ -69,7 +69,7 @@ def read_DB(db_path):
                     db['Spartacus Surface'].loc[buildings.index, f'{prop.lower()}_{prefix}all'] = db['Spartacus Material'].loc[buildings[material_col], prop].values
         else:
             print(col)
-            db[col]['descOrigin'] = db[col]['Description'].astype(str) + ', ' + db[col]['Origin'].astype(str)
+            db[col]['nameOrigin'] = db[col]['Name'].astype(str) + ', ' + db[col]['Origin'].astype(str)
 
     db_sh.close() # trying this to close excelfile
 
@@ -81,21 +81,21 @@ def save_to_db(db_path, db_dict):
         if col == 'References':
             db_dict[col] = db_dict[col].drop(columns='authorYear', errors='ignore')
         elif col not in ['Country', 'Region']:
-            db_dict[col] = db_dict[col].drop(columns='descOrigin', errors='ignore')
+            db_dict[col] = db_dict[col].drop(columns='nameOrigin', errors='ignore')
 
     # Save to Excel
     with pd.ExcelWriter(db_path) as writer:
         for sheet_name, df in db_dict.items():
             df.to_excel(writer, sheet_name=sheet_name)
 
-    # Add 'descOrigin' and 'authorYear' columns back in a vectorized manner
-    if 'Types' in db_dict:
-        db_dict['Types']['descOrigin'] = db_dict['Types']['Type'].astype(str) + ', ' + db_dict['Types']['Origin'].astype(str)
+    # Add 'nameOrigin' and 'authorYear' columns back in a vectorized manner
+    if 'Name' in db_dict:
+        db_dict['Types']['nameOrigin'] = db_dict['Types']['Type'].astype(str) + ', ' + db_dict['Types']['Origin'].astype(str)
     if 'References' in db_dict:
         db_dict['References']['authorYear'] = db_dict['References']['Author'].astype(str) + ', ' + db_dict['References']['Year'].astype(str)
     for col in db_dict.keys():
-        if col not in ['Types', 'References', 'Country', 'Region']:
-            db_dict[col]['descOrigin'] = db_dict[col]['Description'].astype(str) + ', ' + db_dict[col]['Origin'].astype(str)
+        if col not in ['Name', 'References', 'Country', 'Region']:
+            db_dict[col]['nameOrigin'] = db_dict[col]['Name'].astype(str) + ', ' + db_dict[col]['Origin'].astype(str)
 
 # def save_to_db(db_path, db_dict):
 #     for col in list(db_dict.keys()):
@@ -105,14 +105,14 @@ def save_to_db(db_path, db_dict):
 #             pass
 #         else:
 #             try:
-#                 db_dict[col] = db_dict[col].drop(columns = 'descOrigin')
+#                 db_dict[col] = db_dict[col].drop(columns = 'nameOrigin')
 #             except:
 #                 print('ERROR IN SAVE TO DB IN: ' + col)
 
 #     with pd.ExcelWriter(db_path) as writer: 
 #         db_dict['Region'].to_excel(writer, sheet_name='Region')
 #         db_dict['Country'].to_excel(writer, sheet_name='Country')
-#         db_dict['Types'].to_excel(writer, sheet_name='Types')
+#         db_dict['Types'].to_excel(writer, sheet_name='Name')
 #         db_dict['Veg'].to_excel(writer, sheet_name='Veg')
 #         db_dict['NonVeg'].to_excel(writer, sheet_name='NonVeg')
 #         db_dict['Water'].to_excel(writer, sheet_name='Water')
@@ -141,14 +141,14 @@ def save_to_db(db_path, db_dict):
 #         db_dict['References'].to_excel(writer, sheet_name='References')
 
 #     for col in list(db_dict.keys()):
-#         if col == 'Types':
-#             db_dict[col]['descOrigin'] = db_dict[col]['Type'].astype(str) + ', ' + db_dict[col]['Origin'].astype(str)
+#         if col == 'Name':
+#             db_dict[col]['nameOrigin'] = db_dict[col]['Type'].astype(str) + ', ' + db_dict[col]['Origin'].astype(str)
 #         elif col == 'References': 
 #             db_dict[col]['authorYear'] = db_dict[col]['Author'].astype(str) + ', ' + db_dict[col]['Year'].astype(str)
 #         elif col == 'Country' or col == 'Region':
 #             pass
 #         else:
-#             db_dict[col]['descOrigin'] = db_dict[col]['Description'].astype(str) + ', ' + db_dict[col]['Origin'].astype(str)
+#             db_dict[col]['nameOrigin'] = db_dict[col]['Name'].astype(str) + ', ' + db_dict[col]['Origin'].astype(str)
 
 
 def update_db(db_dict, db_path, updated_db_path, backup_path):
@@ -160,6 +160,8 @@ def update_db(db_dict, db_path, updated_db_path, backup_path):
     save_to_db(db_dict, backup_path)            # Save to db
 
     return updated_db_dict
+
+
 
 
 surf_df_dict = {
@@ -175,7 +177,7 @@ surf_df_dict = {
 code_id_dict = {
     'Region': 10,
     'Country': 11,
-    'Types': 12, 
+    'Name': 12, 
 
     'NonVeg': 20,
     'Soil': 22,
@@ -236,6 +238,7 @@ def create_code(table_name):
 
 param_info_dict = {
     'Albedo': {
+        'description': 'Effective bulk surface albedo (middle of the day value) for summertime.',
         'surface': ['Paved','Buildings','Deciduous Tree',  'Evergreen Tree','Grass', 'Bare Soil','Water', 'Snow'],
         'param': {
             'Alb_min': {
@@ -314,6 +317,7 @@ param_info_dict = {
             }
         },
     'Drainage': {
+        'Description': 'Drainage settings for surface',
         'surface': ['Paved','Buildings','Deciduous Tree','Evergreen Tree','Grass','Bare Soil'],
     'param': {
         'DrainageCoef1': {'min': 0,
@@ -334,6 +338,7 @@ param_info_dict = {
         }
     },
     'Emissivity': {
+        'description': 'Effective bulk surface emissivity.',
         'surface':  ['Paved','Buildings','Deciduous Tree','Evergreen Tree','Grass','Bare Soil'],
         'param': {'Emissivity': {'min': 0,
             'max': 1,
@@ -380,6 +385,7 @@ param_info_dict = {
             'GDDFull': {'min': 0, 'max': 1, 'tooltip': 'The growing degree days (GDD) needed for full capacity of the leaf area index (LAI) [°C].'},
             'SDDFull': {'min': 0, 'max': 1, 'tooltip': 'The sensesence degree days (SDD) needed to initiate leaf off. [°C]'}}},
     'Water State': {
+        'Description' : 'Minimum and maximum water storage capacity for upper surfaces (i.e. canopy).',
         'surface': ['Water'],
         'param': {
             'StateLimit': {'min': 0, 'max': 1, 'tooltip':'Upper limit to the surface state. [mm]. Currently only used for the water surface. Set to a large value (e.g. 20000 mm = 20 m) if the water body is substantial (lake, river, etc) or a small value (e.g. 10 mm) if water bodies are very shallow (e.g. fountains). WaterDepth (column 9) must not exceed this value.'},

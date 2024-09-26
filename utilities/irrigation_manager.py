@@ -14,21 +14,21 @@ def setup_irrigation_manager(self, dlg, db_dict, db_path):
     def fill_cboxes():
         dlg.comboBoxBaseIrr.clear()
         dlg.comboBoxRef.clear()
-        dlg.textEditDesc.clear()
+        dlg.textEditName.clear()
         dlg.textEditOrig.clear()
         
         for i in range(0,25):
             Le = eval('dlg.IrrLineEdit_' + str(i))
             Le.clear()
     
-        dlg.comboBoxBaseIrr.addItems(db_dict['Irrigation']['descOrigin'].tolist())
+        dlg.comboBoxBaseIrr.addItems(db_dict['Irrigation']['nameOrigin'].tolist())
         dlg.comboBoxBaseIrr.setCurrentIndex(-1)
         dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear'])) 
         dlg.comboBoxRef.setCurrentIndex(-1)
 
     def base_irr_changed():
         base_irr = dlg.comboBoxBaseIrr.currentText()
-        irr_sel = db_dict['Irrigation'][db_dict['Irrigation']['descOrigin'] == base_irr]
+        irr_sel = db_dict['Irrigation'][db_dict['Irrigation']['nameOrigin'] == base_irr]
 
         irr_sel_dict = irr_sel.squeeze().to_dict()
 
@@ -46,7 +46,8 @@ def setup_irrigation_manager(self, dlg, db_dict, db_path):
                 '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
                 'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
                 'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
-                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>'
+                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
+                'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
             )
         except:
             pass
@@ -57,7 +58,7 @@ def setup_irrigation_manager(self, dlg, db_dict, db_path):
         # refindex['authorYear'] = (refindex['Author'] + ' ,(' + refindex['Publication Year'].apply(str) + ')')
         dict_reclass = {
             'ID' : create_code('Irrigation'),
-            'Description' : dlg.textEditDesc.value(),
+            'Name' : dlg.textEditName.value(),
             'Origin' : dlg.textEditOrig.value(),
             'Ref' : db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
         }

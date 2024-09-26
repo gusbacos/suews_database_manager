@@ -12,7 +12,7 @@ from qgis.PyQt.QtWidgets import QMessageBox
 def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
     
     def fill_cboxes():
-        dlg.comboBoxBaseAnEm.addItems(db_dict['AnthropogenicEmission']['descOrigin'].tolist())
+        dlg.comboBoxBaseAnEm.addItems(db_dict['AnthropogenicEmission']['nameOrigin'].tolist())
         dlg.comboBoxBaseAnEm.setCurrentIndex(-1)
         dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear'])) 
         dlg.comboBoxRef.setCurrentIndex(-1)
@@ -21,13 +21,13 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
             Le = getattr(dlg, f'lineEdit_{i}')
             Le.clear()
 
-        dlg.textEditDesc.clear()
+        dlg.textEditName.clear()
         dlg.textEditOrig.clear()
         
     def base_AnEm_changed():
 
         base_irr = dlg.comboBoxBaseAnEm.currentText()
-        AnEm_sel = db_dict['AnthropogenicEmission'][db_dict['AnthropogenicEmission']['descOrigin'] == base_irr]
+        AnEm_sel = db_dict['AnthropogenicEmission'][db_dict['AnthropogenicEmission']['nameOrigin'] == base_irr]
 
         AnEm_sel_dict = AnEm_sel.squeeze().to_dict()        
         for i in range(1,18):
@@ -56,14 +56,14 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
 
     def ref_changed():
         dlg.textBrowserRef.clear()
-
         try:
             ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
             dlg.textBrowserRef.setText(
                 '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
                 'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
                 'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
-                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>'
+                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
+                'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
             )
         except:
             pass
@@ -72,7 +72,7 @@ def setup_anthropogenic_emission_manager(self, dlg, db_dict, db_path):
 
         dict_reclass = {
             'ID' : create_code('AnthropogenicEmission'),
-            'Description' : dlg.textEditDesc.value(),
+            'Name' : dlg.textEditName.value(),
             'Origin' : dlg.textEditOrig.value(),
         }
         

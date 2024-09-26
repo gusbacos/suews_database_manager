@@ -22,12 +22,12 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
         dlg.textEditName.clear()
         dlg.textEditAuthor.clear()
         dlg.comboBoxTableSelect.clear()
-        dlg.comboBoxTableSelect.addItems((db_dict['Types']['descOrigin'])) 
+        dlg.comboBoxTableSelect.addItems((db_dict['Types']['nameOrigin'])) 
         dlg.comboBoxTableSelect.setCurrentIndex(-1)
         dlg.comboBoxPavedType.clear()
-        dlg.comboBoxPavedType.addItems((db_dict['NonVeg']['descOrigin'][db_dict['NonVeg']['Surface'] == 'Paved']))
+        dlg.comboBoxPavedType.addItems((db_dict['NonVeg']['nameOrigin'][db_dict['NonVeg']['Surface'] == 'Paved']))
         dlg.comboBoxBuildingType.clear()
-        dlg.comboBoxBuildingType.addItems((db_dict['NonVeg']['descOrigin'][db_dict['NonVeg']['Surface'] == 'Buildings']))
+        dlg.comboBoxBuildingType.addItems((db_dict['NonVeg']['nameOrigin'][db_dict['NonVeg']['Surface'] == 'Buildings']))
         for i in [dlg.comboBoxPavedType,dlg.comboBoxBuildingType]:
             i.setCurrentIndex(-1)
         dlg.comboBoxProf.setCurrentIndex(0)
@@ -58,16 +58,16 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
         def type_changed(cbox, table, surface):
             urb_type = dlg.comboBoxTableSelect.currentText()
             if urb_type != '':
-                indexer =db_dict['Types'][db_dict['Types']['descOrigin'] == urb_type][surface].item()
-                table_indexer = table.loc[indexer,'descOrigin']
-                cbox.setCurrentIndex(table['descOrigin'][table['Surface'] == surface].tolist().index(table_indexer))
+                indexer =db_dict['Types'][db_dict['Types']['nameOrigin'] == urb_type][surface].item()
+                table_indexer = table.loc[indexer,'nameOrigin']
+                cbox.setCurrentIndex(table['nameOrigin'][table['Surface'] == surface].tolist().index(table_indexer))
         
         type_changed(dlg.comboBoxBuildingType, db_dict['NonVeg'],  'Buildings')
         type_changed(dlg.comboBoxPavedType, db_dict['NonVeg'], 'Paved')
         
         urb_type = dlg.comboBoxTableSelect.currentText()
         if urb_type != '':
-            indexer =db_dict['Types']['ProfileType'].loc[db_dict['Types']['descOrigin'] == urb_type].item()
+            indexer =db_dict['Types']['ProfileType'].loc[db_dict['Types']['nameOrigin'] == urb_type].item()
             if indexer == 'Residential':
                 dlg.comboBoxProf.setCurrentIndex(1)
             elif indexer == 'Commercial':
@@ -75,7 +75,7 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
             elif indexer == 'Industrial':
                 dlg.comboBoxProf.setCurrentIndex(3)
             
-            indexerPeriod =db_dict['Types']['Period'].loc[db_dict['Types']['descOrigin'] == urb_type].item()
+            indexerPeriod =db_dict['Types']['Period'].loc[db_dict['Types']['nameOrigin'] == urb_type].item()
             if indexerPeriod == 'Pre80':
                 dlg.comboBoxPeriod.setCurrentIndex(1)
             elif indexerPeriod == 'Pst80':
@@ -88,39 +88,39 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
         typology_str = dlg.comboBoxTableSelect.currentText()
         dlg.textBrowserTypo.clear()
         if dlg.comboBoxTableSelect.currentIndex() != -1:
-            #typology_sel = db_dict['NonVeg'].loc[db_dict['NonVeg']['descOrigin'] == typology_str]
-            typology_sel = db_dict['Types'].loc[db_dict['Types']['descOrigin'] == typology_str]
+            #typology_sel = db_dict['NonVeg'].loc[db_dict['NonVeg']['nameOrigin'] == typology_str]
+            typology_sel = db_dict['Types'].loc[db_dict['Types']['nameOrigin'] == typology_str]
             buildID = typology_sel['Buildings'].item()
             PavedID  = typology_sel['Paved'].item()
             wall1ID = db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID].loc['Spartacus Surface']]['w1Material'].item()
-            wall1Type = db_dict['Spartacus Material'].loc[wall1ID]['Description']
+            wall1Type = db_dict['Spartacus Material'].loc[wall1ID]['Name']
             wall1Th = str(round(db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID].loc['Spartacus Surface']]['w1Thickness'],2) * 100)
             wall2ID = db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID].loc['Spartacus Surface']]['w2Material'].item()
-            wall2Type = db_dict['Spartacus Material'].loc[wall2ID]['Description']
+            wall2Type = db_dict['Spartacus Material'].loc[wall2ID]['Name']
             wall2Th = str(round(db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID].loc['Spartacus Surface']]['w2Thickness'],2) * 100)
             wall3ID = db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID].loc['Spartacus Surface']]['w3Material'].item()
-            wall3Type = db_dict['Spartacus Material'].loc[wall3ID]['Description']
+            wall3Type = db_dict['Spartacus Material'].loc[wall3ID]['Name']
             wall3Th = str(round(db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID].loc['Spartacus Surface']]['w3Thickness'],2) * 100)
             
             roof1ID = db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID].loc['Spartacus Surface']]['r1Material'].item()
-            roof1Type = db_dict['Spartacus Material'].loc[roof1ID]['Description']
+            roof1Type = db_dict['Spartacus Material'].loc[roof1ID]['Name']
             roof1Th = str(round(db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID].loc['Spartacus Surface']]['r1Thickness'],2) * 100)
             roof2ID = db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID].loc['Spartacus Surface']]['r2Material'].item()
-            roof2Type = db_dict['Spartacus Material'].loc[roof2ID]['Description']
+            roof2Type = db_dict['Spartacus Material'].loc[roof2ID]['Name']
             roof2Th = str(round(db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID].loc['Spartacus Surface']]['r2Thickness'],2) * 100)
             roof3ID = db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID].loc['Spartacus Surface']]['r3Material'].item()
-            roof3Type = db_dict['Spartacus Material'].loc[roof3ID]['Description']
+            roof3Type = db_dict['Spartacus Material'].loc[roof3ID]['Name']
             roof3Th = str(round(db_dict['Spartacus Surface'].loc[db_dict['NonVeg'].loc[buildID].loc['Spartacus Surface']]['r3Thickness'],2) * 100)
 
             dlg.textBrowserTypo.setText(
                 'URBAN TYPOLOGY:' + '\n' +
-                'Typology: ' + typology_sel['Description'].item() + '\n' +
+                'Typology: ' + typology_sel['Name'].item() + '\n' +
                 'Origin: ' + typology_sel['Origin'].item() + '\n' +
                 'Construction perion: ' +  typology_sel['Period'].item() + '\n' +
                 'Type of land use: ' + typology_sel['ProfileType'].item() + '\n' +
                 ' '  + '\n' +
                 'ASSOCIATED BUILDING TYPE:' + '\n' +
-                'Description: ' + db_dict['NonVeg'].loc[buildID]['Description'] + '\n' +
+                'Name: ' + db_dict['NonVeg'].loc[buildID]['Name'] + '\n' +
                 'Origin: ' + db_dict['NonVeg'].loc[buildID]['Origin'] + '\n' +
                 'Mean albedo (min): ' + str(db_dict['Albedo'].loc[db_dict['NonVeg'].loc[buildID]['Albedo']]['Alb_min'].item()) + '\n' +
                 'Mean albedo (max): ' + str(db_dict['Albedo'].loc[db_dict['NonVeg'].loc[buildID]['Albedo']]['Alb_min'].item()) + '\n' +
@@ -136,7 +136,7 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
                 # 'More?....' + '\n' +
                 ' '  + '\n' +
                 'ASSOCIATED PAVED TYPE:' + '\n' +
-                'Description: ' + db_dict['NonVeg'].loc[PavedID]['Description'] + '\n' +
+                'Name: ' + db_dict['NonVeg'].loc[PavedID]['Name'] + '\n' +
                 'Origin: ' + db_dict['NonVeg'].loc[PavedID]['Origin'] + '\n' +
                 'Mean albedo (min): ' + str(round(db_dict['Albedo'].loc[db_dict['NonVeg'].loc[PavedID]['Albedo']]['Alb_min'].item(), 2)) + '\n' +
                 'Mean albedo (max): ' + str(round(db_dict['Albedo'].loc[db_dict['NonVeg'].loc[PavedID]['Albedo']]['Alb_min'].item(), 2)) + '\n' +
@@ -180,10 +180,10 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
     def generate_type():
 
         dict_reclass = {
-            'ID' : create_code('Types'), #str('Type' + str(int(round(time.time())))),
+            'ID' : create_code('Name'), #str('Type' + str(int(round(time.time())))),
             'Origin' : str(dlg.textEditOrig.value()),
             'Type' : str(dlg.textEditName.value()),
-            'Description': str(dlg.textEditDesc.value()),
+            'Name': str(dlg.textEditDesc.value()),
             'ProfileType' : dlg.comboBoxProf.currentText(),
             'Period' : dlg.comboBoxPeriod.currentText(),
             'Author' : str(dlg.textEditAuthor.value()),
@@ -197,7 +197,7 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
 
             var = textbrowser.toPlainText()
             surf_table = db_dict['NonVeg']
-            dict_reclass[var] = surf_table[surf_table['descOrigin'] == cbox.currentText()].index.item()
+            dict_reclass[var] = surf_table[surf_table['nameOrigin'] == cbox.currentText()].index.item()
 
         new_edit = pd.DataFrame.from_dict([dict_reclass]).set_index('ID')
         db_dict['Types'] = pd.concat([db_dict['Types'], new_edit])
@@ -217,7 +217,7 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
 
     #     # Select correct tab fom DB (Veg, db_dict['NonVeg'] or Water)
     #     if surface == 'Paved' or surface == 'Buildings' or surface == 'Bare Soil':
-    #         item_list = db_dict['NonVeg']['Description'][db_dict['NonVeg']['Surface'] == surface].tolist()
+    #         item_list = db_dict['NonVeg']['Name'][db_dict['NonVeg']['Surface'] == surface].tolist()
     #         origin = db_dict['NonVeg']['Origin'][db_dict['NonVeg']['Surface'] == surface].tolist()
     #         clr = db_dict['NonVeg']['Color'][db_dict['NonVeg']['Surface'] == surface].tolist()
 
@@ -227,7 +227,7 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
     #             app_list.append((clr + ' ' + item + ', ' + origin))
 
     #     elif surface == 'Water':
-    #         item_list = db_dict['NonVeg']['Description'][db_dict['NonVeg']['Surface'] == surface].tolist()
+    #         item_list = db_dict['NonVeg']['Name'][db_dict['NonVeg']['Surface'] == surface].tolist()
     #         origin = db_dict['NonVeg']['Origin'][db_dict['NonVeg']['Surface'] == surface].tolist()
 
     #         app_list = []
@@ -236,7 +236,7 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
     #             app_list.append((i + ', ' + j))
 
     #     else: 
-    #         item_list = db_dict['Veg']['Description'][db_dict['Veg']['Surface'] == surface].tolist()
+    #         item_list = db_dict['Veg']['Name'][db_dict['Veg']['Surface'] == surface].tolist()
     #         origin = db_dict['Veg']['Origin'][db_dict['Veg']['Surface'] == surface].tolist()
 
     #         app_list = []

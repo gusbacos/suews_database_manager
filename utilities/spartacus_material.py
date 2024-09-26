@@ -9,7 +9,7 @@ def setup_SS_material_creator(self, dlg, db_dict, db_path):
         dlg.comboBoxRef.clear()
         dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear'])) 
         dlg.comboBoxRef.setCurrentIndex(-1)
-        dlg.textEditDesc.clear()
+        dlg.textEditName.clear()
         dlg.textEditColor.clear()
         dlg.textEditOrig.clear()
         dlg.textEditAlbedo.clear()
@@ -21,7 +21,7 @@ def setup_SS_material_creator(self, dlg, db_dict, db_path):
 
         dict_reclass = {
             'ID' : create_code('Spartacus Material'), 
-            'Description' : str(dlg.textEditDesc.value()),
+            'Name' : str(dlg.textEditName.value()),
             'Color' : str(dlg.textEditColor.value()),
             'Origin': str(dlg.textEditOrig.value()),
             'Albedo': float((dlg.textEditAlbedo.value())),
@@ -41,15 +41,14 @@ def setup_SS_material_creator(self, dlg, db_dict, db_path):
 
     def ref_changed():
         dlg.textBrowserRef.clear()
-
         try:
-            ref = db_dict['References']
-            ID = ref[ref['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
+            ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
             dlg.textBrowserRef.setText(
-                '<b>Author: ' +'</b>' + str(ref.loc[ID, 'Author']) + '<br><br><b>' +
-                'Year: ' + '</b> '+ str(ref.loc[ID, 'Year']) + '<br><br><b>' +
-                'Title: ' + '</b> ' +  str(ref.loc[ID, 'Title']) + '<br><br><b>' +
-                'Journal: ' + '</b>' + str(ref.loc[ID, 'Journal']) + '<br><br><b>'
+                '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
+                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
+                'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
+                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
+                'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
             )
         except:
             pass

@@ -12,7 +12,7 @@ from .database_functions import save_to_db
 
 from qgis.PyQt.QtCore import  QVariant
 from qgis.PyQt.QtWidgets import QFileDialog, QMessageBox
-from qgis.core import QgsVectorLayer, QgsMapLayerProxyModel, QgsFeature, QgsProject, QgsField, QgsVectorFileWriter, Qgis
+from qgis.core import QgsVectorLayer, QgsMapLayerProxyModel, QgsProject, QgsField, QgsVectorFileWriter, Qgis
 
 def setup_reclassifier(self, dlg, db_dict):
 
@@ -20,7 +20,7 @@ def setup_reclassifier(self, dlg, db_dict):
         # dlg.comboBoxType.clear()
         dlg.comboBoxNew1.clear()        
 
-        typology_list = list(db_dict['Types']['descOrigin'])
+        typology_list = list(db_dict['Types']['nameOrigin'])
         for i in range(1, 23):
             Nc = getattr(dlg, f'comboBoxNew{i}')
             Nc.addItems(typology_list)
@@ -99,19 +99,19 @@ def setup_reclassifier(self, dlg, db_dict):
     #     typology_str = dlg.comboBoxType.currentText()
     #     dlg.textBrowser.clear()
     #     if dlg.comboBoxType.currentIndex() != -1:
-    #         #typology_sel = db_dict['NonVeg'].loc[db_dict['NonVeg']['descOrigin'] == typology_str]
-    #         typology_sel = db_dict['Types'].loc[db_dict['Types']['descOrigin'] == typology_str]
+    #         #typology_sel = db_dict['NonVeg'].loc[db_dict['NonVeg']['nameOrigin'] == typology_str]
+    #         typology_sel = db_dict['Types'].loc[db_dict['Types']['nameOrigin'] == typology_str]
     #         buildID = typology_sel['Buildings'].item()
     #         PavedID  = typology_sel['Paved'].item()
 
     #         dlg.textBrowser.setText(
     #             'URBAN TYPOLOGY:' + '\n' +
-    #             'Typology: ' + typology_sel['Description'].item() + '\n' +
+    #             'Typology: ' + typology_sel['Name'].item() + '\n' +
     #             'Origin: ' + typology_sel['Origin'].item() + '\n' +
     #             'Construction perion: ' +  typology_sel['Period'].item() + '\n' +
     #             ' '  + '\n' +
     #             'ASSOCIATED BUILDING TYPE:' + '\n' +
-    #             'Description: ' + db_dict['NonVeg'].loc[buildID]['Description'] + '\n' +
+    #             'Name: ' + db_dict['NonVeg'].loc[buildID]['Name'] + '\n' +
     #             'Origin: ' + db_dict['NonVeg'].loc[buildID]['Origin'] + '\n' +
     #             'Bulk albedo (min): ' + str(db_dict['Albedo'].loc[db_dict['NonVeg'].loc[buildID]['Albedo']]['Alb_min'].item()) + '\n' +
     #             'Bulk albedo (max): ' + str(db_dict['Albedo'].loc[db_dict['NonVeg'].loc[buildID]['Albedo']]['Alb_min'].item()) + '\n' +
@@ -121,7 +121,7 @@ def setup_reclassifier(self, dlg, db_dict):
     #             'More?....' + '\n' +
     #             ' '  + '\n' +
     #             'ASSOCIATED PAVED TYPE:' + '\n' +
-    #             'Description: ' + db_dict['NonVeg'].loc[PavedID]['Description'] + '\n' +
+    #             'Name: ' + db_dict['NonVeg'].loc[PavedID]['Name'] + '\n' +
     #             'Origin: ' + db_dict['NonVeg'].loc[PavedID]['Origin'] + '\n' +
     #             'Bulk albedo (min): ' + str(db_dict['Albedo'].loc[db_dict['NonVeg'].loc[PavedID]['Albedo']]['Alb_min'].item()) + '\n' +
     #             'Bulk albedo (max): ' + str(db_dict['Albedo'].loc[db_dict['NonVeg'].loc[PavedID]['Albedo']]['Alb_min'].item()) + '\n' +
@@ -175,7 +175,7 @@ def setup_reclassifier(self, dlg, db_dict):
             newField = Nc.currentText()
             
             dict_reclass[str(oldField)] = str(newField)
-            dict_reclassID[str(oldField)] = db_dict['Types'].loc[db_dict['Types']['descOrigin'] == str(newField)].index.item()
+            dict_reclassID[str(oldField)] = db_dict['Types'].loc[db_dict['Types']['nameOrigin'] == str(newField)].index.item()
             
             idx += 1
 

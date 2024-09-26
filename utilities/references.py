@@ -18,8 +18,8 @@ def setup_ref_manager(self, dlg, db_dict, db_path):
         dlg.textEditJournal.clear(),
         dlg.textEditDOI.clear()
         for i in range(0,16):
-            first_name = eval('dlg.textEditFN_' + str(i))
-            last_name = eval('dlg.textEditLN0_' + str(i))   
+            first_name = getattr(dlg, f'textEditFN_{i}')
+            last_name = getattr(dlg, f'textEditLN0_{i}')   
             first_name.clear()
             last_name.clear()
             
@@ -34,7 +34,8 @@ def setup_ref_manager(self, dlg, db_dict, db_path):
                 '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
                 'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
                 'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
-                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>'
+                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
+                'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
             )
         except:
             pass
@@ -44,8 +45,8 @@ def setup_ref_manager(self, dlg, db_dict, db_path):
         dlg.pushButtonAddRef.setEnabled(True)
         author_list = []
         for i in range(0,16):
-            first_name = eval('dlg.textEditFN_' + str(i))
-            last_name = eval('dlg.textEditLN0_' + str(i))   
+            first_name = getattr(dlg, f'textEditFN_{i}')
+            last_name = getattr(dlg, f'textEditLN0_{i}')   
             name = first_name.value() + ', ' + last_name.value() + ';' 
             if len(first_name.value()) > 0 and len(last_name.value()) > 0: 
                 author_list.append(name)
@@ -64,8 +65,8 @@ def setup_ref_manager(self, dlg, db_dict, db_path):
     #     Type, veg, nonveg, water, ref, alb, em, OHM, LAI, st, cnd, LGP, dr, VG, ANOHM, BIOCO2, MVCND, por, reg, snow, AnEm, prof, ws, soil, ESTM, irr , country= self.read_db()
     #     author_list = []
     #     for i in range(0,16):
-    #         first_name = eval('dlg.textEditFN_' + str(i))
-    #         last_name = eval('dlg.textEditLN0_' + str(i))   
+    #         first_name = getattr(dlg, f'textEditFN_{i}')
+    #         last_name = getattr(dlg, f'textEditLN0_{i}')   
     #         name = first_name.value() + ', ' + last_name.value() + ';' 
     #         if len(first_name.value()) > 0 and len(last_name.value()) > 0: 
     #             author_list.append(name)
@@ -91,8 +92,8 @@ def setup_ref_manager(self, dlg, db_dict, db_path):
 
         author_list = []
         for i in range(0,16):
-            first_name = eval('dlg.textEditFN_' + str(i))
-            last_name = eval('dlg.textEditLN0_' + str(i))   
+            first_name = getattr(dlg, f'textEditFN_{i}')
+            last_name = getattr(dlg, f'textEditLN0_{i}')   
             name = first_name.value() + ', ' + last_name.value() + ';' 
             if len(first_name.value()) > 0 and len(last_name.value()) > 0: 
                 author_list.append(name)
@@ -117,14 +118,14 @@ def setup_ref_manager(self, dlg, db_dict, db_path):
         
     #     dlg.textBrowserRef.clear()
     #     if dlg.textBrowserRef.currentIndex() != -1:
-    #         #typology_sel = db_dict['NonVeg'].loc[db_dict['NonVeg']['descOrigin'] == typology_str]
-    #         ref_sel = db_dict['Types'].loc[db_dict['Types']['descOrigin'] == typology_str]
+    #         #typology_sel = db_dict['NonVeg'].loc[db_dict['NonVeg']['nameOrigin'] == typology_str]
+    #         ref_sel = db_dict['Types'].loc[db_dict['Types']['nameOrigin'] == typology_str]
     #         buildID = typology_sel['Buildings'].item()
     #         PavedID  = typology_sel['Paved'].item()
 
     #         dlg.textBrowserRef.setText(
     #             'URBAN TYPOLOGY:' + '\n' +
-    #             'Typology: ' + typology_sel['Description'].item() + '\n' +
+    #             'Typology: ' + typology_sel['Name'].item() + '\n' +
     #             'Origin: ' + typology_sel['Origin'].item() + '\n' +
     #             'Construction perion: ' +  typology_sel['Period'].item() + '\n' +
     #             ' '  + '\n' +

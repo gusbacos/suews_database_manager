@@ -8,7 +8,7 @@ from qgis.PyQt.QtWidgets import QMessageBox
 #                                                                                               #
 #################################################################################################
 def setup_snow_creator(self, dlg, db_dict, db_path ):
-    dlg.comboBoxBase.addItems(db_dict['Snow']['descOrigin'].tolist())
+    dlg.comboBoxBase.addItems(db_dict['Snow']['nameOrigin'].tolist())
     dlg.comboBoxBase.setCurrentIndex(-1)
 
     cbox_dict = {
@@ -28,13 +28,13 @@ def setup_snow_creator(self, dlg, db_dict, db_path ):
         if len(Tb.toPlainText()) <1:
             break
         else:
-            Cb.addItems((cbox_dict[Tb.toPlainText()])['descOrigin'].tolist())
+            Cb.addItems((cbox_dict[Tb.toPlainText()])['nameOrigin'].tolist())
             Cb.setCurrentIndex(-1)
     
     def base_snow_changed():
 
         base_snow = dlg.comboBoxBase.currentText()
-        snow_sel = snow[snow['descOrigin'] == base_snow]
+        snow_sel = snow[snow['nameOrigin'] == base_snow]
 
         snow_sel_dict = snow_sel.squeeze().to_dict()
         
@@ -55,7 +55,7 @@ def setup_snow_creator(self, dlg, db_dict, db_path ):
         Type, veg, nonveg, water, ref, alb, em, OHM, LAI, st, cnd, LGP, dr, VG, ANOHM, BIOCO2, MVCND, por, reg, snow, AnEm, prof, ws, soil, ESTM, irr , country= self.read_db()
         dict_reclass = {
             'ID' : create_code('Snow'),
-            'Description' : dlg.textEditDesc.value(),
+            'Name' : dlg.textEditName.value(),
             'Origin' : dlg.textEditOrig.value()
         }
         
@@ -65,7 +65,7 @@ def setup_snow_creator(self, dlg, db_dict, db_path ):
             col = Tb.toPlainText()
             val = Cb.currentText()
             table = cbox_dict[col]
-            fill = table[table['descOrigin'] == val].index.item()   
+            fill = table[table['nameOrigin'] == val].index.item()   
             dict_reclass[col] = [fill]
 
         for i in range(0, 11): 
