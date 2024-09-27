@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>881</width>
-    <height>604</height>
+    <height>608</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -312,8 +312,8 @@ p, li { white-space: pre-wrap; }
       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;SUEWS Snow&lt;/span&gt;&lt;/p&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;SUEWS Snow&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;SUEWS_Snow.txt specifies the characteristics for snow surfaces when &lt;/span&gt;&lt;a href=&quot;https://suews-docs.readthedocs.io/en/latest/input_files/RunControl/scheme_options.html#cmdoption-arg-SnowUse&quot;&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;SnowUse=1&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; in &lt;/span&gt;&lt;a href=&quot;https://suews-docs.readthedocs.io/en/latest/input_files/RunControl/RunControl.html#runcontrol-nml&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;RunControl.nml&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;. If the snow part of the model is not run, fill this table with ‘-999’ except for the first (Code) column and set &lt;/span&gt;&lt;a href=&quot;https://suews-docs.readthedocs.io/en/latest/input_files/RunControl/scheme_options.html#cmdoption-arg-SnowUse&quot;&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;SnowUse=0&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; in &lt;/span&gt;&lt;a href=&quot;https://suews-docs.readthedocs.io/en/latest/input_files/RunControl/RunControl.html#runcontrol-nml&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;RunControl.nml&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;. For a detailed description of the variables, see Järvi et al. (2014)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="openExternalLinks">
