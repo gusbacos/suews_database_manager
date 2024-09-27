@@ -9,6 +9,11 @@ def setup_SS_material_creator(self, dlg, db_dict, db_path):
         dlg.comboBoxRef.clear()
         dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear'])) 
         dlg.comboBoxRef.setCurrentIndex(-1)
+
+        dlg.comboBoxBase.clear()
+        dlg.comboBoxBase.addItems(sorted(db_dict['Spartacus Material']['nameOrigin'])) 
+        dlg.comboBoxBase.setCurrentIndex(-1)
+
         dlg.textEditName.clear()
         dlg.textEditColor.clear()
         dlg.textEditOrig.clear()
@@ -39,6 +44,18 @@ def setup_SS_material_creator(self, dlg, db_dict, db_path):
         QMessageBox.information(None, 'Succesful', 'New edit added to your local database')
         start_material_creator(dlg) # Clear tab
 
+    def base_changed():
+        
+        base_str = dlg.comboBoxBase.currentText()
+        if base_str != '': 
+            
+            base = db_dict['Spartacus Material'].loc[db_dict['Spartacus Material']['nameOrigin'] == base_str]
+
+            dlg.textEditAlbedo.setValue(str(base['Albedo'].item()))
+            dlg.textEditEmissivity.setValue(str(base['Emissivity'].item()))
+            dlg.textEditThermalC.setValue(str(base['Thermal Conductivity'].item()))
+            dlg.textEditSpecificH.setValue(str(base['Specific Heat'].item()))
+
     def ref_changed():
         dlg.textBrowserRef.clear()
         try:
@@ -64,3 +81,4 @@ def setup_SS_material_creator(self, dlg, db_dict, db_path):
     self.dlg.tabWidget.currentChanged.connect(tab_update)
     dlg.comboBoxRef.currentIndexChanged.connect(ref_changed)
     dlg.pushButtonGen.clicked.connect(generate_material)
+    dlg.comboBoxBase.currentIndexChanged.connect(base_changed)

@@ -42,8 +42,8 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
             QMessageBox.warning(None, 'Error in Name','Please, don´t use test as type name..')
         elif dlg.textEditName.value().startswith('Test'):
             QMessageBox.warning(None, 'Error in Name','Please, don´t use test as type name..')
-        elif dlg.textEditName.value() in db_dict['Types']['Type'].tolist():
-            QMessageBox.warning(None, 'Error in Name','The suggested type name is already taken.')
+        # elif dlg.textEditName.value() in db_dict['Types']['Type'].tolist():
+        #     QMessageBox.warning(None, 'Error in Name','The suggested type name is already taken.')
 
         # Origin
         elif dlg.textEditOrig.isNull():
@@ -60,7 +60,8 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
             if urb_type != '':
                 indexer =db_dict['Types'][db_dict['Types']['nameOrigin'] == urb_type][surface].item()
                 table_indexer = table.loc[indexer,'nameOrigin']
-                cbox.setCurrentIndex(table['nameOrigin'][table['Surface'] == surface].tolist().index(table_indexer))
+                table_index = cbox.findText(table_indexer)
+                cbox.setCurrentIndex(table_index)
         
         type_changed(dlg.comboBoxBuildingType, db_dict['NonVeg'],  'Buildings')
         type_changed(dlg.comboBoxPavedType, db_dict['NonVeg'], 'Paved')
@@ -114,8 +115,9 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
 
             dlg.textBrowserTypo.setText(
                 'URBAN TYPOLOGY:' + '\n' +
-                'Typology: ' + typology_sel['Name'].item() + '\n' +
+                'Name: ' + typology_sel['Name'].item() + '\n' +
                 'Origin: ' + typology_sel['Origin'].item() + '\n' +
+                'Description: ' + typology_sel['Description'].item() + '\n' +
                 'Construction perion: ' +  typology_sel['Period'].item() + '\n' +
                 'Type of land use: ' + typology_sel['ProfileType'].item() + '\n' +
                 ' '  + '\n' +

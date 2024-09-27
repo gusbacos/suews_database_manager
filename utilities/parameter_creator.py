@@ -35,10 +35,10 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
     def table_changed():
 
         try:        
+            dlg.comboBoxBase.clear()
             dlg.comboBoxSeason.setDisabled(True)
             dlg.comboBoxSeason.setCurrentIndex(-1)
             dlg.textBrowserSeason.setDisabled(True)
-            dlg.comboBoxBase.clear()
         
             table_name = dlg.comboBoxTableSelect.currentText()
             dlg.textBrowserDf.clear()
@@ -56,7 +56,6 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
 
                 dlg.comboBoxSurface.addItems(param_info_dict[table_name]['surface'])
                 dlg.comboBoxSurface.setEnabled(True)
-                dlg.comboBoxSurface.setCurrentIndex(0)   
 
                 # Add correct parameters for selected table
                 params = list(param_info_dict[table_name]['param'].keys())
@@ -73,23 +72,21 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
                 dlg.comboBoxSeason.setEnabled(True)
                 dlg.comboBoxSeason.setCurrentIndex(0)
                 dlg.textBrowserSeason.setEnabled(True)
+            
+            dlg.comboBoxSurface.setCurrentIndex(-1)   
 
-            surface_sel = dlg.comboBoxSurface.currentText()
-            current_parameters = db_dict[table_name][db_dict[table_name]['Surface'] == surface_sel]
-            dlg.comboBoxBase.addItems(current_parameters['nameOrigin'].tolist())
-            dlg.comboBoxBase.setEnabled(True)
-            dlg.comboBoxBase.setCurrentIndex(-1)
             
         except:
             pass
 
     def surface_changed():
+        
         try:
-            dlg.comboBoxBase.clear()
             surface_sel = dlg.comboBoxSurface.currentText()
             table_name = dlg.comboBoxTableSelect.currentText()
-       
+
             current_parameters = db_dict[table_name][db_dict[table_name]['Surface'] == surface_sel]
+            dlg.comboBoxBase.clear()
             dlg.comboBoxBase.addItems(current_parameters['nameOrigin'].tolist())
             dlg.comboBoxBase.setEnabled(True)
             dlg.comboBoxBase.setCurrentIndex(-1)
@@ -186,8 +183,6 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
         # Write to db
         save_to_db(db_path, db_dict)
        
-        # self.setup_tabs()
-        # self.dlg.tabWidget.setCurrentIndex(3)
         QMessageBox.information(None, 'Succesful', table_name + ' Entry added to your local database')
         tab_update()
 

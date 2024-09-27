@@ -8,77 +8,129 @@ from qgis.PyQt.QtWidgets import QMessageBox
 #                                                                                               #
 #################################################################################################
 def setup_snow_creator(self, dlg, db_dict, db_path ):
-    dlg.comboBoxBase.addItems(db_dict['Snow']['nameOrigin'].tolist())
-    dlg.comboBoxBase.setCurrentIndex(-1)
-
-    cbox_dict = {
-        'Alb' : alb[alb['General Type'] == 'Snow'],
-        'Em' : em[em['General Type'] == 'Snow'],
-        'OHMCode_WinterWet' : OHM[OHM['General Type'] == 'Snow'],
-        'OHMCode_WinterDry' : OHM[OHM['General Type'] == 'Snow'],
-        'OHMCode_SummerWet' : OHM[OHM['General Type'] == 'Snow'],
-        'OHMCode_SummerDry' : OHM[OHM['General Type'] == 'Snow'],
-        'ESTM' : ESTM[ESTM['General Type'] == 'Snow'],
-        'ANOHM' : ANOHM[ANOHM['General Type'] == 'Snow']
-        }
-
-    for i in range(0, 8): 
-        Tb = eval('dlg.textBrowserCb_' + str(i))
-        Cb = eval('dlg.comboBox_' + str(i))
-        if len(Tb.toPlainText()) <1:
-            break
-        else:
-            Cb.addItems((cbox_dict[Tb.toPlainText()])['nameOrigin'].tolist())
-            Cb.setCurrentIndex(-1)
     
-    def base_snow_changed():
-
-        base_snow = dlg.comboBoxBase.currentText()
-        snow_sel = snow[snow['nameOrigin'] == base_snow]
-
-        snow_sel_dict = snow_sel.squeeze().to_dict()
+    # Startup function, clean and setup
+    def fill_cbox():
+        dlg.comboBoxRef.clear()
+        dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear'])) 
+        dlg.comboBoxRef.setCurrentIndex(-1)
         
-        for i in range(0,11):
-            Tb = eval('dlg.textBrowser_' + str(i))
-            Le = eval('dlg.LineEdit_' + str(i))
+        dlg.comboBoxBase.clear()
+        dlg.comboBoxBase.addItems(db_dict['Snow']['nameOrigin'].tolist())
+        dlg.comboBoxBase.setCurrentIndex(-1)
+
+        dlg.textEditName.clear(),
+        dlg.textEditOrig.clear()
+
+        # Clear all LineEdits
+        for i in range(0, 11): 
+            Le = getattr(dlg, f'LineEdit_{i}')
             Le.clear()
-            Le.setText(str(snow_sel_dict[Tb.toPlainText()]))
         
-        for i in range(0,8):
-            Cb = eval('dlg.comboBox_' + str(i))
-            CbT = eval('dlg.textBrowserCb_' + str(i))
-            cbox_list = cbox_dict[CbT.toPlainText()].index.tolist()
-            list_indexcer = snow_sel_dict[CbT.toPlainText()]
-            Cb.setCurrentIndex(cbox_list.index(list_indexcer))
+        # Fill comboboxes with albedo, emissivity and OHM values 
+        for i in range(0, 7): 
+            Tb = getattr(dlg, f'textBrowserCb_{i}')
+            Cb = getattr(dlg, f'comboBox_{i}')
+   
+            tablename = Tb.toPlainText()
+            if tablename.startswith('OHM'):
+                Cb.addItems(sorted(db_dict['OHM']['nameOrigin'][db_dict['OHM']['Surface'] == 'Snow'].tolist()))
+            else:               
+                Cb.addItems(sorted(db_dict[tablename]['nameOrigin'][db_dict[tablename]['Surface'] == 'Snow'].tolist()))
+           
+            Cb.setCurrentIndex(-1)
+
+    def base_snow_changed():
+        
+        # Check if base is selected
+        base_snow = dlg.comboBoxBase.currentText()
+
+        if base_snow != '':
+            # slice dataframe for selected base snow
+            snow_sel = db_dict['Snow'].loc[db_dict['Snow']['nameOrigin'] == base_snow]
+            
+            # Set LineEdits (text boxes) according to base snow
+            for i in range(0, 11): 
+                Tb = getattr(dlg, f'textBrowser_{i}')
+                Le = getattr(dlg, f'LineEdit_{i}')
+                Le.setText(str(snow_sel[Tb.toPlainText()].item()))
+
+            # Set comboboxes according to base snow
+        
+            for i in range(0, 7): 
+                Tb = getattr(dlg, f'textBrowserCb_{i}')
+                Cb = getattr(dlg, f'comboBox_{i}')
+
+                # use nameOrigin to locate correct index in combobox        
+                tablename = Tb.toPlainText()
+                if tablename.startswith('OHM'):
+                    indexer = db_dict['OHM'].loc[snow_sel[tablename].item(), 'nameOrigin']
+                else:
+                    indexer = db_dict[tablename].loc[snow_sel[tablename].item(), 'nameOrigin']
+
+                # set index in combobox
+                Cb_index = Cb.findText(indexer)     
+                Cb.setCurrentIndex(Cb_index)
+    
+    
+    def ref_changed():
+        dlg.textBrowserRef.clear()
+        try:
+            ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
+            dlg.textBrowserRef.setText(
+                '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
+                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
+                'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
+                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
+                'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
+            )
+        except:
+            pass
+
 
     def add_snow():
-        Type, veg, nonveg, water, ref, alb, em, OHM, LAI, st, cnd, LGP, dr, VG, ANOHM, BIOCO2, MVCND, por, reg, snow, AnEm, prof, ws, soil, ESTM, irr , country= self.read_db()
+
         dict_reclass = {
             'ID' : create_code('Snow'),
             'Name' : dlg.textEditName.value(),
-            'Origin' : dlg.textEditOrig.value()
+            'Origin' : dlg.textEditOrig.value(),
+            'Ref' : db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
         }
-        
-        for i in range(0, 8): 
-            Tb = eval('dlg.textBrowserCb_' + str(i))
-            Cb = eval('dlg.comboBox_' + str(i))
-            col = Tb.toPlainText()
-            val = Cb.currentText()
-            table = cbox_dict[col]
-            fill = table[table['nameOrigin'] == val].index.item()   
-            dict_reclass[col] = [fill]
 
+        # read LineEdits (text boxes)
         for i in range(0, 11): 
-            Tb = eval('dlg.textBrowser_' + str(i))
-            Le = eval('dlg.LineEdit_' + str(i))
-            dict_reclass[Tb.toPlainText()] = [Le.text()]
+            Tb = getattr(dlg, f'textBrowser_{i}')
+            Le = getattr(dlg, f'LineEdit_{i}')
+            dict_reclass[Tb.toPlainText] = float(Le.text())
 
-        df_new_edit = pd.DataFrame(dict_reclass).set_index('ID')
-        snow = snow.append(df_new_edit)
-        self.write_to_db(Type, veg, nonveg, water, ref, alb, em, OHM, LAI, st, cnd, LGP, dr, VG, ANOHM, BIOCO2, MVCND, por, reg, snow, AnEm, prof, ws, soil, ESTM, irr)
-        self.setup_tabs()
-        self.dlg.tabWidget.setCurrentIndex(7)
+        # Read comboboxes
+        for i in range(0, 7): 
+            Tb = getattr(dlg, f'textBrowserCb_{i}')
+            Cb = getattr(dlg, f'comboBox_{i}')
+
+            # use nameOrigin to locate Code            
+            tablename = Tb.toPlainText()
+            current_text = Cb.currentText()
+
+            if tablename.startswith('OHM'):
+                dict_reclass[Tb.toPlainText()] =  db_dict['OHM'].loc[db_dict['OHM']['nameOrigin'] == current_text].index.item()
+            else:
+                dict_reclass[Tb.toPlainText()] = db_dict[tablename].loc[db_dict[tablename]['nameOrigin'] == current_text].index.item()
+
+        new_edit = pd.DataFrame([dict_reclass]).set_index('ID')
+        db_dict['Snow'] = pd.concat([db_dict['Snow'], new_edit])
+        save_to_db(db_path, db_dict)
+
         QMessageBox.information(None, 'Succesful', 'Snow Entry added to your local database')
 
+        tab_update()
+
+
+    def tab_update():
+        if self.dlg.tabWidget.currentIndex() == 7:
+            fill_cbox()
+
+    self.dlg.tabWidget.currentChanged.connect(tab_update)
+    dlg.comboBoxRef.currentIndexChanged.connect(ref_changed)
     dlg.comboBoxBase.currentIndexChanged.connect(base_snow_changed)
     dlg.pushButtonGen.clicked.connect(add_snow) 

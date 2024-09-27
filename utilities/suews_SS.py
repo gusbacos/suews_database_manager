@@ -25,7 +25,7 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
         mat_list.insert(0,'None')
 
         for roofwall in ['r', 'w']:
-            for layer in range(1,4): #6
+            for layer in range(1,6): #6 #TODO Change 4->6 if we want all 5 layers
                 cbox = eval('dlg.comboBox_' + roofwall + str(layer))
             
                 cbox.clear()
@@ -34,11 +34,11 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
                 lineEdit = eval('dlg.lineEdit_' + roofwall + str(layer)) 
                 lineEdit.setText('')
         
-    def print_table(dlg,idx, rw):
+    def print_table(dlg, idx, rw):
         try:
             # Print texts for selected material in textBrowser for selected layer
-            Tb = eval('dlg.textBrowser_' + rw + str(idx))       # Textbrowser 
-            mat_cbox = eval('dlg.comboBox_' + rw + str(idx))    # Material combobox
+            Tb = getattr(dlg, 'textBrowser_' + rw + str(idx))       # Textbrowser 
+            mat_cbox = getattr(dlg, 'comboBox_' + rw + str(idx))    # Material combobox
             material = mat_cbox.currentText()                   # Selected material
 
             if material != 'None':
@@ -87,7 +87,7 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
 
         for cols in db_dict['Spartacus Surface'].columns:
             if cols != 'nameOrigin':
-                spartacus_dict[cols] = -9999
+                spartacus_dict[cols] = -999
 
         spartacus_dict['ID'] = create_code('Spartacus Surface')
         spartacus_dict['Name'] = str(dlg.textEditName.value())
@@ -173,19 +173,23 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
             mat_list.insert(0,'None')
             
             for roofwall in ['r', 'w']:
-                for layer in range(1,4): #6
+                for layer in range(1,6): #6 #TODO Change 4->6 if we want all 5 layers
                     cbox = eval('dlg.comboBox_' + roofwall + str(layer))
                     lineEdit = eval('dlg.lineEdit_' + roofwall + str(layer)) 
 
                     mat_idx = spartacus_sel.loc[:,(roofwall + str(layer) + 'Material')].item()
 
-                    if mat_idx != -9999:
+                    if mat_idx != -999:
                         material = mat_table.loc[mat_idx, 'nameOrigin']
                         mat_table.loc[mat_idx, 'nameOrigin']
                         cbox_index = mat_list.index(material)
                         cbox.setCurrentIndex(cbox_index)
                         thickness = spartacus_sel.loc[:,(roofwall + str(layer) + 'Thickness')].item()
                         lineEdit.setText(str(thickness))
+                   
+                    else:
+                        cbox.setCurrentIndex(cbox.findText('None'))
+
 
             # wInsulation = spartacus_sel['wInsulation'].item()
             # w_insulation = eval('dlg.radioButton_w' + str(wInsulation))

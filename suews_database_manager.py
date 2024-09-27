@@ -61,6 +61,7 @@ from .utilities.profile_creator import setup_profile_creator
 from .utilities.anthropogenic_emissions_creator import setup_anthropogenic_emission_manager
 from .utilities.irrigation_manager import setup_irrigation_manager
 from .utilities.references import setup_ref_manager
+from .utilities.snow import setup_snow_creator
 
 from.utilities.database_functions import save_to_db
 
@@ -210,7 +211,7 @@ class suews_database_manager:
 
         # Tab 7
         snow_creator = SnowCreator_tab()
-        # self.setup_snow_creator(snow_creator, ref, alb, em, OHM, ANOHM, snow, ESTM,)
+        setup_snow_creator(self, snow_creator, self.db_dict, self.db_path)
         self.dlg.tabWidget.addTab(snow_creator, 'Snow')
 
         # Tab 8
