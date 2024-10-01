@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import  QVBoxLayout
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 from .database_functions import save_to_db, create_code
+import time
+
 
 #################################################################################################
 #                                                                                               #
@@ -12,45 +14,191 @@ from .database_functions import save_to_db, create_code
 #################################################################################################
 
 def setup_profile_creator(self, dlg, db_dict, db_path):
+    a=1
 
     def fill_cbox():
-        dlg.comboBoxRef.clear()
-        dlg.textEditName.clear()
-        dlg.textEditOrig.clear()
-        dlg.comboBoxBaseProfile.clear()
-        
-        dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear'])) 
-        dlg.comboBoxRef.setCurrentIndex(-1)
-        dlg.comboBoxProfType.setCurrentIndex(-1)
-        dlg.comboBoxDay.setCurrentIndex(-1)
-        dlg.comboBoxBaseProfile.setCurrentIndex(1)
 
-    def prof_type_changed():
-        prof_type = dlg.comboBoxProfType.currentText()
-        dlg.comboBoxBaseProfile.clear()
-        # dlg.comboBoxDay.setCurrentIndex(0)
-        day = dlg.comboBoxDay.currentText()
+        db_dict['Profiles']['baseProfIndexer'] = [f"{row['Name']}, {row['City']}" for index, row in db_dict['Profiles'].iterrows()]
 
-        prof_types = db_dict['Profiles'][db_dict['Profiles']['Profile Type'] == prof_type]
-        prof_types = prof_types['nameOrigin'][db_dict['Profiles']['Day'] == day]
-        dlg.comboBoxBaseProfile.addItems(prof_types.tolist())
+        dlg.comboBoxMain.clear()
+        dlg.comboBoxSub.clear()
+
+        dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear']))
+
+        if dlg.radioButtonProfile.isChecked() is True:
+            profile_setting('Profile')
+
+    def profile_setting(setting):
+
+        dlg.comboBoxSub.blockSignals(True)
+        dlg.comboBoxMain.clear()
+
+        if setting == 'Profile':
+            
+            dlg.textBrowserMain.setText('Profile Type')
+            dlg.comboBoxMain.addItems(['Human Activity', 'Population density', 'Energy Use', 'Traffic', 'Water use (manual)','Water use (automatic)','Snow removal'])
+            dlg.comboBoxMain.setCurrentIndex(-1)
+            
+            dlg.textBrowserSub.setText('Country')
+            dlg.comboBoxSub.clear()
+            dlg.comboBoxDay.clear()
+            dlg.comboBoxBaseProfile.clear()
+
+        elif setting == 'Country':
+            dlg.textBrowserMain.setText('Country')
+
+            dlg.comboBoxMain.addItems(sorted(list(set(db_dict['Profiles']['Country']))))
+            dlg.comboBoxMain.setCurrentIndex(-1)
+
+            dlg.textBrowserSub.setText('Profile Type')
+            dlg.comboBoxSub.clear()
+            dlg.comboBoxDay.clear()
+            dlg.comboBoxBaseProfile.clear()
+
+        dlg.comboBoxSub.blockSignals(False)
+
+    def main_changed():
+
+        dlg.comboBoxSub.blockSignals(True)
+
+        if dlg.radioButtonProfile.isChecked() is True:
+
+            # 1. Check for country
+            if dlg.comboBoxMain.currentText() == '':
+                pass 
+            else:
+                dlg.comboBoxSub.clear()
+                dlg.comboBoxDay.clear()
+                dlg.comboBoxBaseProfile.clear()
+                main_sel_sel = dlg.comboBoxMain.currentText()
+                country_list = sorted(list(set(list(db_dict['Profiles']['Country'].loc[db_dict['Profiles']['Profile Type'] == main_sel_sel]))))
+                dlg.comboBoxSub.addItems(sorted(country_list))
+                dlg.comboBoxSub.setCurrentIndex(-1)
+        else:
+
+            # 1. Check for country
+            if dlg.comboBoxMain.currentText() == '':
+                pass 
+            else:
+                dlg.comboBoxSub.clear()
+                dlg.comboBoxDay.clear()
+                dlg.comboBoxBaseProfile.clear()
+                main_sel = dlg.comboBoxMain.currentText()
+                profile_list = list(set(list(db_dict['Profiles']['Profile Type'].loc[db_dict['Profiles']['Country'] == main_sel])))
+                dlg.comboBoxSub.addItems(sorted(profile_list))
+                dlg.comboBoxSub.setCurrentIndex(-1)
     
+        dlg.comboBoxSub.blockSignals(False)
+        
+    def sub_changed():
+
+        dlg.comboBoxDay.blockSignals(True)
+
+        if dlg.comboBoxMain.currentText() == '' and dlg.comboBoxSub.currentText() == '':
+            pass
+
+        else:
+
+            if dlg.radioButtonProfile.isChecked() is True:
+                main_sel = dlg.comboBoxMain.currentText()
+                sub_sel = dlg.comboBoxSub.currentText()
+
+                profiles = db_dict['Profiles'][(db_dict['Profiles']['Profile Type'] == main_sel) & (db_dict['Profiles']['Country'] == sub_sel) ]
+                day_list = list(set(list(profiles['Day'])))
+
+                current_days = []
+                for i in range(dlg.comboBoxDay.count()):
+                    current_days.append(dlg.comboBoxDay.itemText(i))
+
+                if current_days == day_list:
+                    day_changed()
+                else:
+                    dlg.comboBoxDay.clear()
+                    dlg.comboBoxDay.addItems(day_list)
+                    dlg.comboBoxDay.setCurrentIndex(1)
+                    day_changed()
+            else:
+
+                main_sel = dlg.comboBoxMain.currentText()
+                sub_sel = dlg.comboBoxSub.currentText()
+
+                profiles = db_dict['Profiles'][(db_dict['Profiles']['Profile Type'] == sub_sel) & (db_dict['Profiles']['Country'] == main_sel)]
+                day_list = list(set(list(profiles['Day'])))
+                
+                current_days = []
+                for i in range(dlg.comboBoxDay.count()):
+                    current_days.append(dlg.comboBoxDay.itemText(i))
+
+                if current_days == day_list:
+                    day_changed()
+                else:
+                    dlg.comboBoxDay.clear()
+                    dlg.comboBoxDay.addItems(day_list)
+                    dlg.comboBoxDay.setCurrentIndex(1)
+                    day_changed()
+        
+        dlg.comboBoxDay.blockSignals(False)
+        
+
     def day_changed():
-        day = dlg.comboBoxDay.currentText()
-        prof_type = dlg.comboBoxProfType.currentText()
-        dlg.comboBoxBaseProfile.clear()
+        main_sel = dlg.comboBoxMain.currentText()
+        sub_sel = dlg.comboBoxSub.currentText()
+        day_sel = dlg.comboBoxDay.currentText()
 
-        prof_types = db_dict['Profiles'][db_dict['Profiles']['Profile Type'] == prof_type]
-        prof_types = prof_types['nameOrigin'][db_dict['Profiles']['Day'] == day]
+            
+        if dlg.comboBoxMain.currentText() == '' and dlg.comboBoxSub.currentText() == '' and dlg.comboBoxDay.currentText() =='' :
+            pass 
+        else:
 
-        dlg.comboBoxBaseProfile.addItems(prof_types.tolist())
-        dlg.comboBoxBaseProfile.setEnabled(True)
+            if dlg.radioButtonProfile.isChecked() is True:
+
+                dlg.comboBoxBaseProfile.clear()
+
+                profiles = db_dict['Profiles'][(db_dict['Profiles']['Day'] == day_sel) & (db_dict['Profiles']['Profile Type'] == main_sel) & (db_dict['Profiles']['Country'] == sub_sel)]
+
+                dlg.comboBoxBaseProfile.clear()
+                dlg.comboBoxBaseProfile.addItems(sorted(profiles['baseProfIndexer']))
+        
+            else:
+                
+                dlg.comboBoxBaseProfile.clear()
+
+                profiles = db_dict['Profiles'][(db_dict['Profiles']['Day'] == day_sel) & (db_dict['Profiles']['Profile Type'] == sub_sel) & (db_dict['Profiles']['Country'] == main_sel)]
+
+                dlg.comboBoxBaseProfile.clear()
+                dlg.comboBoxBaseProfile.addItems(sorted(profiles['baseProfIndexer']))
 
     def base_prof_changed():
-        base_prof = dlg.comboBoxBaseProfile.currentText()
-        prof_sel = db_dict['Profiles'][(db_dict['Profiles']['nameOrigin'] == base_prof) & (db_dict['Profiles']['Day'] == dlg.comboBoxDay.currentText()) & (db_dict['Profiles']['Profile Type'] == dlg.comboBoxProfType.currentText())]
-        prof_sel.columns = prof_sel.columns.map(str)
-        prof_sel_dict = prof_sel.squeeze().to_dict()
+        main_sel = dlg.comboBoxMain.currentText()
+        sub_sel = dlg.comboBoxSub.currentText()
+        day_sel = dlg.comboBoxDay.currentText()
+        base_sel = dlg.comboBoxBaseProfile.currentText()
+            
+        if main_sel == '' and sub_sel == '' and day_sel =='' and base_sel == '':
+            pass
+
+        else:
+            if dlg.radioButtonProfile.isChecked() is True:
+                prof_sel = db_dict['Profiles'][
+                    (db_dict['Profiles']['Day'] == day_sel) & (db_dict['Profiles']['Profile Type'] == main_sel) & 
+                    (db_dict['Profiles']['Country'] == sub_sel)  & (db_dict['Profiles']['baseProfIndexer'] ==base_sel)]
+                
+            else:
+                prof_sel = db_dict['Profiles'][
+                    (db_dict['Profiles']['Day'] == day_sel) & (db_dict['Profiles']['Profile Type'] == sub_sel) & 
+                    (db_dict['Profiles']['Country'] == main_sel)  & (db_dict['Profiles']['baseProfIndexer'] ==base_sel)]
+                
+    #     # db[col]['Name'].astype(str)  +  ', ' + db[col]['Day'].astype(str) +  ', ' + db[col]['Country'].astype(str) + ', ' + db[col]['City'].astype(str) 
+    #     # base_prof = country_sel + ', ' + prof_sel + ', ' + day_sel+ ', ' + prof_sel
+    #     base_prof = dlg.comboBoxBaseProfile.currentText()
+    #     prof_sel = db_dict['Profiles'][(db_dict['Profiles']['nameOrigin'] == base_prof) & (db_dict['Profiles']['Day'] == dlg.comboBoxDay.currentText()) & (db_dict['Profiles']['Profile Type'] == dlg.comboBoxProfType.currentText())]
+            prof_sel.columns = prof_sel.columns.map(str)
+            prof_sel_dict = prof_sel.squeeze().to_dict()
+# import matplotlib.pyplot as plt
+# from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+# import pandas as pd
+# from PyQt5.QtWidgets import QVBoxLayout
+
 
         plotValues = []
         for i in range(24):
@@ -63,9 +211,9 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
                 plotValues.append(float(prof_sel_dict[str(Tb.toPlainText())]))
             except:
                 pass
-        
-        ## Plot the profile
-        # Create dataframe from selected profile values
+
+            ## Plot the profile
+            # Create dataframe from selected profile values
         prof_df = pd.DataFrame(plotValues)
         # Check if df is empty to avoid errors from trying to plot nans
         # TODO Make a plot showing NAN values or make sure that nan is instead -9999 in Database
@@ -74,115 +222,162 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         else:
             # Check if plotViewer.layout() exists, to be sure that no errors are given when cleaning
             if dlg.plotViewer.layout() is None:
-                    layout = QVBoxLayout(dlg.plotViewer)
-                    dlg.plotViewer.setLayout(layout)
+                layout = QVBoxLayout(dlg.plotViewer)
+                dlg.plotViewer.setLayout(layout)
             else:
                 layout = dlg.plotViewer.layout()
             
             # clean dlg.plotViewer
             for i in reversed(range(layout.count())):
-                plt.close()
                 widget_to_remove = layout.itemAt(i).widget()
                 layout.removeWidget(widget_to_remove)
                 widget_to_remove.setParent(None)
             
             # Create plot from dataframe
             fig, ax = plt.subplots()
-            # Adjust figure size # THIS MIGHT NEED TO CHANGE. Check at more screens than just one..
+            # Adjust figure size
             fig.subplots_adjust(0.1, 0.2, 0.9, 1)
-            prof_df.plot(ax = ax,
-                    legend=None)
-            ax.set_xlim([0,23])
-            ax.set_xticks([0,6,12,18,23])
+            prof_df.plot(ax=ax, legend=None)
+            ax.set_xlim([0, 23])
+            ax.set_xticks([0, 6, 12, 18, 23])
             ax.minorticks_on()
             ax.set_xlabel('Hours')
             # Add plot to FigureCanvas object and add to layout Widget
             canvas = FigureCanvas(fig)
-            plt.close()
             layout.addWidget(canvas)
+            
+                
+            # ## Plot the profile
+            # # Create dataframe from selected profile values
+            # prof_df = pd.DataFrame(plotValues)
+            # # Check if df is empty to avoid errors from trying to plot nans
+            # # TODO Make a plot showing NAN values or make sure that nan is instead -9999 in Database
+            # if prof_df.empty is True:
+            #     pass
+            # else:
+            #     # Check if plotViewer.layout() exists, to be sure that no errors are given when cleaning
+            #     if dlg.plotViewer.layout() is None:
+            #             layout = QVBoxLayout(dlg.plotViewer)
+            #             dlg.plotViewer.setLayout(layout)
+            #     else:
+            #         layout = dlg.plotViewer.layout()
+                
+            #     # clean dlg.plotViewer
+            #     for i in reversed(range(layout.count())):
+            #         plt.close()
+            #         widget_to_remove = layout.itemAt(i).widget()
+            #         layout.removeWidget(widget_to_remove)
+            #         widget_to_remove.setParent(None)
+                
+            #     # Create plot from dataframe
+            #     plt.ioff()  # Turn off interactive mode
+            #     fig, ax = plt.subplots()
+            #     # Adjust figure size # THIS MIGHT NEED TO CHANGE. Check at more screens than just one..
+            #     fig.subplots_adjust(0.1, 0.2, 0.9, 1)
+            #     prof_df.plot(ax = ax,
+            #             legend=None)
+            #     ax.set_xlim([0,23])
+            #     ax.set_xticks([0,6,12,18,23])
+            #     ax.minorticks_on()
+            #     ax.set_xlabel('Hours')
+            #     # Add plot to FigureCanvas object and add to layout Widget
+            #     canvas = FigureCanvas(fig)
+            #     plt.close()
+            #     layout.addWidget(canvas)
     
-    def update_plot():
-        a =  dlg.comboBoxProfType.currentText() # Not sure why this has to be here, but if i remove it, nothing works...
+    #     def prof_type_changed():
+    #         prof_type = dlg.comboBoxProfType.currentText()
+            
+    #         dlg.comboBoxBaseProfile.clear()
+    #         # dlg.comboBoxDay.setCurrentIndex(0)
+    #         day = dlg.comboBoxDay.currentText()
 
-        plotValues = []
-        for i in range(24):
-            Le = getattr(dlg, f'lineEdit_{i}')
-            val = Le.text()
-            plotValues.append(float(val))
+    #         prof_types = db_dict['Profiles'][db_dict['Profiles']['Profile Type'] == prof_type]
+    #         prof_types = prof_types['nameOrigin'][db_dict['Profiles']['Day'] == day]
+    #         dlg.comboBoxBaseProfile.addItems(prof_types.tolist())
 
-        prof_df = pd.DataFrame(plotValues)
+    # def update_plot():
+    #     a =  dlg.comboBoxProfType.currentText() # Not sure why this has to be here, but if i remove it, nothing works...
 
-        if dlg.plotViewer.layout() is None:
-                layout = QVBoxLayout(dlg.plotViewer)
-                dlg.plotViewer.setLayout(layout)
-        else:
-            layout = dlg.plotViewer.layout()
+    #     plotValues = []
+    #     for i in range(24):
+    #         Le = getattr(dlg, f'lineEdit_{i}')
+    #         val = Le.text()
+    #         plotValues.append(float(val))
+
+    #     prof_df = pd.DataFrame(plotValues)
+
+    #     if dlg.plotViewer.layout() is None:
+    #             layout = QVBoxLayout(dlg.plotViewer)
+    #             dlg.plotViewer.setLayout(layout)
+    #     else:
+    #         layout = dlg.plotViewer.layout()
         
-        # clean dlg.plotViewer
-        for i in reversed(range(layout.count())):
-            plt.close()
-            widget_to_remove = layout.itemAt(i).widget()
-            layout.removeWidget(widget_to_remove)
-            widget_to_remove.setParent(None)
+    #     # clean dlg.plotViewer
+    #     for i in reversed(range(layout.count())):
+    #         plt.close()
+    #         widget_to_remove = layout.itemAt(i).widget()
+    #         layout.removeWidget(widget_to_remove)
+    #         widget_to_remove.setParent(None)
         
-        # Create plot from dataframe
-        fig, ax = plt.subplots()
-        # Adjust figure size # THIS MIGHT NEED TO CHANGE. Check at more screens than just one..
-        fig.subplots_adjust(0.1, 0.2, 0.9, 1)
-        prof_df.plot(ax = ax,
-                legend=None)
-        ax.set_xlim([0,23])
-        ax.set_xticks([0,6,12,18,23])
-        ax.minorticks_on()
-        ax.set_xlabel('Hours')
-        # Add plot to FigureCanvas object and add to layout Widget
-        canvas = FigureCanvas(fig)
-        plt.close()
-        layout.addWidget(canvas)
+    #     # Create plot from dataframe
+    #     fig, ax = plt.subplots()
+    #     # Adjust figure size # THIS MIGHT NEED TO CHANGE. Check at more screens than just one..
+    #     fig.subplots_adjust(0.1, 0.2, 0.9, 1)
+    #     prof_df.plot(ax = ax,
+    #             legend=None)
+    #     ax.set_xlim([0,23])
+    #     ax.set_xticks([0,6,12,18,23])
+    #     ax.minorticks_on()
+    #     ax.set_xlabel('Hours')
+    #     # Add plot to FigureCanvas object and add to layout Widget
+    #     canvas = FigureCanvas(fig)
+    #     plt.close()
+    #     layout.addWidget(canvas)
 
         
-    def ref_changed():
-        dlg.textBrowserRef.clear()
-        try:
-            ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
-            dlg.textBrowserRef.setText(
-                '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
-                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
-                'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
-                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
-                'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
-            )
-        except:
-            pass
+    # def ref_changed():
+    #     dlg.textBrowserRef.clear()
+    #     try:
+    #         ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
+    #         dlg.textBrowserRef.setText(
+    #             '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
+    #             'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
+    #             'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
+    #             'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
+    #             'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
+    #         )
+    #     except:
+    #         pass
 
-    def add_profile():
+    # def add_profile():
 
-        dict_reclass = {
-            'ID' : create_code('Profiles'),
-            'General Type' : 'Reg',
-            'Profile Type' : dlg.comboBoxProfType.currentText(), 
-            'Day' : dlg.comboBoxDay.currentText(),
-            'Name' : dlg.textEditName.value(),
-            'Origin' : dlg.textEditOrig.value(),
-            'Ref' : db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
-        }
+    #     dict_reclass = {
+    #         'ID' : create_code('Profiles'),
+    #         'General Type' : 'Reg',
+    #         'Profile Type' : dlg.comboBoxProfType.currentText(), 
+    #         'Day' : dlg.comboBoxDay.currentText(),
+    #         'Name' : dlg.textEditName.value(),
+    #         'Origin' : dlg.textEditOrig.value(),
+    #         'Ref' : db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
+    #     }
 
-        for i in range(0, 24): 
-            Tb = eval('dlg.textBrowser_' + str(i))
-            Le = eval('dlg.lineEdit_' + str(i))
-            col = int(Tb.toPlainText())
-            val = Le.text()
-            dict_reclass[col] = val
+    #     for i in range(0, 24): 
+    #         Tb = eval('dlg.textBrowser_' + str(i))
+    #         Le = eval('dlg.lineEdit_' + str(i))
+    #         col = int(Tb.toPlainText())
+    #         val = Le.text()
+    #         dict_reclass[col] = val
 
-        dict_reclass['Ref'] = db_dict[  'References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
-        new_edit = pd.DataFrame([dict_reclass]).set_index('ID')
-        db_dict['Profiles'] = pd.concat([db_dict['Profiles'], new_edit])
+    #     dict_reclass['Ref'] = db_dict[  'References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
+    #     new_edit = pd.DataFrame([dict_reclass]).set_index('ID')
+    #     db_dict['Profiles'] = pd.concat([db_dict['Profiles'], new_edit])
 
-        # Write to db
-        save_to_db(db_path, db_dict)
+    #     # Write to db
+    #     save_to_db(db_path, db_dict)
 
-        QMessageBox.information(None, 'Succesful', 'Profile Entry added to your local database')
-        fill_cbox()
+    #     QMessageBox.information(None, 'Succesful', 'Profile Entry added to your local database')
+    #     fill_cbox()
     
     def tab_update():
         if self.dlg.tabWidget.currentIndex() == 5:
@@ -193,10 +388,24 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
     
 
     dlg.pushButtonToRefManager.clicked.connect(to_ref_edit)
+
     self.dlg.tabWidget.currentChanged.connect(tab_update)
-    dlg.pushButtonGen.clicked.connect(add_profile)
-    dlg.pushButtonUpdatePlot.clicked.connect(update_plot)
-    dlg.comboBoxRef.currentIndexChanged.connect(ref_changed) 
-    dlg.comboBoxProfType.currentIndexChanged.connect(prof_type_changed)
+    dlg.radioButtonProfile.toggled.connect(lambda: profile_setting('Profile'))
+    dlg.radioButtonCountry.toggled.connect(lambda: profile_setting('Country'))
+
+
+
+    # dlg.pushButtonGen.clicked.connect(add_profile)
+    # dlg.pushButtonUpdatePlot.clicked.connect(update_plot)
+    # dlg.pushButtonClear.clicked.connect(fill_cbox)
+
+    # dlg.comboBoxRef.currentIndexChanged.connect(ref_changed)
+    
+    dlg.comboBoxMain.currentIndexChanged.connect(main_changed)
+    dlg.comboBoxSub.currentIndexChanged.connect(sub_changed)
     dlg.comboBoxBaseProfile.currentIndexChanged.connect(base_prof_changed)
     dlg.comboBoxDay.currentIndexChanged.connect(day_changed)
+
+    # # dlg.comboBoxProfType.currentIndexChanged.connect(prof_type_changed)
+    # dlg.comboBoxBaseProfile.currentIndexChanged.connect(base_prof_changed)
+    # # dlg.comboBoxDay.currentIndexChanged.connect(day_changed)
