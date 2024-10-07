@@ -95,7 +95,7 @@ def save_to_db(db_path, db_dict):
         db_dict['References']['authorYear'] = db_dict['References']['Author'].astype(str) + ', ' + db_dict['References']['Year'].astype(str)
     for col in db_dict.keys():
         if col not in ['Name', 'References', 'Country', 'Region']:
-            db_dict[col]['nameOrigin'] = db_dict[col]['Name'].astype(str) + ', ' + db_dict[col]['Origin'].astype(str)
+            db_dict[col]['nameOrigin'] = db_dict[col]['Name'].astype(str) + ', ' + db_dict[col]['City'].astype(str)
 
 # def save_to_db(db_path, db_dict):
 #     for col in list(db_dict.keys()):
