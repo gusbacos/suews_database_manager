@@ -4,7 +4,9 @@ from PyQt5.QtWidgets import  QVBoxLayout
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 from .database_functions import save_to_db, create_code
-import time
+
+from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtCore import QRegExp
 
 
 #################################################################################################
@@ -23,9 +25,21 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         dlg.comboBoxSub.clear()
 
         dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear']))
+        dlg.comboBoxRef.setCurrentIndex(-1)
 
         if dlg.radioButtonProfile.isChecked() is True:
             profile_setting('Profile')
+
+        # set up rules for profile LineEdits
+        # Only 5
+        # only 0-9 and .
+        reg_ex = QRegExp("[0-9.]*")        
+        for i in range(24):
+            Le = getattr(dlg, f'lineEdit_{i}')
+            Le.setMaxLength(5)
+            input_validator = QRegExpValidator(reg_ex, Le)
+            Le.setValidator(input_validator)
+
 
     def profile_setting(setting):
 
@@ -73,6 +87,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
                 country_list = sorted(list(set(list(db_dict['Profiles']['Country'].loc[db_dict['Profiles']['Profile Type'] == main_sel_sel]))))
                 dlg.comboBoxSub.addItems(sorted(country_list))
                 dlg.comboBoxSub.setCurrentIndex(-1)
+                dlg.comboBoxRef.setCurrentIndex(-1)
         else:
 
             # 1. Check for country
@@ -86,6 +101,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
                 profile_list = list(set(list(db_dict['Profiles']['Profile Type'].loc[db_dict['Profiles']['Country'] == main_sel])))
                 dlg.comboBoxSub.addItems(sorted(profile_list))
                 dlg.comboBoxSub.setCurrentIndex(-1)
+                dlg.comboBoxRef.setCurrentIndex(-1)
     
         dlg.comboBoxSub.blockSignals(False)
         
@@ -97,6 +113,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
             pass
 
         else:
+            dlg.comboBoxRef.setCurrentIndex(-1)
 
             if dlg.radioButtonProfile.isChecked() is True:
                 main_sel = dlg.comboBoxMain.currentText()
@@ -120,6 +137,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
 
                 main_sel = dlg.comboBoxMain.currentText()
                 sub_sel = dlg.comboBoxSub.currentText()
+                dlg.comboBoxRef.setCurrentIndex(-1)
 
                 profiles = db_dict['Profiles'][(db_dict['Profiles']['Profile Type'] == sub_sel) & (db_dict['Profiles']['Country'] == main_sel)]
                 day_list = list(set(list(profiles['Day'])))
@@ -133,7 +151,6 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
                 else:
                     dlg.comboBoxDay.clear()
                     dlg.comboBoxDay.addItems(day_list)
-                    dlg.comboBoxDay.setCurrentIndex(1)
                     day_changed()
         
         dlg.comboBoxDay.blockSignals(False)
@@ -143,6 +160,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         main_sel = dlg.comboBoxMain.currentText()
         sub_sel = dlg.comboBoxSub.currentText()
         day_sel = dlg.comboBoxDay.currentText()
+        dlg.comboBoxRef.setCurrentIndex(-1)
 
             
         if dlg.comboBoxMain.currentText() == '' and dlg.comboBoxSub.currentText() == '' and dlg.comboBoxDay.currentText() =='' :
@@ -187,17 +205,18 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
                     (db_dict['Profiles']['Day'] == day_sel) & (db_dict['Profiles']['Profile Type'] == sub_sel) & 
                     (db_dict['Profiles']['Country'] == main_sel)  & (db_dict['Profiles']['baseProfIndexer'] ==base_sel)]
                 
-    #     # db[col]['Name'].astype(str)  +  ', ' + db[col]['Day'].astype(str) +  ', ' + db[col]['Country'].astype(str) + ', ' + db[col]['City'].astype(str) 
-    #     # base_prof = country_sel + ', ' + prof_sel + ', ' + day_sel+ ', ' + prof_sel
-    #     base_prof = dlg.comboBoxBaseProfile.currentText()
-    #     prof_sel = db_dict['Profiles'][(db_dict['Profiles']['nameOrigin'] == base_prof) & (db_dict['Profiles']['Day'] == dlg.comboBoxDay.currentText()) & (db_dict['Profiles']['Profile Type'] == dlg.comboBoxProfType.currentText())]
             prof_sel.columns = prof_sel.columns.map(str)
             prof_sel_dict = prof_sel.squeeze().to_dict()
-# import matplotlib.pyplot as plt
-# from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-# import pandas as pd
-# from PyQt5.QtWidgets import QVBoxLayout
 
+            try:
+                # Set reference for profile
+                ref_sel = prof_sel['Ref'].item()
+                ref_str = db_dict['References'].loc[ref_sel, 'authorYear']
+
+                ref_index = dlg.comboBoxRef.findText(ref_str)
+                dlg.comboBoxRef.setCurrentIndex(ref_index)
+            except:
+                pass
 
         plotValues = []
         for i in range(24):
@@ -211,8 +230,9 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
             except:
                 pass
 
-            ## Plot the profile
-            # Create dataframe from selected profile values
+        ## Plot the profile
+        
+        # Create dataframe from selected profile values
         prof_df = pd.DataFrame(plotValues)
         # Check if df is empty to avoid errors from trying to plot nans
         # TODO Make a plot showing NAN values or make sure that nan is instead -9999 in Database
@@ -327,7 +347,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
             val = Le.text()
             dict_reclass[col] = val
 
-        dict_reclass['Ref'] = db_dict[  'References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
+        dict_reclass['Ref'] = db_dict[ 'References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
         new_edit = pd.DataFrame([dict_reclass]).set_index('ID')
         db_dict['Profiles'] = pd.concat([db_dict['Profiles'], new_edit])
 
