@@ -1,4 +1,4 @@
-import pandas as pd
+from pandas import DataFrame, concat
 from .database_functions import save_to_db, create_code
 from qgis.PyQt.QtWidgets import QMessageBox
 
@@ -107,8 +107,8 @@ def setup_ref_manager(self, dlg, db_dict, db_path):
             'DOI' : dlg.textEditDOI.value()
         }
 
-        new_edit = pd.DataFrame([ref_dict]).set_index('ID')
-        db_dict['References'] = pd.concat([db_dict['References'], new_edit])
+        new_edit = DataFrame([ref_dict]).set_index('ID')
+        db_dict['References'] = concat([db_dict['References'], new_edit])
         save_to_db(db_path, db_dict)
 
         QMessageBox.information(None, 'Succesful', 'New edit added to your local database')

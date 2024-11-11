@@ -1,11 +1,10 @@
-import pandas as pd
+from pandas import DataFrame, concat
 from .database_functions import create_code, save_to_db
 from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.PyQt.QtGui import QImage, QPixmap
 import urllib.request, urllib.error, urllib.parse
-from qgis.core import QgsMessageLog, Qgis
-import math
-import numpy as np
+from qgis.core import QgsMessageLog
+from numpy import nan
 
 #################################################################################################
 #                                                                                               #
@@ -33,6 +32,7 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
         dlg.comboBoxProf.setCurrentIndex(0)
         dlg.comboBoxPeriod.setCurrentIndex(0)
         dlg.label_2.clear()
+        dlg.textBrowser_source.clear()
 
 
     def check_type():
@@ -86,8 +86,11 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
 
 
     def typology_info():
+
+        # TODO Update with changed paved/buildings Combobox
         typology_str = dlg.comboBoxTableSelect.currentText()
         dlg.textBrowserTypo.clear()
+
         if dlg.comboBoxTableSelect.currentIndex() != -1:
             #typology_sel = db_dict['NonVeg'].loc[db_dict['NonVeg']['nameOrigin'] == typology_str]
             typology_sel = db_dict['Types'].loc[db_dict['Types']['nameOrigin'] == typology_str]
@@ -149,13 +152,17 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
             if typology_sel['Url'].item() == None:
                 dlg.label_2.clear()
             else:
-                setup_image(dlg.label_2, typology_sel['Url'].item())
+                setup_image(dlg.label_2, typology_sel['Url'].item(), typology_sel['imageSource'].item())
 
-    def setup_image(widget, url):
+    def setup_image(widget, url, imageSource):
         # if math.isnan(url):
             # widget.clear()
         # else:
         if type(url) == str:
+            if imageSource != None:
+                dlg.textBrowser_source.setText('Picture Author:, '+  str(imageSource))
+                
+
             req = urllib.request.Request(str(url))
             try:
                 resp = urllib.request.urlopen(req)
@@ -175,8 +182,10 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
                 image.loadFromData(data)
 
                 widget.setPixmap(QPixmap(image).scaledToWidth(450))
+
         else:
             widget.clear()
+            dlg.textBrowser_source.setText('Picture Author missing')
             widget.setText('No example picture available in database')
     
     def generate_type():
@@ -184,25 +193,26 @@ def setup_typology_creator(self, dlg, db_dict, db_path):
         dict_reclass = {
             'ID' : create_code('Name'), #str('Type' + str(int(round(time.time())))),
             'Origin' : str(dlg.textEditOrig.value()),
-            'Type' : str(dlg.textEditName.value()),
-            'Name': str(dlg.textEditDesc.value()),
+            'Name' : str(dlg.textEditName.value()),
+            'Description': str(dlg.textEditDesc.value()),
             'ProfileType' : dlg.comboBoxProf.currentText(),
             'Period' : dlg.comboBoxPeriod.currentText(),
             'Author' : str(dlg.textEditAuthor.value()),
-            'Url' : np.nan, 
+            'Url' : nan, 
         }
 
         cbox_list = [dlg.comboBoxPavedType, dlg.comboBoxBuildingType]#, dlg.comboBoxGrassType, dlg.comboBoxDecType, dlg.comboBoxEvrType,dlg.comboBoxBsoilType, dlg.comboBoxWaterType]
         textbrowser_list = [dlg.textBrowser_0, dlg.textBrowser_1]#, dlg.textBrowser_2, dlg.textBrowser_3, dlg.textBrowser_4, dlg.textBrowser_5, dlg.textBrowser_6]
         
+
         for cbox, textbrowser in zip(cbox_list, textbrowser_list):
 
-            var = textbrowser.toPlainText()
-            surf_table = db_dict['NonVeg']
+            var = textbrowser.toPlainText() # Paved or Buildings
+            surf_table = db_dict['NonVeg'][db_dict['NonVeg']['Surface'] == var]
             dict_reclass[var] = surf_table[surf_table['nameOrigin'] == cbox.currentText()].index.item()
 
-        new_edit = pd.DataFrame.from_dict([dict_reclass]).set_index('ID')
-        db_dict['Types'] = pd.concat([db_dict['Types'], new_edit])
+        new_edit = DataFrame.from_dict([dict_reclass]).set_index('ID')
+        db_dict['Types'] = concat([db_dict['Types'], new_edit])
     
         save_to_db(db_path, db_dict)
         fill_cbox()

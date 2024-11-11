@@ -1,5 +1,5 @@
-import pandas as pd
-from .database_functions import save_to_db, create_code
+from pandas import DataFrame, concat
+from .database_functions import save_to_db, create_code, ref_changed
 from qgis.PyQt.QtWidgets import QMessageBox
 
 #################################################################################################
@@ -18,7 +18,7 @@ def setup_irrigation_manager(self, dlg, db_dict, db_path):
         dlg.textEditOrig.clear()
         
         for i in range(0,25):
-            Le = eval('dlg.IrrLineEdit_' + str(i))
+            Le = getattr(dlg, f'IrrLineEdit_{i}', None)
             Le.clear()
     
         dlg.comboBoxBaseIrr.addItems(db_dict['Irrigation']['nameOrigin'].tolist())
@@ -33,24 +33,18 @@ def setup_irrigation_manager(self, dlg, db_dict, db_path):
         irr_sel_dict = irr_sel.squeeze().to_dict()
 
         for i in range(0,25):
-            Tb = eval('dlg.textBrowser_' + str(i))
-            Le = eval('dlg.IrrLineEdit_' + str(i))
+            Tb = getattr(dlg, f'textBrowser_{i}', None)
+            Le = getattr(dlg, f'IrrLineEdit_{i}', None)
             Le.clear()
             Le.setText(str(irr_sel_dict[Tb.toPlainText()]))
-    
-    def ref_changed():
-        dlg.textBrowserRef.clear()
+
+        # set correct ref
         try:
-            ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
-            dlg.textBrowserRef.setText(
-                '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
-                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
-                'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
-                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
-                'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
-            )
+            ref_id = irr_sel['Ref']
+            ref_index = db_dict['References'].loc[ref_id, 'authorYear'].item()
+            dlg.comboBoxRef.setCurrentIndex(dlg.comboBoxRef.findText(ref_index))
         except:
-            pass
+            dlg.comboBoxRef.setCurrentIndex(-1) 
 
     def add_irr():
 
@@ -64,14 +58,14 @@ def setup_irrigation_manager(self, dlg, db_dict, db_path):
         }
 
         for i in range(0, 25): 
-            Tb = eval('dlg.textBrowser_' + str(i))
-            Le = eval('dlg.IrrLineEdit_' + str(i))
+            Tb = getattr(dlg, f'textBrowser_{i}', None)
+            Le = getattr(dlg, f'IrrLineEdit_{i}', None)
             col = Tb.toPlainText()
             val = Le.text()
             dict_reclass[col] = val
 
-        new_edit = pd.DataFrame([dict_reclass]).set_index('ID')
-        db_dict['Irrigation'] = pd.concat([db_dict['Irrigation'], new_edit])
+        new_edit = DataFrame([dict_reclass]).set_index('ID')
+        db_dict['Irrigation'] = concat([db_dict['Irrigation'], new_edit])
         save_to_db(db_path, db_dict)
 
         QMessageBox.information(None, 'Succesful', 'Irrigation Entry added to your local database')
@@ -83,6 +77,6 @@ def setup_irrigation_manager(self, dlg, db_dict, db_path):
     
     self.dlg.tabWidget.currentChanged.connect(tab_update)
 
-    dlg.comboBoxRef.currentIndexChanged.connect(ref_changed) 
+    dlg.comboBoxRef.currentIndexChanged.connect(lambda: ref_changed(dlg, db_dict))    
     dlg.comboBoxBaseIrr.currentIndexChanged.connect(base_irr_changed)
     dlg.pushButtonGen.clicked.connect(add_irr)

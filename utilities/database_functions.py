@@ -1,5 +1,5 @@
-import pandas as pd
-import numpy as np
+from pandas import ExcelFile, read_excel, ExcelWriter
+from numpy import nonzero, isnan, nan, vectorize, int32
 from time import sleep
 from datetime import datetime
 
@@ -9,11 +9,12 @@ def read_DB(db_path):
     function for reading database and parse it to dictionary of dataframes
     nameOrigin is used for indexing and presenting the database entries in a understandable way for the user
     '''
-    db_sh = pd.ExcelFile(db_path)
+    db_sh = ExcelFile(db_path)
     sheets = db_sh.sheet_names
-    db = pd.read_excel(db_path, sheet_name= sheets, index_col= 0)
-    # add 
+    db = read_excel(db_path, sheet_name= sheets, index_col= 0)
+
     for col in sheets:
+        
         if col == 'Name':
             db[col]['nameOrigin'] = db[col]['Name'].astype(str) + ', ' + db[col]['Origin'].astype(str)
         elif col == 'References': 
@@ -25,8 +26,51 @@ def read_DB(db_path):
         elif col == 'Spartacus Material':
             db[col]['nameOrigin'] = db[col]['Name'].astype(str) + '; ' + db[col]['Color'].astype(str) + '; ' + db[col]['Origin'].astype(str)    
         # Calculate U-values for roof and wall new columns u_value_wall and u_value_roof
+        
+        elif col == 'Spartacus Surface':
+            db[col]['nameOrigin'] = db[col]['Name'].astype(str) + ', ' + db[col]['Origin'].astype(str)
+                # Filter rows where Surface is 'Buildings'
+        
+            buildings = db['Spartacus Surface'][db['Spartacus Surface']['Surface'] == 'Buildings']
+
+            # Calculate resistances and U-values
+            for prefix in ['w', 'r']:
+
+                if prefix == 'w':
+                    pr = 'wall'
+                else:
+                    pr = 'roof'
+                materials = buildings[[f'{prefix}{i}Material' for i in range(1, 6)]].values
+                thicknesses = buildings[[f'{prefix}{i}Thickness' for i in range(1, 6)]].values
+
+                thicknesses[isnan(thicknesses)] = 0
+
+                for i in range(0,5):
+                    materials[isnan(materials)] = materials[nonzero(isnan(materials))[0], nonzero(isnan(materials))[1]-1]
+
+
+                thermal_conductivities = vectorize(lambda x: db['Spartacus Material'].loc[x, 'Thermal Conductivity'])(materials)
+
+
+                resistances = thicknesses / thermal_conductivities
+                resistance_bulk = resistances.sum(axis=1)
+
+                u_values = 1 / resistance_bulk
+
+                db['Spartacus Surface'].loc[buildings.index, f'u_value_{pr}'] = u_values
+
+            # Calculate albedo and emissivity
+            for prop in ['Albedo', 'Emissivity']:
+                for prefix in ['w', 'r']:
+                    if prefix == 'w':
+                        pr = 'wall'
+                    elif prefix == 'r':
+                        pr == 'roof'
+                    material_col = f'{prefix}1Material'
+                    db['Spartacus Surface'].loc[buildings.index, f'{prop.lower()}_{pr}'] = db['Spartacus Material'].loc[buildings[material_col], prop].values
+        
         elif col == 'Profiles':
-            # Normalise traffic and energy use profiles to ensure that mean == 1
+            # Normalise traffic and energy use profiles to ensure that average of all columns = 1
             normalisation_rows = db[col][(db[col]['Profile Type'] == 'Traffic') | (db[col]['Profile Type'] == 'Energy use')]
             cols = list(range(24))
             normalisation_rows_index = list(normalisation_rows.index)
@@ -35,48 +79,86 @@ def read_DB(db_path):
             sums = db[col].loc[normalisation_rows_index, cols].sum(axis=1)
 
             # Avoid division by zero by replacing zero sums with NaN
-            sums.replace(0, np.nan, inplace=True)
+            sums.replace(0, nan, inplace=True)
 
             # # Calculate the scaling factor to make the sum equal to the number of columns (24)
             scaling_factors = 24 / sums
 
             # Scale the values
             db[col].loc[normalisation_rows_index, cols] = db[col].loc[normalisation_rows_index, cols].multiply(scaling_factors, axis=0)
-
+            
+            # Create unique name
             db[col]['nameOrigin'] = db[col]['Name'].astype(str)  +  ', ' + db[col]['Day'].astype(str) +  ', ' + db[col]['Country'].astype(str) + ', ' + db[col]['City'].astype(str) 
 
-        elif col == 'Spartacus Surface':
-            db[col]['nameOrigin'] = db[col]['Name'].astype(str) + ', ' + db[col]['Origin'].astype(str)
-        # Filter rows where Surface is 'Buildings'
-            buildings = db['Spartacus Surface'][db['Spartacus Surface']['Surface'] == 'Buildings']
-
-            # Calculate resistances and U-values
-            for prefix in ['w', 'r']:
-                materials = buildings[[f'{prefix}{i}Material' for i in range(1, 4)]].values
-                thicknesses = buildings[[f'{prefix}{i}Thickness' for i in range(1, 4)]].values
-
-                thermal_conductivities = np.vectorize(lambda x: db['Spartacus Material'].loc[x, 'Thermal Conductivity'])(materials)
-                resistances = thicknesses / thermal_conductivities
-                resistance_bulk = resistances.sum(axis=1)
-
-                u_values = 1 / resistance_bulk
-                db['Spartacus Surface'].loc[buildings.index, f'u_value_{prefix}all'] = u_values
-
-            # Calculate albedo and emissivity
-            for prop in ['Albedo', 'Emissivity']:
-                for prefix in ['w', 'r']:
-                    material_col = f'{prefix}1Material'
-                    db['Spartacus Surface'].loc[buildings.index, f'{prop.lower()}_{prefix}all'] = db['Spartacus Material'].loc[buildings[material_col], prop].values
         else:
-            print(col)
+            # Standard
             db[col]['nameOrigin'] = db[col]['Name'].astype(str) + ', ' + db[col]['Origin'].astype(str)
+    
+    # # add 
+    # for col in sheets:
+    #     if col == 'Name':
+    #         db[col]['nameOrigin'] = db[col]['Name'].astype(str) + ', ' + db[col]['Origin'].astype(str)
+    #     elif col == 'References': 
+    #         db[col]['authorYear'] = db[col]['Author'].astype(str) + ', ' + db[col]['Year'].astype(str)
+    #     elif col == 'Country':
+    #         db[col]['nameOrigin'] = db[col]['Country'].astype(str) + ', ' + db[col]['City'].astype(str)  
+    #     elif col == 'Region':
+    #         pass
+    #     elif col == 'Spartacus Material':
+    #         db[col]['nameOrigin'] = db[col]['Name'].astype(str) + '; ' + db[col]['Color'].astype(str) + '; ' + db[col]['Origin'].astype(str)    
+    #     # Calculate U-values for roof and wall new columns u_value_wall and u_value_roof
+    #     elif col == 'Profiles':
+    #         # Normalise traffic and energy use profiles to ensure that mean == 1
+    #         normalisation_rows = db[col][(db[col]['Profile Type'] == 'Traffic') | (db[col]['Profile Type'] == 'Energy use')]
+    #         cols = list(range(24))
+    #         normalisation_rows_index = list(normalisation_rows.index)
+
+    #         # # # Calculate the sum of the values for each row
+    #         sums = db[col].loc[normalisation_rows_index, cols].sum(axis=1)
+
+    #         # Avoid division by zero by replacing zero sums with NaN
+    #         sums.replace(0, np.nan, inplace=True)
+
+    #         # # Calculate the scaling factor to make the sum equal to the number of columns (24)
+    #         scaling_factors = 24 / sums
+
+    #         # Scale the values
+    #         db[col].loc[normalisation_rows_index, cols] = db[col].loc[normalisation_rows_index, cols].multiply(scaling_factors, axis=0)
+
+    #         db[col]['nameOrigin'] = db[col]['Name'].astype(str)  +  ', ' + db[col]['Day'].astype(str) +  ', ' + db[col]['Country'].astype(str) + ', ' + db[col]['City'].astype(str) 
+
+    #     elif col == 'Spartacus Surface':
+    #         db[col]['nameOrigin'] = db[col]['Name'].astype(str) + ', ' + db[col]['Origin'].astype(str)
+    #     # Filter rows where Surface is 'Buildings'
+    #         buildings = db['Spartacus Surface'][db['Spartacus Surface']['Surface'] == 'Buildings']
+
+    #         # Calculate resistances and U-values
+    #         for prefix in ['w', 'r']:
+    #             materials = buildings[[f'{prefix}{i}Material' for i in range(1, 4)]].values
+    #             thicknesses = buildings[[f'{prefix}{i}Thickness' for i in range(1, 4)]].values
+
+    #             thermal_conductivities = np.vectorize(lambda x: db['Spartacus Material'].loc[x, 'Thermal Conductivity'])(materials)
+    #             resistances = thicknesses / thermal_conductivities
+    #             resistance_bulk = resistances.sum(axis=1)
+
+    #             u_values = 1 / resistance_bulk
+    #             db['Spartacus Surface'].loc[buildings.index, f'u_value_{prefix}all'] = u_values
+
+    #         # Calculate albedo and emissivity
+    #         for prop in ['Albedo', 'Emissivity']:
+    #             for prefix in ['w', 'r']:
+    #                 material_col = f'{prefix}1Material'
+    #                 db['Spartacus Surface'].loc[buildings.index, f'{prop.lower()}_{prefix}all'] = db['Spartacus Material'].loc[buildings[material_col], prop].values
+    #     else:
+    #         print(col)
+    #         db[col]['nameOrigin'] = db[col]['Name'].astype(str) + ', ' + db[col]['Origin'].astype(str)
 
     db_sh.close() # trying this to close excelfile
 
     return db
 
 def save_to_db(db_path, db_dict):
-    # Drop columns in a vectorized manner
+    # Drop columns in a 
     for col in db_dict.keys():
         if col == 'References':
             db_dict[col] = db_dict[col].drop(columns='authorYear', errors='ignore')
@@ -84,18 +166,18 @@ def save_to_db(db_path, db_dict):
             db_dict[col] = db_dict[col].drop(columns='nameOrigin', errors='ignore')
 
     # Save to Excel
-    with pd.ExcelWriter(db_path) as writer:
+    with ExcelWriter(db_path) as writer:
         for sheet_name, df in db_dict.items():
             df.to_excel(writer, sheet_name=sheet_name)
 
-    # Add 'nameOrigin' and 'authorYear' columns back in a vectorized manner
-    if 'Name' in db_dict:
-        db_dict['Types']['nameOrigin'] = db_dict['Types']['Type'].astype(str) + ', ' + db_dict['Types']['Origin'].astype(str)
+    # Add 'nameOrigin' and 'authorYear' columns back
     if 'References' in db_dict:
         db_dict['References']['authorYear'] = db_dict['References']['Author'].astype(str) + ', ' + db_dict['References']['Year'].astype(str)
+    if 'Profiles' in db_dict:
+        db_dict['Profiles']['nameOrigin'] = db_dict['Profiles']['Name'].astype(str)  +  ', ' + db_dict['Profiles']['Day'].astype(str) +  ', ' + db_dict['Profiles']['Country'].astype(str) + ', ' + db_dict['Profiles']['City'].astype(str) 
     for col in db_dict.keys():
-        if col not in ['Name', 'References', 'Country', 'Region']:
-            db_dict[col]['nameOrigin'] = db_dict[col]['Name'].astype(str) + ', ' + db_dict[col]['City'].astype(str)
+        if col not in ['Profiles', 'References', 'Country', 'Region']:
+            db_dict[col]['nameOrigin'] = db_dict[col]['Name'].astype(str) + ', ' + db_dict[col]['Origin'].astype(str)
 
 # def save_to_db(db_path, db_dict):
 #     for col in list(db_dict.keys()):
@@ -193,6 +275,7 @@ code_id_dict = {
     'Vegetation Growth': 35,
     'Spartacus Material' : 36,
     'Spartacus Surface': 37,
+    'SnowLimPatch' : 38,
     
     'Emissivity': 40,
     'Albedo': 41,   
@@ -211,6 +294,27 @@ code_id_dict = {
     
     'Reference': 90,
 }
+
+
+def get_combobox_items(combobox):
+    items = [combobox.itemText(i) for i in range(combobox.count())]  # Get all items
+    items = [item.split(': ', 1)[1] for item in items]
+    return items
+
+
+def ref_changed(dlg, db_dict):
+    dlg.textBrowserRef.clear()
+    try:
+        ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
+        dlg.textBrowserRef.setText(
+            '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
+            'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
+            'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
+            'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
+            'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
+        )
+    except:
+            pass
 
 def create_code(table_name):
     '''
@@ -231,7 +335,7 @@ def create_code(table_name):
     table_code = str(code_id_dict[table_name]) 
     year = str(datetime.utcnow().strftime('%Y'))[2:]
     ms = str(datetime.utcnow().strftime('%S%f')) 
-    code = np.int32(table_code + year + ms[4:])
+    code = int32(table_code + year + ms[4:])
     
     return code
 
@@ -349,11 +453,12 @@ param_info_dict = {
         'surface': ['Deciduous Tree', 'Evergreen Tree', 'Grass'],
         'param': {'LAIEq': {'min': 0,
             'max': 1,
-            'tooltip': 'LAI calculation choice.'},
+            'tooltip': 'LAI calculation choice. [0,1]'},
         'LAIMin': {'min': 0, 'max': 1, 'tooltip': 'leaf-off wintertime value'},
         'LAIMax': {'min': 0,
             'max': 1,
             'tooltip': 'full leaf-on summertime value'}}},
+
     'Leaf Growth Power': {
         'surface': ['Deciduous Tree', 'Evergreen Tree', 'Grass'],
         'param': {'LeafGrowthPower1': {'min': 0,
@@ -367,7 +472,10 @@ param_info_dict = {
             'tooltip': 'a parameter required by LAI calculation [|K^-1|] in `LAIEq`'},
         'LeafOffPower2': {'min': 0,
             'max': 1,
-            'tooltip': 'a parameter required by LAI calculation [|K^-1|] in `LAIEq`'}
+            'tooltip': 'a parameter required by LAI calculation [|K^-1|] in `LAIEq`'},
+        'LAIEq': {'min': 0,
+            'max': 1,
+            'tooltip': 'LAI calculation choice. [0,1]'},
             },
     }, 
     'Max Vegetation Conductance': {
@@ -421,6 +529,12 @@ param_info_dict = {
             'a1': {'tooltip' : 'Coefficient for Q* term [-]'},
             'a2': {'tooltip' : 'Coefficient for dQ*/dt term [h]'},
             'a3': {'tooltip' : 'Constant term [W m-2]'},
+        }
+    },
+    'SnowLimPatch': {
+        'surface': ['Paved','Buildings','Deciduous Tree','Evergreen Tree','Grass','Bare Soil'], 
+        'param' : {
+            'SnowLimPatch' : {'tooltip' : 'Limit for the snow water equivalent when snow cover starts to be patchy [mm]. Not needed if SnowUse = 0 in RunControl.nml'}
         }
     }
 }

@@ -1,9 +1,9 @@
-import pandas as pd
+from pandas import DataFrame, concat
 from qgis.PyQt.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import  QVBoxLayout
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
-from .database_functions import save_to_db, create_code
+from .database_functions import save_to_db, create_code, ref_changed
 
 from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtCore import QRegExp
@@ -33,7 +33,8 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         # set up rules for profile LineEdits
         # Only 5
         # only 0-9 and .
-        reg_ex = QRegExp("[0-9.]*")        
+        reg_ex = QRegExp("[0-9.]*")  
+              
         for i in range(24):
             Le = getattr(dlg, f'lineEdit_{i}')
             Le.setMaxLength(5)
@@ -209,14 +210,20 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
             prof_sel_dict = prof_sel.squeeze().to_dict()
 
             try:
-                # Set reference for profile
-                ref_sel = prof_sel['Ref'].item()
-                ref_str = db_dict['References'].loc[ref_sel, 'authorYear']
-
-                ref_index = dlg.comboBoxRef.findText(ref_str)
-                dlg.comboBoxRef.setCurrentIndex(ref_index)
+                ref_id = prof_sel['Ref']
+                ref_index = db_dict['References'].loc[ref_id, 'authorYear'].item()
+                dlg.comboBoxRef.setCurrentIndex(dlg.comboBoxRef.findText(ref_index))
             except:
-                pass
+                print('error in showing References')
+            # try:
+            #     # Set reference for profile
+            #     ref_sel = prof_sel['Ref'].item()
+            #     ref_str = db_dict['References'].loc[ref_sel, 'authorYear']
+
+            #     ref_index = dlg.comboBoxRef.findText(ref_str)
+            #     dlg.comboBoxRef.setCurrentIndex(ref_index)
+            # except:
+            #     pass
 
         plotValues = []
         for i in range(24):
@@ -233,7 +240,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         ## Plot the profile
         
         # Create dataframe from selected profile values
-        prof_df = pd.DataFrame(plotValues)
+        prof_df = DataFrame(plotValues)
         # Check if df is empty to avoid errors from trying to plot nans
         # TODO Make a plot showing NAN values or make sure that nan is instead -9999 in Database
         if prof_df.empty is True:
@@ -275,7 +282,7 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
             val = Le.text()
             plotValues.append(float(val))
 
-        prof_df = pd.DataFrame(plotValues)
+        prof_df = DataFrame(plotValues)
 
         if dlg.plotViewer.layout() is None:
                 layout = QVBoxLayout(dlg.plotViewer)
@@ -304,20 +311,6 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
         canvas = FigureCanvas(fig)
         plt.close()
         layout.addWidget(canvas)
-        
-    def ref_changed():
-        dlg.textBrowserRef.clear()
-        try:
-            ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
-            dlg.textBrowserRef.setText(
-                '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
-                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
-                'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
-                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
-                'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
-            )
-        except:
-            pass
 
     def add_profile():
     
@@ -348,8 +341,8 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
             dict_reclass[col] = val
 
         dict_reclass['Ref'] = db_dict[ 'References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
-        new_edit = pd.DataFrame([dict_reclass]).set_index('ID')
-        db_dict['Profiles'] = pd.concat([db_dict['Profiles'], new_edit])
+        new_edit = DataFrame([dict_reclass]).set_index('ID')
+        db_dict['Profiles'] = concat([db_dict['Profiles'], new_edit])
 
         # Write to db
         save_to_db(db_path, db_dict)
@@ -370,12 +363,10 @@ def setup_profile_creator(self, dlg, db_dict, db_path):
     self.dlg.tabWidget.currentChanged.connect(tab_update)
     dlg.radioButtonProfile.toggled.connect(lambda: profile_setting('Profile'))
     dlg.radioButtonCountry.toggled.connect(lambda: profile_setting('Country'))
-
-
+    dlg.comboBoxRef.currentIndexChanged.connect(lambda: ref_changed(dlg, db_dict))    
 
     dlg.pushButtonGen.clicked.connect(add_profile)
     dlg.pushButtonUpdatePlot.clicked.connect(update_plot)
-    dlg.comboBoxRef.currentIndexChanged.connect(ref_changed)
     
     dlg.comboBoxMain.currentIndexChanged.connect(main_changed)
     dlg.comboBoxSub.currentIndexChanged.connect(sub_changed)

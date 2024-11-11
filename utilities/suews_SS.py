@@ -3,8 +3,9 @@
 #                                  Spartacus Surface Creator                                    #
 #                                                                                               #
 #################################################################################################
-import pandas as pd
-from .database_functions import create_code, save_to_db
+from pandas import DataFrame, concat
+from numpy import isnan, nan
+from .database_functions import create_code, save_to_db, ref_changed
 from qgis.PyQt.QtWidgets import QMessageBox
 
 def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
@@ -19,6 +20,9 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
         dlg.comboBoxBase.clear()
         dlg.comboBoxBase.addItems(surf_list) 
         dlg.comboBoxBase.setCurrentIndex(-1)
+
+        dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear'])) 
+        dlg.comboBoxRef.setCurrentIndex(-1)
     
         mat_list = list(db_dict['Spartacus Material']['nameOrigin'])
         mat_list.sort()
@@ -26,12 +30,12 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
 
         for roofwall in ['r', 'w']:
             for layer in range(1,6): #6 #TODO Change 4->6 if we want all 5 layers
-                cbox = eval('dlg.comboBox_' + roofwall + str(layer))
+                cbox = getattr(dlg, f'comboBox_{roofwall}{str(layer)}', None)
             
                 cbox.clear()
                 cbox.addItems(mat_list)
 
-                lineEdit = eval('dlg.lineEdit_' + roofwall + str(layer)) 
+                lineEdit = getattr(dlg, f'lineEdit_{roofwall}{str(layer)}', None)
                 lineEdit.setText('')
         
     def print_table(dlg, idx, rw):
@@ -54,13 +58,13 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
                 )
                 # activate frames of following layer.
                 if idx <6:
-                    frame_plus = eval('dlg.frame_' + rw + str(idx+1))   
+                    frame_plus = getattr(dlg,f'frame_{rw}{str(idx+1)}')
                     frame_plus.setEnabled(True)    
             else:
                 # if material set to None, just clean the text Browser
                 Tb.setText('')
                 if idx <6:
-                    frame_plus = eval('dlg.frame_' + rw + str(idx+1))
+                    frame_plus = getattr(dlg,f'frame_{rw}{str(idx+1)}')
                     frame_plus.setEnabled(False) 
         except:
             pass
@@ -87,11 +91,12 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
 
         for cols in db_dict['Spartacus Surface'].columns:
             if cols != 'nameOrigin':
-                spartacus_dict[cols] = -999
-
+                spartacus_dict[cols] = nan
+        
         spartacus_dict['ID'] = create_code('Spartacus Surface')
         spartacus_dict['Name'] = str(dlg.textEditName.value())
         spartacus_dict['Origin'] = str(dlg.textEditOrig.value())
+        spartacus_dict['Ref'] = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
 
         # Roof 
         if r1_mat != 'None':
@@ -153,16 +158,18 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
         
         # print(spartacus_dict)
                 
-        new_edit = pd.DataFrame([spartacus_dict]).set_index('ID')
-        db_dict['Spartacus Surface'] = pd.concat([db_dict['Spartacus Surface'], new_edit])
+        new_edit = DataFrame([spartacus_dict]).set_index('ID')
+        db_dict['Spartacus Surface'] = concat([db_dict['Spartacus Surface'], new_edit])
         save_to_db(db_path, db_dict)
 
-        QMessageBox.information(None, 'Succesful', 'New edit TEST added to your local database')
+        QMessageBox.information(None, 'Succesful', f'New edit {spartacus_dict['Name']}, {spartacus_dict['Origin']} added to your local database')
         fill_cboxes()
               
     def base_surface_changed():
+
         spartacus_str = dlg.comboBoxBase.currentText()
-        if spartacus_str != '': 
+
+        if dlg.comboBoxBase.currentIndex() != -1: 
             surf_table = db_dict['Spartacus Surface']
             mat_table = db_dict['Spartacus Material']
 
@@ -174,26 +181,33 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
             
             for roofwall in ['r', 'w']:
                 for layer in range(1,6): #6 #TODO Change 4->6 if we want all 5 layers
-                    cbox = eval('dlg.comboBox_' + roofwall + str(layer))
-                    lineEdit = eval('dlg.lineEdit_' + roofwall + str(layer)) 
+                    cbox = getattr(dlg, f'comboBox_{roofwall}{str(layer)}', None)
+                    lineEdit = getattr(dlg, f'lineEdit_{roofwall}{str(layer)}', None)
 
                     mat_idx = spartacus_sel.loc[:,(roofwall + str(layer) + 'Material')].item()
 
-                    if mat_idx != -999:
+                    if isnan(mat_idx) != True:
                         material = mat_table.loc[mat_idx, 'nameOrigin']
                         mat_table.loc[mat_idx, 'nameOrigin']
                         cbox_index = mat_list.index(material)
                         cbox.setCurrentIndex(cbox_index)
                         thickness = spartacus_sel.loc[:,(roofwall + str(layer) + 'Thickness')].item()
-                        lineEdit.setText(str(thickness))
-                   
+                        lineEdit.setText(str(thickness))                   
                     else:
                         cbox.setCurrentIndex(cbox.findText('None'))
+                        lineEdit.clear()
+                        # set correct ref
+            try:
+                ref_id = spartacus_sel['Ref']
+                ref_index = db_dict['References'].loc[ref_id, 'authorYear'].item()
+                dlg.comboBoxRef.setCurrentIndex(dlg.comboBoxRef.findText(ref_index))
+            except:
+                dlg.comboBoxRef.setCurrentIndex(-1) 
 
 
             # wInsulation = spartacus_sel['wInsulation'].item()
             # w_insulation = eval('dlg.radioButton_w' + str(wInsulation))
-            # w_insulation.setChecked(True)
+            # w_insulation.setChecked(True)s
 
             # rInsulation = spartacus_sel['rInsulation'].item()
             # r_insulation = eval('dlg.radioButton_r' + str(rInsulation))
@@ -206,6 +220,7 @@ def setup_SUEWS_SS_creator(self, dlg, db_dict, db_path):
         if self.dlg.tabWidget.currentIndex() == 8:
             fill_cboxes()
 
+    dlg.comboBoxRef.currentIndexChanged.connect(lambda: ref_changed(dlg, db_dict))    
     dlg.pushButtonGen.clicked.connect(new_edit)
     dlg.comboBoxBase.currentIndexChanged.connect(base_surface_changed)
     dlg.comboBox_r1.currentIndexChanged.connect(lambda: print_table(dlg,1,'r'))

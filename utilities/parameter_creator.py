@@ -1,6 +1,6 @@
-import pandas as pd
+from pandas import DataFrame, concat
 from qgis.PyQt.QtWidgets import QMessageBox
-from .database_functions import param_info_dict, create_code, save_to_db, surf_df_dict
+from .database_functions import param_info_dict, create_code, save_to_db, ref_changed
 
 #################################################################################################
 #                                                                                               #
@@ -11,6 +11,9 @@ from .database_functions import param_info_dict, create_code, save_to_db, surf_d
 def setup_parameter_creator(self, dlg, db_dict, db_path):
 
     def fill_cbox():
+        dlg.comboBoxSurface.blockSignals(True)
+        dlg.comboBoxTableSelect.blockSignals(True)
+        
         dlg.comboBoxRef.clear()
         dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear'])) 
         dlg.comboBoxRef.setCurrentIndex(-1)
@@ -31,10 +34,13 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
             Nc = getattr(dlg, f'textEdit_Edit_{i}')
             Nc.clear()
             Nc.setDisabled(True)
+        
+        dlg.comboBoxSurface.blockSignals(False)
+        dlg.comboBoxTableSelect.blockSignals(False)
 
     def table_changed():
 
-        try:        
+        if dlg.comboBoxTableSelect.currentIndex() != -1:
             dlg.comboBoxBase.clear()
             dlg.comboBoxSeason.setDisabled(True)
             dlg.comboBoxSeason.setCurrentIndex(-1)
@@ -72,36 +78,42 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
                 dlg.comboBoxSeason.setEnabled(True)
                 dlg.comboBoxSeason.setCurrentIndex(0)
                 dlg.textBrowserSeason.setEnabled(True)
-            
-            dlg.comboBoxSurface.setCurrentIndex(-1)   
 
+            elif table_name in ['Conductance', 'Soil']:
+                dlg.comboBoxSurface.setEnabled(False)
             
-        except:
-            pass
+            # dlg.comboBoxSurface.setCurrentIndex(-1)
 
     def surface_changed():
-        
-        try:
+
+        if dlg.comboBoxTableSelect.currentIndex() != -1:
+
             surface_sel = dlg.comboBoxSurface.currentText()
             table_name = dlg.comboBoxTableSelect.currentText()
 
-            current_parameters = db_dict[table_name][db_dict[table_name]['Surface'] == surface_sel]
+            if table_name in ['Soil', 'Conductance']:  
+                current_parameters = db_dict[table_name]
+            else:              
+                current_parameters = db_dict[table_name][db_dict[table_name]['Surface'] == surface_sel]
+
             dlg.comboBoxBase.clear()
             dlg.comboBoxBase.addItems(current_parameters['nameOrigin'].tolist())
             dlg.comboBoxBase.setEnabled(True)
             dlg.comboBoxBase.setCurrentIndex(-1)
 
             params = list(param_info_dict[table_name]['param'].keys())
-                   
+            
             for idx in range(len(params)):
                 Nc = getattr(dlg, f'textEdit_Edit_' + str(idx))
                 Nc.clear()
-     
-        except:
-            pass
+        
+        if dlg.comboBoxSurface.currentIndex() != -1:
+            print_table()   
+
 
     def base_parameter_changed():
 
+        dlg.comboBoxRef.setCurrentIndex(-1)
         base_str = dlg.comboBoxBase.currentText()
         if base_str != '': 
             table_name = dlg.comboBoxTableSelect.currentText()
@@ -109,6 +121,7 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
             base_parameter = db_dict[table_name].loc[db_dict[table_name]['nameOrigin'] == base_str]
                         
             params = list(param_info_dict[table_name]['param'].keys())
+
             try:
                 for idx in range(len(params)):
                     Oc = getattr(dlg, f'textBrowser_' + str(idx))
@@ -117,20 +130,62 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
                     Nc.setValue(str(round(param_sel.item(),3)))
             except:
                 pass
+            
+            ref_id = base_parameter['Ref']
+            ref_index = db_dict['References'].loc[ref_id, 'authorYear'].item()
+            dlg.comboBoxRef.setCurrentIndex(dlg.comboBoxRef.findText(ref_index))
 
-    def ref_changed():
-        dlg.textBrowserRef.clear()
-        try:
-            ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
-            dlg.textBrowserRef.setText(
-                '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
-                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
-                'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
-                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
-                'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
-            )
-        except:
-            pass
+
+    def print_table():
+        # Check if a base typology is selected
+
+        surface = dlg.comboBoxSurface.currentText()
+        # Get the name of the text browser
+        Tb = dlg.textBrowserDf
+        table_var = dlg.comboBoxTableSelect.currentText()
+
+        if table_var == 'Conductance':
+            table = db_dict['Conductance']  
+
+            dlg.comboBoxSurface.blockSignals(True)
+            dlg.comboBoxSurface.setCurrentIndex(-1)
+            col_list = list(table)
+
+            remove_cols = ['ID', 'Surface', 'Ref', 'nameOrigin']
+            col_list = [col for col in col_list if col not in remove_cols]
+
+            Tb.clear()
+            ref_show = db_dict['References']['authorYear'].to_dict()
+            table['Reference'] = table['Ref'].map(ref_show).fillna('')  # Map references
+            Tb.setText(str(table.reset_index().drop(columns=['Ref', 'ID']).to_html(index=True)))
+            Tb.setLineWrapMode(0)
+            dlg.comboBoxSurface.blockSignals(False)
+
+        else:
+            # Determine if to use OHM or not
+            table = db_dict['OHM'] if table_var.startswith('OHM') else db_dict.get(table_var)
+
+            # Filter the table based on the selected surface
+            if surface in ['Grass', 'Evergreen Tree', 'Deciduous Tree']:
+                table_surf = table[(table['Surface'] == surface) | (table['Surface'] == 'All vegetation') | (table['Surface'] == 'cropland')]
+            elif surface in ['Buildings', 'Paved', 'Bare Soil']:
+                table_surf = table[(table['Surface'] == surface) | (table['Surface'] == 'All nonveg')]
+            else:
+                table_surf = table[table['Surface'] == surface]
+        
+            # Prepare to display the table, remove columns that not is to show
+            col_list = list(table)
+
+            remove_cols = ['ID', 'Surface', 'Period', 'Ref', 'typeOrigin', 'nameOrigin']
+            col_list = [col for col in col_list if col not in remove_cols]
+
+            Tb.clear()
+            ref_show = db_dict['References']['authorYear'].to_dict()
+            table_surf['Reference'] = table_surf['Ref'].map(ref_show).fillna('')  # Map references
+            Tb.setText(str(table_surf.reset_index().drop(columns=['Ref', 'ID', 'Surface']).to_html(index=True)))
+            Tb.setLineWrapMode(0)
+
+
 
     def add_table():
 
@@ -144,24 +199,32 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
                 list(table).remove(remove)
             except:
                 pass
+
         len_list = len(list(table))
 
         if table_name == 'Soil':
             dict_reclass = {
-                'ID' : create_code['NonVeg'],
-                'General Type' : 'NonVeg',
+                'ID' : create_code(table_name),
                 'Surface' : 'NaN', 
                 'Name' : dlg.textEditName.value(),
                 'Origin' : dlg.textEditOrig.value()
             }
+
+        elif table_name == 'conductance':
+            dict_reclass = {
+                'ID' : create_code(table_name),
+                'Name' : dlg.textEditName.value(),
+                'Origin' : dlg.textEditOrig.value()
+            }
+        
         else:
             dict_reclass = {
                 'ID' : create_code(table_name),
-                'General Type' : surf_df_dict[dlg.comboBoxSurface.currentText()],
                 'Surface' : dlg.comboBoxSurface.currentText(), 
                 'Name' : dlg.textEditName.value(),
                 'Origin' : dlg.textEditOrig.value() 
             }
+            
             if dlg.comboBoxTableSelect.currentText() == 'OHM':
                 dict_reclass['Season'] = dlg.comboBoxSeason.currentText()
     
@@ -177,8 +240,8 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
             dict_reclass[oldField] =  newField
 
         dict_reclass['Ref'] = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
-        new_edit = pd.DataFrame([dict_reclass]).set_index('ID')
-        db_dict[table_name] = pd.concat([db_dict[table_name], new_edit])
+        new_edit = DataFrame([dict_reclass]).set_index('ID')
+        db_dict[table_name] = concat([db_dict[table_name], new_edit])
     
         # Write to db
         save_to_db(db_path, db_dict)
@@ -238,16 +301,16 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
     #                 break
     #         try:
     #             newField = float(Nc.value())
-    #             # vars()[dlg, f'textEdit_Edit_' + str(idx)] = Nc
-    #             # dict_reclass[oldField] =  [newField]
-    #             # col_list.append(Oc.toPlainText())
+    #             vars()[dlg, f'textEdit_Edit_' + str(idx)] = Nc
+    #             dict_reclass[oldField] =  [newField]
+    #             col_list.append(Oc.toPlainText())
 
-    #             # dict_reclass['Ref'] = ref[ref['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
-    #             # df_new_edit = pd.DataFrame(dict_reclass)
-    #             # col_list.append('Ref')
+    #             dict_reclass['Ref'] = ref[ref['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() 
+    #             df_new_edit = pd.DataFrame(dict_reclass)
+    #             col_list.append('Ref')
 
-    #             # row = len(table.index)
-    #             # col = len(table[col_list].columns)
+    #             row = len(table.index)
+    #             col = len(table[col_list].columns)
 
     #             try:
     #                 if var == 'Albedo':
@@ -313,7 +376,8 @@ def setup_parameter_creator(self, dlg, db_dict, db_path):
     dlg.pushButtonToRefManager.clicked.connect(to_ref_edit)
     dlg.comboBoxTableSelect.currentIndexChanged.connect(table_changed) 
     dlg.pushButtonGen.clicked.connect(add_table)
-    dlg.comboBoxRef.currentIndexChanged.connect(ref_changed)
+    dlg.comboBoxRef.currentIndexChanged.connect(lambda: ref_changed(dlg, db_dict))    
+
     dlg.comboBoxBase.currentIndexChanged.connect(base_parameter_changed)
     dlg.comboBoxSurface.currentIndexChanged.connect(surface_changed)
 

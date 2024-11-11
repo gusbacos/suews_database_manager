@@ -1,18 +1,18 @@
-import pandas as pd
+from pandas import DataFrame, concat
 from qgis.PyQt.QtWidgets import QMessageBox
-from .database_functions import create_code, save_to_db
+from .database_functions import create_code, save_to_db, ref_changed
 
 def setup_SS_material_creator(self, dlg, db_dict, db_path):
 
     def start_material_creator(dlg):
 
-        dlg.comboBoxRef.clear()
-        dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear'])) 
-        dlg.comboBoxRef.setCurrentIndex(-1)
-
         dlg.comboBoxBase.clear()
         dlg.comboBoxBase.addItems(sorted(db_dict['Spartacus Material']['nameOrigin'])) 
         dlg.comboBoxBase.setCurrentIndex(-1)
+        
+        dlg.comboBoxRef.clear()
+        dlg.comboBoxRef.addItems(sorted(db_dict['References']['authorYear'])) 
+        dlg.comboBoxRef.setCurrentIndex(-1)
 
         dlg.textEditName.clear()
         dlg.textEditColor.clear()
@@ -36,8 +36,8 @@ def setup_SS_material_creator(self, dlg, db_dict, db_path):
             'Ref' : (db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item() )
         }
 
-        new_edit = pd.DataFrame([dict_reclass]).set_index('ID')
-        db_dict['Spartacus Material'] = pd.concat([db_dict['Spartacus Material'], new_edit])
+        new_edit = DataFrame([dict_reclass]).set_index('ID')
+        db_dict['Spartacus Material'] = concat([db_dict['Spartacus Material'], new_edit])
 
         save_to_db(db_path, db_dict)
 
@@ -56,19 +56,14 @@ def setup_SS_material_creator(self, dlg, db_dict, db_path):
             dlg.textEditThermalC.setValue(str(base['Thermal Conductivity'].item()))
             dlg.textEditSpecificH.setValue(str(base['Specific Heat'].item()))
 
-    def ref_changed():
-        dlg.textBrowserRef.clear()
-        try:
-            ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
-            dlg.textBrowserRef.setText(
-                '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
-                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
-                'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
-                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
-                'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
-            )
-        except:
-            pass
+            try:        
+                ref_id = base['Ref']
+                ref_index = db_dict['References'].loc[ref_id, 'authorYear'].item()
+                dlg.comboBoxRef.setCurrentIndex(dlg.comboBoxRef.findText(ref_index))
+            except:
+                dlg.comboBoxRef.setCurrentIndex(-1)
+                print(ref_id)
+
 
     def tab_update():
         if self.dlg.tabWidget.currentIndex() == 9:
@@ -76,9 +71,9 @@ def setup_SS_material_creator(self, dlg, db_dict, db_path):
 
     def to_ref_edit():
         self.dlg.tabWidget.setCurrentIndex(10)
-    
+
+    dlg.comboBoxRef.currentIndexChanged.connect(lambda: ref_changed(dlg, db_dict))    
     dlg.pushButtonToRefManager.clicked.connect(to_ref_edit)
     self.dlg.tabWidget.currentChanged.connect(tab_update)
-    dlg.comboBoxRef.currentIndexChanged.connect(ref_changed)
     dlg.pushButtonGen.clicked.connect(generate_material)
     dlg.comboBoxBase.currentIndexChanged.connect(base_changed)

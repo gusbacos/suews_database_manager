@@ -4,20 +4,16 @@
 #                                                                                               #
 #################################################################################################
 
-import pandas as pd
-import numpy as np
-import webbrowser
 from pathlib import Path
 from .database_functions import save_to_db
 
 from qgis.PyQt.QtCore import  QVariant
 from qgis.PyQt.QtWidgets import QFileDialog, QMessageBox
-from qgis.core import QgsVectorLayer, QgsMapLayerProxyModel, QgsProject, QgsField, QgsVectorFileWriter, Qgis
+from qgis.core import QgsVectorLayer, QgsMapLayerProxyModel, QgsProject, QgsField, QgsVectorFileWriter
 
 def setup_reclassifier(self, dlg, db_dict):
 
     def fill_cbox():
-        # dlg.comboBoxType.clear()
         dlg.comboBoxNew1.clear()        
 
         typology_list = list(db_dict['Types']['nameOrigin'])
@@ -29,9 +25,6 @@ def setup_reclassifier(self, dlg, db_dict):
             vars()[f'dlg.comboBoxNew{i}'] = Nc
 
         
-        # dlg.comboBoxType.clear()
-        # dlg.comboBoxType.addItems(typology_list)
-        # dlg.comboBoxType.setCurrentIndex(-1)
 
     def field_changed():
 
@@ -212,19 +205,12 @@ def setup_reclassifier(self, dlg, db_dict):
         QMessageBox.information(None, 'Process Complete', 'Your reclassified shapefile has been added to project. Proceed to SUEWS Preprare Database Typologies')
         dlg.textOutput.clear()
 
-    # def tab_update():
-    #     if self.dlg.tabWidget.currentIndex() == 0:
-    #         fill_cbox()
-    
-    # def to_type_edit():
-    #     self.dlg.tabWidget.setCurrentIndex(1)
 
     self.layerComboManagerPoint = dlg.comboBoxVector
     self.layerComboManagerPoint.setCurrentIndex(-1)
     self.layerComboManagerPoint.setFilters(QgsMapLayerProxyModel.PolygonLayer)
 
     fill_cbox()
-    # dlg.editTypeButton.clicked.connect(to_type_edit)
 
     dlg.comboBoxVector.currentIndexChanged.connect(layer_changed)
     dlg.comboBoxField.currentIndexChanged.connect(field_changed)
@@ -238,8 +224,4 @@ def setup_reclassifier(self, dlg, db_dict):
     dlg.pushButtonUpdateDatabase.clicked.connect(backupDatabase)
 
     
-
-    # self.dlg.tabWidget.currentChanged.connect(tab_update)
-    # dlg.comboBoxType.currentIndexChanged.connect(typology_info)
-
         

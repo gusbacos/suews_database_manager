@@ -1,5 +1,5 @@
-import pandas as pd
-from .database_functions import save_to_db, create_code
+from pandas import DataFrame, concat
+from .database_functions import save_to_db, create_code, ref_changed
 from qgis.PyQt.QtWidgets import QMessageBox
 
 #################################################################################################
@@ -28,7 +28,7 @@ def setup_snow_creator(self, dlg, db_dict, db_path ):
             Le.clear()
         
         # Fill comboboxes with albedo, emissivity and OHM values 
-        for i in range(0, 7): 
+        for i in range(0, 6): 
             Tb = getattr(dlg, f'textBrowserCb_{i}')
             Cb = getattr(dlg, f'comboBox_{i}')
    
@@ -45,7 +45,7 @@ def setup_snow_creator(self, dlg, db_dict, db_path ):
         # Check if base is selected
         base_snow = dlg.comboBoxBase.currentText()
 
-        if base_snow != '':
+        if dlg.comboBoxBase.currentIndex() != -1:
             # slice dataframe for selected base snow
             snow_sel = db_dict['Snow'].loc[db_dict['Snow']['nameOrigin'] == base_snow]
             
@@ -57,7 +57,7 @@ def setup_snow_creator(self, dlg, db_dict, db_path ):
 
             # Set comboboxes according to base snow
         
-            for i in range(0, 7): 
+            for i in range(0, 6): 
                 Tb = getattr(dlg, f'textBrowserCb_{i}')
                 Cb = getattr(dlg, f'comboBox_{i}')
 
@@ -71,22 +71,15 @@ def setup_snow_creator(self, dlg, db_dict, db_path ):
                 # set index in combobox
                 Cb_index = Cb.findText(indexer)     
                 Cb.setCurrentIndex(Cb_index)
-    
-    
-    def ref_changed():
-        dlg.textBrowserRef.clear()
-        try:
-            ID = db_dict['References'][db_dict['References']['authorYear'] ==  dlg.comboBoxRef.currentText()].index.item()
-            dlg.textBrowserRef.setText(
-                '<b>Author: ' +'</b>' + str(db_dict['References'].loc[ID, 'Author']) + '<br><br><b>' +
-                'Year: ' + '</b> '+ str(db_dict['References'].loc[ID, 'Year']) + '<br><br><b>' +
-                'Title: ' + '</b> ' +  str(db_dict['References'].loc[ID, 'Title']) + '<br><br><b>' +
-                'Journal: ' + '</b>' + str(db_dict['References'].loc[ID, 'Journal']) + '<br><br><b>' +
-                'DOI: ' + '</b>' + str(db_dict['References'].loc[ID, 'DOI']) + '<br><br><b>' 
-            )
-        except:
-            pass
 
+            
+            # set correct ref
+            try:
+                ref_id = snow_sel['Ref']
+                ref_index = db_dict['References'].loc[ref_id, 'authorYear'].item()
+                dlg.comboBoxRef.setCurrentIndex(dlg.comboBoxRef.findText(ref_index))
+            except:
+                dlg.comboBoxRef.setCurrentIndex(-1) 
 
     def add_snow():
 
@@ -104,7 +97,7 @@ def setup_snow_creator(self, dlg, db_dict, db_path ):
             dict_reclass[Tb.toPlainText] = float(Le.text())
 
         # Read comboboxes
-        for i in range(0, 7): 
+        for i in range(0, 6): 
             Tb = getattr(dlg, f'textBrowserCb_{i}')
             Cb = getattr(dlg, f'comboBox_{i}')
 
@@ -117,8 +110,8 @@ def setup_snow_creator(self, dlg, db_dict, db_path ):
             else:
                 dict_reclass[Tb.toPlainText()] = db_dict[tablename].loc[db_dict[tablename]['nameOrigin'] == current_text].index.item()
 
-        new_edit = pd.DataFrame([dict_reclass]).set_index('ID')
-        db_dict['Snow'] = pd.concat([db_dict['Snow'], new_edit])
+        new_edit = DataFrame([dict_reclass]).set_index('ID')
+        db_dict['Snow'] = concat([db_dict['Snow'], new_edit])
         save_to_db(db_path, db_dict)
 
         QMessageBox.information(None, 'Succesful', 'Snow Entry added to your local database')
@@ -131,6 +124,6 @@ def setup_snow_creator(self, dlg, db_dict, db_path ):
             fill_cbox()
 
     self.dlg.tabWidget.currentChanged.connect(tab_update)
-    dlg.comboBoxRef.currentIndexChanged.connect(ref_changed)
+    dlg.comboBoxRef.currentIndexChanged.connect(lambda: ref_changed(dlg, db_dict))    
     dlg.comboBoxBase.currentIndexChanged.connect(base_snow_changed)
     dlg.pushButtonGen.clicked.connect(add_snow) 
